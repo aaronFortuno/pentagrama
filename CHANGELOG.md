@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.11.0
+
+- La melodia continua en obrir la història. El popup permet aturar, repetir i descobrir un altre fragment sense tancar-se.
+- Catàleg ampliat a dotze fragments, amb selecció aleatòria des de la primera descoberta, sense repeticions dins d’una ronda ni entre el final i l’inici de dues rondes.
+- Vuit retrats contemporanis en estil de linogravat, negres sobre fons transparent, carregats només quan calen. El de Petzold s’identifica com a imaginat.
+- Noves píndoles i textos dels retrats als vuit idiomes, amb partitures i procedència de les il·lustracions documentades.
+- Notes llargues i silencis en repòs abans del salt següent, mantenint els instants musicals exactes.
+- Eliminat el títol interior redundant d’espai superior extra; selectors d’orientació i distribució amb colors terracota coherents amb la resta de controls.
+
 ## 1.10.0
 
 - Ou de pasqua musical després de cinc clics al logotip, amb sis fragments breus de Beethoven, Petzold, Grieg, Mozart i Pachelbel.

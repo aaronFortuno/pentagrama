@@ -1,0 +1,48 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-10-17",
+  "style": "Black linocut on transparent background",
+  "note": "Contemporary interpretive illustrations; Petzold's likeness is imagined, not authenticated.",
+  "assets": [
+    {
+      "file": "beethoven.png",
+      "prompt": "Use case: stylized-illustration. One small editorial portrait for a classical music website, a consistent collectable series of composer linocuts. Subject: Ludwig van Beethoven, recognizable mature likeness, unruly thick swept hair, broad forehead, serious thoughtful expression, high collar and early nineteenth-century coat. Head and shoulders only, facing slightly to the viewer's left, complete hair and silhouette visible, centered in a square with generous transparent margins. Medium: elegant hand-carved linocut, bold economical jet-black ink shapes with fine deliberate parallel cut marks, simplified expressive face, refined literary bookplate. Only pure black ink and genuinely transparent unprinted areas, including the facial highlights and carved marks. No white painted fill, gray wash, paper texture, gradient, backdrop, frame, text, signature, music symbols or props. At small size the face must remain legible. Flat isolated transparent PNG asset. This is an interpretive illustration, not an archival engraving.",
+      "reference": null
+    },
+    {
+      "file": "mozart.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: Wolfgang Amadeus Mozart, recognizable youthful adult likeness, oval face, large attentive eyes, powdered eighteenth-century tied-back hair, formal coat and cravat. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    },
+    {
+      "file": "grieg.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: Edvard Grieg, recognizable mature likeness with unruly swept-back hair, distinctive large moustache, clean-shaven cheeks, nineteenth-century jacket. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    },
+    {
+      "file": "pachelbel.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: Johann Pachelbel, mature seventeenth-century German composer, shoulder-length curled period wig, thoughtful long face, small formal neck cloth and dark coat, based on familiar historical likenesses. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    },
+    {
+      "file": "petzold.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: An explicitly imagined period portrait of Christian Petzold, early eighteenth-century Dresden composer. No authenticated likeness is being claimed: imagine a composed middle-aged man with a long curled Baroque wig, slim face, neck cloth and period coat. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    },
+    {
+      "file": "bach.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: Johann Sebastian Bach, recognizable mature likeness inspired by the familiar Haussmann portrait: full cheeks, large powdered curled wig, composed gaze, eighteenth-century coat and white neck cloth. No music sheet in hand. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    },
+    {
+      "file": "vivaldi.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: Antonio Vivaldi, recognizable adult likeness inspired by the familiar historical portraits, long curled hair, slender face, long nose, ecclesiastical neck bands and dark eighteenth-century coat. Black ink only even in the hair. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    },
+    {
+      "file": "schubert.png",
+      "prompt": "Use case: stylized-illustration. Generate ONE new portrait for the SAME series as the reference image. The reference is a STYLE AND COMPOSITION guide only, not the person's face or identity. Subject: Franz Schubert, recognizable young adult likeness: short curly hair, round wire-rim spectacles, rounded face, sideburns, nineteenth-century jacket and cravat. Head and shoulders, slight three-quarter view toward the viewer's left, complete silhouette with generous transparent margins, same head scale and square framing as the reference. Match its refined hand-carved linocut/bookplate language: economical solid black ink and deliberate parallel cut marks, expressive simplified face that reads at 100 pixels. Pure black ink only; genuinely transparent background AND transparent unprinted highlights, cut marks and gaps. No painted white or gray fills, gradients, paper, rectangle, frame, text, signature, instruments or symbols. Create an interpretive contemporary illustration, not a copied archival print.",
+      "reference": "beethoven.png"
+    }
+  ]
+}

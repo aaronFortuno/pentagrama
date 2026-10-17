@@ -1,21 +1,50 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MELODIES, melodyNote, planMelody } from '../docs/melodies.js';
+import { MELODIES, melodyNote, planMelody, createMelodyPicker } from '../docs/melodies.js';
+import { readFile } from 'node:fs/promises';
 import { INITIAL_NOTE, sampleNoteJump } from '../docs/logo-note.js';
 import { createMelodyPlayer } from '../docs/melody-player.js';
 import { messages } from '../docs/i18n.js';
 
-test('six sourced excerpts fit the logo, retain accidentals and have complete translations', () => {
-  assert.equal(MELODIES.length, 6); assert.equal(new Set(MELODIES.map(m => m.id)).size, 6);
+test('twelve sourced excerpts fit the logo, retain accidentals and have complete translations and portraits', async () => {
+  assert.equal(MELODIES.length, 12); assert.equal(new Set(MELODIES.map(m => m.id)).size, 12);
   assert.equal(melodyNote('D#5', 0).midi, 75); assert.equal(melodyNote('Bb4', 1).midi, 70);
   assert.throws(() => melodyNote('G7', 0), RangeError);
   for (const melody of MELODIES) {
     assert.match(melody.source, /^https:\/\/www.mutopiaproject.org\//);
     const timeline = planMelody(melody, INITIAL_NOTE);
-    assert.ok(timeline.duration > 3000 && timeline.duration < 15_000);
+    assert.ok(timeline.duration > 3000 && timeline.duration < 30_000);
+    const portrait = await readFile(new URL(`../docs/portraits/${melody.portrait}.png`, import.meta.url));
+    assert.equal(portrait.subarray(1, 4).toString(), 'PNG'); assert.equal(portrait[25], 6);
     for (const entry of timeline.entries) assert.ok(entry.note.step >= 0 && entry.note.step <= 8);
     for (const locale of Object.values(messages)) for (const key of ['label', 'title', 'story', 'reason']) assert.ok(locale[`melody_${melody.id}_${key}`]);
   }
+});
+
+test('shuffled rounds cover the full catalogue without repeats, including across round boundaries', () => {
+  for (let seed = 1; seed < 8; seed++) {
+    let state = seed;
+    const random = () => { state = Math.imul(state, 1664525) + 1013904223 | 0; return (state >>> 0) / 2 ** 32; };
+    const pick = createMelodyPicker(MELODIES, random); let previous;
+    for (let round = 0; round < 10; round++) {
+      const ids = [];
+      for (let index = 0; index < MELODIES.length; index++) {
+        const melody = pick(); assert.notEqual(melody.id, previous); previous = melody.id; ids.push(melody.id);
+      }
+      assert.equal(new Set(ids).size, MELODIES.length);
+    }
+  }
+  assert.notEqual(createMelodyPicker(MELODIES, () => 0)().id, createMelodyPicker(MELODIES, () => .999)().id);
+  const single = createMelodyPicker([MELODIES[0]]); assert.equal(single(), single());
+  assert.throws(() => createMelodyPicker([]), RangeError);
+});
+
+test('long holds and rests keep the note at rest before a short, correctly timed next leap', () => {
+  const melody = { tempo: 60, notes: [{ pitch: 'G4', beats: 4 }, { pitch: null, beats: 2 }, { pitch: 'B4', beats: 1 }] };
+  const { entries } = planMelody(melody, INITIAL_NOTE);
+  assert.ok(entries[1].start - entries[0].end > 5000);
+  assert.equal(entries[1].plan.touchdown, 700);
+  assert.equal(entries[1].start + entries[1].plan.touchdown, entries[1].at);
 });
 
 test('musical attacks have exact shared times, with nonoverlapping jumps and continuous landings', () => {

@@ -71,14 +71,14 @@ select,input[type=text],input[type=number],input[readonly]{width:100%;border:1px
 select{cursor:pointer}
 .paper-control-row{display:flex;align-items:center;gap:10px}
 .paper-control-row>select{flex:1;height:36px}
-.segmented{display:flex;border:1px solid #cdd6bf;border-radius:5px;overflow:hidden;background:#fcfcf8}
-.segmented button{display:flex;align-items:center;justify-content:center;gap:5px;flex:1;min-width:0;border:0;background:transparent;padding:9px 5px;font-size:11px;color:#718063;overflow-wrap:anywhere}
-.segmented button:hover{background:#edf1e6}
-.segmented button[aria-pressed=true]{background:#dce5cc;color:#34452a;font-weight:650;box-shadow:inset 0 -2px 0 #819565}
+.segmented{display:flex;border:1px solid #d8d6ce;border-radius:5px;overflow:hidden;background:#fcfcf8}
+.segmented button{display:flex;align-items:center;justify-content:center;gap:5px;flex:1;min-width:0;border:0;background:transparent;padding:9px 5px;font-size:11px;color:#7c8175;overflow-wrap:anywhere}
+.segmented button:hover:not(:disabled){background:#f0e9e2;color:#98402d}
+.segmented button[aria-pressed=true]{background:#efe1d9;color:#963c28;font-weight:650;box-shadow:inset 0 -2px 0 var(--accent)}
 .selection-check .lucide{width:12px;height:12px}
 .selection-check{opacity:0;transition:opacity var(--motion-duration) var(--motion-ease)}
 [aria-pressed=true]>.selection-check{opacity:1}
-.segmented button+button{border-left:1px solid #d8ddcf}
+.segmented button+button{border-left:1px solid #d8d6ce}
 .segmented.orientation-controls{flex-shrink:0;height:36px}
 .segmented.orientation-controls .icon-button{width:36px;height:34px;flex:none;padding:8px}
 .distribution-fields{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:10px;align-items:end}
@@ -149,6 +149,8 @@ details[data-motion=closing] .restore-chevron{transform:rotate(0deg)}
 .settings-disclosure>.details-content{max-height:var(--settings-content-height);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#c8cebc transparent;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:2px}
 .settings-disclosure>.details-content::after{content:"";display:block;height:10px}
 .settings-disclosure .field-hint:first-child{margin-top:0}
+.top-space-controls .control-label{align-items:center}
+.top-space-controls #top-space-hint{flex:1;margin:0}
 .settings-disclosure .reference-row{margin-top:10px}
 #restore-form{padding-top:10px;margin-top:10px;border-top:1px solid var(--line)}
 #restore-message:empty{display:none}
@@ -233,11 +235,15 @@ dialog .field-hint{font-size:10px}
 .privacy-details{margin:0}.privacy-details>summary{padding:11px 0;font-size:11px;font-weight:600;color:#4c5542}.privacy-details[data-motion=closing] .restore-chevron{transform:rotate(0deg)}
 .dialog-actions{display:flex;align-items:center;justify-content:flex-end;gap:22px;margin-top:24px}
 .melody-dialog{width:480px;max-width:min(480px,calc(100vw - 32px))}
+.composer-portrait{float:right;width:112px;margin:4px 0 12px 20px}
+.composer-portrait img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;filter:brightness(0);opacity:0;transition:opacity var(--motion-duration) var(--motion-ease)}
+.composer-portrait img.loaded{opacity:1}
+.composer-portrait figcaption{font-size:8px;line-height:1.4;color:var(--muted);text-align:center;margin-top:3px}
 .melody-dialog .dialog-heading{margin-bottom:5px}
 .melody-dialog .melody-composer{font-size:10px;line-height:1.6;color:#929a87;margin-top:0}
 .melody-dialog .melody-reason{padding-left:14px;border-left:2px solid #d8decd;font-family:Georgia,"Times New Roman",serif;font-size:15px;color:#68745b}
 .melody-source{display:inline-block;margin-top:6px;font-size:10px;color:#7e8772;text-underline-offset:3px}
-.melody-actions{display:flex;align-items:center;gap:12px 18px;flex-wrap:wrap;margin-top:24px}
+.melody-actions{display:flex;align-items:center;gap:12px 18px;flex-wrap:wrap;margin-top:24px;clear:both}
 .melody-actions #melody-reset{margin-left:auto}
 .lightning-address{display:flex;gap:6px;margin-top:22px}
 .lightning-address input{font:11px ui-monospace,monospace;padding:11px 8px}
@@ -255,6 +261,7 @@ h1{font-size:23px}
 .paper-controls{padding:10px 0}
 .settings-disclosure>summary{min-height:36px;padding:9px 0}}
 @media(max-width:760px){.header-intro{display:none}html,body{height:auto;min-height:100%;overflow:visible}
+.composer-portrait{width:88px;margin-left:14px}
 .app-shell{height:auto;min-height:100dvh;padding:0 16px;grid-template-rows:auto 1fr auto}
 .site-header{grid-template-columns:minmax(0,1fr) auto;gap:16px 12px;padding:17px 0}
 .wordmark{font-size:24px}

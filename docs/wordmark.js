@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=1.10.0';
+import { motionOptions } from './motion.js?v=1.11.0';
 
 // The red period lives outside both labels and is never replaced or faded out.
 export function createWordmark(home, trigger) {
@@ -10,6 +10,7 @@ export function createWordmark(home, trigger) {
     }));
   }
   async function change(text, { immediate = false } = {}) {
+    if (!animations.length && home.hidden === Boolean(text) && (text ? trigger : home).textContent === (text || 'pentagrama')) return;
     const token = ++generation; cancel();
     const source = home.hidden ? trigger : home, target = text ? trigger : home;
     const options = motionOptions(), moving = options.duration && !immediate;
