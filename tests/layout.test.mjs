@@ -4,7 +4,34 @@ import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeSh
 import { createPdf } from '../docs/pdf.js';
 import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from '../docs/library.js';
 import { LANGUAGES, messages, detectLanguage, translate } from '../docs/i18n.js';
+import { previewView } from '../docs/preview.js';
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} differs from ${b}`);
+
+test('preview fits all paper formats and keeps every edge reachable while panning', () => {
+  for (const paper of ['A3', 'A4', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
+    const settings = normalizeSettings({ ...DEFAULTS, paper, orientation }), page = createLayout(settings);
+    const viewport = { width: 600, height: 700 }, printed = renderSheet(settings);
+    const fitted = previewView(page, viewport, 1, { x: 9000, y: -9000 });
+    assert.ok(fitted.width <= viewport.width + 1e-7); assert.ok(fitted.height <= viewport.height + 1e-7);
+    close(fitted.x, 0); close(fitted.y, 0);
+    const enlarged = previewView(page, viewport, 4, { x: 9000, y: -9000 });
+    close(enlarged.width, fitted.width * 4); close(enlarged.height, fitted.height * 4);
+    close(enlarged.x + viewport.width / 2, enlarged.width / 2);
+    close(-enlarged.y + viewport.height / 2, enlarged.height / 2);
+    const reset = previewView(page, viewport, 0, enlarged);
+    assert.equal(reset.zoom, 1); close(reset.x, 0); close(reset.y, 0);
+    assert.equal(previewView(page, viewport, 10).zoom, 4);
+    assert.equal(renderSheet(settings), printed);
+  }
+});
+
+test('preview clamps offsets after a resize and stays finite in a collapsed viewport', () => {
+  const page = { width: 210, height: 297 }, viewport = { width: 1000, height: 300 };
+  const view = previewView(page, viewport, 2, { x: 800, y: -800 });
+  close(view.x, 0); close(view.y, -150);
+  const collapsed = previewView(page, { width: -10, height: 0 }, 4, view);
+  close(collapsed.width, 0); close(collapsed.height, 0); close(collapsed.x, 0); close(collapsed.y, 0);
+});
 
 test('every original P1 reference keeps the same A4 geometry', () => {
   for (let count = 1; count <= 24; count++) for (let group = 0; group < count; group++) for (const spacing of [1.2, 2.2, 4]) {

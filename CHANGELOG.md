@@ -1,5 +1,13 @@
 # Canvis
 
+## 1.2.0
+
+- Capçalera compacta amb títol, descripció, idioma i un únic botó d’imprimir que obre el diàleg del navegador.
+- Més espai per al full, sense franja introductòria, etiquetes redundants ni instruccions sota la previsualització.
+- Panell de plantilles superposat a tota l’alçada de l’espai de treball, amb tirador lateral i gestió de desar, compartir i restaurar.
+- Zoom de la previsualització fins al 400 %, arrossegament amb ratolí o dit i retorn a la vista del full sencer.
+- Distribució de capçalera i selector d’idioma revisada en tauletes i mòbils.
+
 ## 1.1.0
 
 - Full sencer visible a l’escriptori, amb panells laterals de desplaçament independent.

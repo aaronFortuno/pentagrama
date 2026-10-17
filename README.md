@@ -14,21 +14,21 @@ Un full en blanc per a la teva música. Paper pautat a mida, previsualització e
 - **Referència opcional al peu** per recuperar la geometria exacta del full.
 - **Enllaç compartible** que conserva la distribució i els noms dels blocs.
 
-El nombre de pentagrames que hi cap depèn del format, l’espai entre línies i la distribució. Si una configuració no hi cap, el web avisa i desactiva la impressió i la descàrrega PDF. **Ajusta al full** fa un ajust explícit: en mode senzill redueix el nombre de pentagrames; en mode blocs redueix els espais i, si és necessari, l’espai entre línies. Els controls mostren els valors resultants. Si tampoc no hi cap amb les mides mínimes, cal reduir manualment el nombre de pentagrames, blocs o repeticions.
+El nombre de pentagrames que hi cap depèn del format, l’espai entre línies i la distribució. Si una configuració no hi cap, el web avisa i desactiva la impressió. **Ajusta al full** fa un ajust explícit: en mode senzill redueix el nombre de pentagrames; en mode blocs redueix els espais i, si és necessari, l’espai entre línies. Els controls mostren els valors resultants. Si tampoc no hi cap amb les mides mínimes, cal reduir manualment el nombre de pentagrames, blocs o repeticions.
 
 En mode blocs les distàncies són exactes en mil·límetres, entre l’última línia d’un pentagrama i la primera del següent. El conjunt queda centrat verticalment. L’espai després de l’últim bloc no s’utilitza; entre repeticions s’aplica **Espai entre conjunts**.
 
-## Imprimir i descarregar
+## Previsualitzar i imprimir
 
-**Descarrega PDF** genera un PDF vectorial d’una pàgina en el mateix navegador, amb les dimensions exactes del format seleccionat. No hi ha cap connexió amb un servidor per generar-lo.
+La capçalera reuneix el títol, el selector d’idioma i **Imprimeix**, que obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
 
-**Imprimeix el full** obre el diàleg habitual del navegador. Tria el mateix format de paper, escala 100 % i desactiva les capçaleres i els peus de pàgina del navegador.
+Els controls **+**, **−** i **Ajusta** amplien la previsualització fins al 400 % o tornen a mostrar el full sencer. Quan està ampliat, arrossega’l amb el ratolí o amb un dit per explorar-lo. També pots ampliar amb Ctrl + roda (Cmd + roda a macOS). Amb el focus al full, les tecles + i − amplien o redueixen, les fletxes el desplacen i 0 o Inici ajusten el full. El zoom només afecta la vista en pantalla.
 
 El full només conté les línies i, si l’actives, la referència de configuració. Sense notes, claus, silencis, armadures, barres de compàs, noms d’instruments ni publicitat.
 
 ## Plantilles sense compte
 
-El panell de plantilles inclou models per a piano, coral SATB, iniciació, trio, SATB amb piano i orquestra en A3. El model orquestral és una proposta editable amb 23 pentagrames distribuïts en sis blocs.
+El tirador **Plantilles** de la dreta obre un panell superposat, amb desplaçament propi, que reuneix les accions de desar, compartir i restaurar. Es tanca amb el tirador, la creu o Esc. El panell inclou models per a piano, coral SATB, iniciació, trio, SATB amb piano i orquestra en A3. El model orquestral és una proposta editable amb 23 pentagrames distribuïts en sis blocs.
 
 - **Desa plantilla** guarda una còpia de la configuració amb el nom que triïs en aquest navegador.
 - Pots eliminar plantilles pròpies i ocultar qualsevol plantilla suggerida.
@@ -86,7 +86,8 @@ Les proves comproven compatibilitat P1, formats i orientacions, distribucions v�
 Fitxers principals:
 
 - `docs/layout.js`: mesures, distribució, referències i SVG.
-- `docs/pdf.js`: generació local del PDF a partir de la mateixa geometria.
+- `docs/preview.js`: zoom i límits del desplaçament, independents de les mesures d’impressió.
+- `docs/pdf.js`: generador vectorial conservat com a mòdul intern; la interfície utilitza el diàleg d’impressió.
 - `docs/library.js`: plantilles suggerides i gestió de les personals.
 - `docs/i18n.js`: idiomes, detecció i missatges.
 - `docs/app.js`: interfície i persistència local.

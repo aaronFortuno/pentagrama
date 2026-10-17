@@ -7,7 +7,13 @@ tagline|Un full en blanc. Totes les possibilitats.|A blank page. Every possibili
 intro|Espai per a la teva|Space for your|Espacio para tu|Raum für deine|De la place pour votre|Spazio per la tua|Espaço para a tua|Ruimte voor jouw
 music|música.|music.|música.|Musik.|musique.|musica.|música.|muziek.
 description|Paper pautat a mida, sense marques d’aigua.|Custom manuscript paper, without watermarks.|Papel pautado a medida, sin marcas de agua.|Notenpapier nach Maß, ohne Wasserzeichen.|Du papier à musique sur mesure, sans filigrane.|Carta pentagrammata su misura, senza filigrane.|Papel de música à medida, sem marcas de água.|Muziekpapier op maat, zonder watermerken.
-print|Imprimeix el full|Print sheet|Imprimir la hoja|Blatt drucken|Imprimer la feuille|Stampa il foglio|Imprimir a folha|Blad afdrukken
+print|Imprimeix|Print|Imprimir|Drucken|Imprimer|Stampa|Imprimir|Afdrukken
+zoom|Zoom de la previsualització|Preview zoom|Zoom de la vista previa|Vorschau-Zoom|Zoom de l’aperçu|Zoom dell’anteprima|Zoom da pré-visualização|Voorbeeldzoom
+zoomIn|Amplia|Zoom in|Ampliar|Vergrößern|Agrandir|Ingrandisci|Ampliar|Inzoomen
+zoomOut|Redueix|Zoom out|Reducir|Verkleinern|Réduire|Riduci|Reduzir|Uitzoomen
+previewFit|Ajusta|Fit|Ajustar|Einpassen|Ajuster|Adatta|Ajustar|Passend
+previewReset|Mostra el full sencer|Show the entire sheet|Mostrar la hoja completa|Ganzes Blatt anzeigen|Afficher la feuille entière|Mostra il foglio intero|Mostrar a folha inteira|Toon het hele blad
+previewNavigation|Full de mostra. Amplia amb els botons o Ctrl + roda i arrossega per moure’l. Amb el teclat: +, −, fletxes i 0 per ajustar.|Preview sheet. Zoom with the buttons or Ctrl + wheel and drag to move. Keyboard: +, −, arrows and 0 to fit.|Hoja de muestra. Amplía con los botones o Ctrl + rueda y arrastra para moverla. Teclado: +, −, flechas y 0 para ajustar.|Vorschaublatt. Mit den Tasten oder Strg + Mausrad zoomen und zum Verschieben ziehen. Tastatur: +, −, Pfeile und 0 zum Einpassen.|Aperçu de la feuille. Zoomez avec les boutons ou Ctrl + molette et faites glisser pour déplacer. Clavier : +, −, flèches et 0 pour ajuster.|Anteprima del foglio. Ingrandisci con i pulsanti o Ctrl + rotella e trascina per spostare. Tastiera: +, −, frecce e 0 per adattare.|Pré-visualização da folha. Amplia com os botões ou Ctrl + roda e arrasta para mover. Teclado: +, −, setas e 0 para ajustar.|Voorbeeldblad. Zoom met de knoppen of Ctrl + muiswiel en sleep om te verplaatsen. Toetsenbord: +, −, pijlen en 0 voor passend.
 pdf|Descarrega PDF|Download PDF|Descargar PDF|PDF herunterladen|Télécharger le PDF|Scarica PDF|Descarregar PDF|PDF downloaden
 settings|El teu full|Your sheet|Tu hoja|Dein Blatt|Votre feuille|Il tuo foglio|A tua folha|Jouw blad
 reset|Restableix|Reset|Restablecer|Zurücksetzen|Réinitialiser|Ripristina|Repor|Herstellen
