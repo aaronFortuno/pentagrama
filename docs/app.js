@@ -1,13 +1,13 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.8.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.8.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.8.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.8.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.8.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.8.0';
-import { bindTouchRange } from './touch-range.js?v=1.8.0';
-import { analytics } from './analytics.js?v=1.8.0';
-import { createLogoNote } from './logo-note.js?v=1.8.0';
-import { connectLogoSound } from './glockenspiel.js?v=1.8.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.8.1';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.8.1';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.8.1';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.8.1';
+import { iconMarkup, renderIcons } from './icons.js?v=1.8.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.8.1';
+import { bindTouchRange } from './touch-range.js?v=1.8.1';
+import { analytics } from './analytics.js?v=1.8.1';
+import { createLogoNote } from './logo-note.js?v=1.8.1';
+import { connectLogoSound } from './glockenspiel.js?v=1.8.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -340,7 +340,7 @@ document.querySelectorAll('dialog').forEach(dialog => {
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(dialog);
   });
 });
-document.querySelectorAll('.configuration-tools details').forEach(bindAnimatedDetails);
+document.querySelectorAll('.configuration-tools details, .privacy-details').forEach(bindAnimatedDetails);
 $('zoom-in').addEventListener('click', () => zoomPreview(previewZoom * 1.25));
 $('zoom-out').addEventListener('click', () => zoomPreview(previewZoom / 1.25));
 $('zoom-reset').addEventListener('click', () => zoomPreview(MIN_ZOOM));

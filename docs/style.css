@@ -219,6 +219,7 @@ dialog>p{font-size:12px;line-height:1.8;color:#737e65;margin:15px 0}
 dialog .field-hint{font-size:10px}
 .project-resources{border-top:1px solid var(--line);margin-top:22px;padding-top:4px;font-size:11px;color:#737e65;line-height:1.7}.project-resources h3{font-size:11px;font-weight:600;color:#4c5542;margin:15px 0 6px}.project-resources p{margin:0 0 7px}.project-resources a{color:#697a52;text-underline-offset:3px}.project-resources a:has([data-icon]){display:inline-flex;align-items:center;gap:5px}.project-resources .lucide{width:12px;height:12px}
 .analytics-privacy ul{margin:0 0 10px;padding-left:18px}.analytics-privacy li+li{margin-top:2px}.analytics-privacy .switch-row{margin-top:12px}
+.privacy-details{margin:0}.privacy-details>summary{padding:11px 0;font-size:11px;font-weight:600;color:#4c5542}.privacy-details[data-motion=closing] .restore-chevron{transform:rotate(0deg)}
 .dialog-actions{display:flex;align-items:center;justify-content:flex-end;gap:22px;margin-top:24px}
 .lightning-address{display:flex;gap:6px;margin-top:22px}
 .lightning-address input{font:11px ui-monospace,monospace;padding:11px 8px}

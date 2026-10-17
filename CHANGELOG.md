@@ -1,5 +1,10 @@
 # Canvis
 
+## 1.8.1
+
+- Detalls de privadesa plegats inicialment dins del diàleg V4V, amb l’interruptor d’exclusió sempre visible.
+- Desplegament i plegament amb la mateixa animació suau que la resta del web i respecte pel moviment reduït.
+
 ## 1.8.0
 
 - So de glockenspiel real a cada primer aterratge del logotip, amb mostres de VSCO 2 Community Edition sota CC0 i crèdits al diàleg del projecte.
