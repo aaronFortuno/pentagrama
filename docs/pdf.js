@@ -1,4 +1,4 @@
-import { createLayout, footerLines } from './layout.js?v=1.3.0';
+import { createLayout, footerLines } from './layout.js?v=1.4.0';
 
 // A vector page in physical units, with no rasterisation or remote service.
 export function createPdf(settings) {

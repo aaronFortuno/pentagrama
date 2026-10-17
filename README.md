@@ -21,9 +21,9 @@ En mode blocs les distàncies són exactes en mil·límetres, entre l’última 
 
 ## Previsualitzar i imprimir
 
-La capçalera reuneix el títol i el selector d’idioma en una sola fila. El títol i la descripció s’oculten a 800 px o menys. **Imprimeix**, fix a dalt del panell de configuració, obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
+La capçalera reuneix el títol i el selector d’idioma en una sola fila. El títol i la descripció s’oculten a 760 px o menys, quan el web passa a la distribució mòbil. **Imprimeix**, fix a dalt del panell de configuració, obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
 
-Els controls **+**, **−** i **Ajusta** amplien la previsualització fins al 400 % o tornen a mostrar el full sencer. Quan està ampliat, arrossega’l amb el ratolí o amb un dit per explorar-lo. També pots ampliar amb Ctrl + roda (Cmd + roda a macOS). Amb el focus al full, les tecles + i − amplien o redueixen, les fletxes el desplacen i 0 o Inici ajusten el full. El zoom només afecta la vista en pantalla.
+Els controls **+**, **−** i la icona d’ajust amplien la previsualització fins al 400 % o tornen a mostrar el full sencer. El percentatge apareix temporalment quan canvies el zoom. La icona d’ajust gira segons l’orientació del paper. Quan està ampliat, arrossega’l amb el ratolí o amb un dit per explorar-lo. També pots ampliar amb Ctrl + roda (Cmd + roda a macOS). Amb el focus al full, les tecles + i − amplien o redueixen, les fletxes el desplacen i 0 o Inici ajusten el full. El zoom només afecta la vista en pantalla.
 
 Si fas scroll sobre el full sense el modificador, apareix breument un avís que recorda Ctrl + roda, o ⌘ + roda a macOS. El scroll normal permet continuar desplaçant la pàgina en mòbil.
 
@@ -31,7 +31,9 @@ Per defecte, el full només conté les línies. Pots activar **Adreça del web a
 
 ## Plantilles sense compte
 
-El tirador **Plantilles** de la dreta obre un panell superposat, amb desplaçament propi, que reuneix les accions de desar, compartir i restaurar. Es tanca amb el tirador, la creu o Esc. El panell inclou models per a piano, coral SATB, iniciació, trio, SATB amb piano i orquestra en A3. El model orquestral és una proposta editable amb 23 pentagrames distribuïts en sis blocs.
+El tirador **Plantilles** de la dreta obre un panell superposat, amb desplaçament propi. Una sola fila superior reuneix desar, compartir el full actual i tancar. Les plantilles es mostren en una graella de dues columnes, amb el nom visible i els detalls i les accions en passar-hi per sobre o donar-hi focus amb el teclat. En dispositius tàctils, les accions són visibles directament. Cada targeta permet compartir aquella plantilla sense aplicar-la al full actual. El panell es tanca amb el tirador, la creu o Esc.
+
+Inclou models per a piano, coral SATB, iniciació, trio, SATB amb piano i orquestra en A3. El model orquestral és una proposta editable amb 23 pentagrames distribuïts en sis blocs.
 
 - **Desa plantilla** guarda una còpia de la configuració amb el nom que triïs en aquest navegador.
 - Pots eliminar plantilles pròpies i ocultar qualsevol plantilla suggerida.
@@ -59,6 +61,10 @@ Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma.
 ## Value for Value
 
 El peu obre un petit diàleg amb la història del projecte i l’adreça Lightning `aptswim903@walletofsatoshi.com` per a aportacions voluntàries. El web permet copiar-la; no es connecta a cap cartera ni processa pagaments. La informació de suport no apareix als fulls ni als PDF.
+
+El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 15 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos.
+
+Les transicions comparteixen `--motion-duration` (220 ms) i `--motion-ease` a `docs/style.css`. La preferència de moviment reduït les desactiva; la reordenació de targetes llegeix aquests mateixos valors.
 
 ## Publicar a GitHub Pages
 
@@ -95,6 +101,8 @@ Fitxers principals:
 - `docs/pdf.js`: generador vectorial conservat com a mòdul intern; la interfície utilitza el diàleg d’impressió.
 - `docs/library.js`: plantilles suggerides i gestió de les personals.
 - `docs/i18n.js`: idiomes, detecció i missatges.
+- `docs/icons.js`: ús del subconjunt local d’icones Lucide.
+- `docs/motion.js`: transicions de reordenació de targetes.
 - `docs/app.js`: interfície i persistència local.
 
 ## Llicència

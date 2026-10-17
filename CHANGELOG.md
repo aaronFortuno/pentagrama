@@ -1,5 +1,15 @@
 # Canvis
 
+## 1.4.0
+
+- Icones Lucide uniformes, servides localment amb les llicències ISC i MIT conservades.
+- Enllaços al repositori i als crèdits de les llibreries dins de «Sobre el projecte».
+- Un únic canvi entre distribució d’escriptori i mòbil, als 760 px.
+- Capçalera de plantilles en una sola fila i targetes en graella de dues columnes.
+- Compartició individual de qualsevol plantilla sense aplicar-la al full actual.
+- Controls de zoom amb icones centrades, percentatge temporal i icona d’ajust orientada segons el full.
+- Transicions de 220 ms compartides entre panell, targetes, avisos i zoom, amb respecte pel moviment reduït.
+
 ## 1.3.0
 
 - Avís breu de Ctrl + roda (⌘ a macOS) quan es fa scroll sense modificador sobre el full.

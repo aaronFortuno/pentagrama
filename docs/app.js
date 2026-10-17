@@ -1,7 +1,9 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.3.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.3.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.3.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.3.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.4.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.4.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.4.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.4.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.4.0';
+import { animateReflow } from './motion.js?v=1.4.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -14,7 +16,7 @@ if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
 let language = detectLanguage(languageChoice, navigator.languages || [navigator.language]);
 let templatesOpen = false, toastTimer, layout;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
-let zoomHintTimer;
+const noticeTimers = new Map();
 const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
 const t = (key, variables) => translate(language, key, variables);
 const number = value => new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
@@ -29,7 +31,10 @@ function translatePage() {
   document.documentElement.lang = language; document.title = t('title');
   document.querySelector('meta[name=description]').content = t('description');
   document.querySelectorAll('[data-i18n]').forEach(element => { element.textContent = t(element.dataset.i18n); });
-  document.querySelectorAll('[data-aria]').forEach(element => { element.setAttribute('aria-label', t(element.dataset.aria)); });
+  document.querySelectorAll('[data-aria]').forEach(element => {
+    element.setAttribute('aria-label', t(element.dataset.aria));
+    if (element.matches('button.icon-button, .stepper button')) element.title = t(element.dataset.aria);
+  });
   document.querySelectorAll('[data-title]').forEach(element => { element.title = t(element.dataset.title); });
   document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
   $('language').replaceChildren(new Option(`${t('automatic')} · ${LANGUAGES[detectLanguage('auto', navigator.languages || [navigator.language])]}`, 'auto'));
@@ -53,7 +58,8 @@ function fitPreview() {
   paper.style.top = `${parseFloat(style.paddingTop) + Math.max(0, availableHeight) / 2}px`;
   paper.style.transform = `translate(-50%, -50%) translate(${view.x}px, ${view.y}px)`;
   stage.dataset.zoomed = String(previewZoom > MIN_ZOOM);
-  $('zoom-value').textContent = `${number(Math.round(previewZoom * 100))} %`;
+  $('zoom-value').textContent = `${number(Math.round(previewZoom * 100))}%`;
+  document.querySelector('.zoom-controls').dataset.orientation = settings.orientation;
   $('zoom-out').disabled = previewZoom <= MIN_ZOOM; $('zoom-in').disabled = previewZoom >= MAX_ZOOM;
 }
 function zoomPreview(value) {
@@ -61,23 +67,28 @@ function zoomPreview(value) {
   const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, value));
   const ratio = next / previewZoom;
   previewPan = next === MIN_ZOOM ? { x: 0, y: 0 } : { x: previewPan.x * ratio, y: previewPan.y * ratio };
-  previewZoom = next; fitPreview();
+  previewZoom = next; fitPreview(); showNotice('zoom-value', 1800);
 }
-function hideZoomHint() { clearTimeout(zoomHintTimer); $('zoom-hint').hidden = true; }
+function hideNotice(id) { clearTimeout(noticeTimers.get(id)); $(id).classList.remove('visible'); $(id).setAttribute('aria-hidden', 'true'); }
+function showNotice(id, duration) {
+  clearTimeout(noticeTimers.get(id)); $(id).classList.add('visible'); $(id).setAttribute('aria-hidden', 'false');
+  noticeTimers.set(id, setTimeout(() => hideNotice(id), duration));
+}
+function hideZoomHint() { hideNotice('zoom-hint'); }
 function showZoomHint() {
   const hint = $('zoom-hint');
-  if (hint.hidden) hint.textContent = t('scrollZoomHint', { key: zoomModifier });
-  hint.hidden = false; clearTimeout(zoomHintTimer); zoomHintTimer = setTimeout(hideZoomHint, 2200);
+  if (!hint.classList.contains('visible')) hint.textContent = t('scrollZoomHint', { key: zoomModifier });
+  showNotice('zoom-hint', 2200);
 }
 function node(tag, className, text) { const element = document.createElement(tag); if (className) element.className = className; if (text !== undefined) element.textContent = text; return element; }
-function icon(text, title, action, index) { const button = node('button', 'icon-button', text); button.type = 'button'; button.title = title; button.setAttribute('aria-label', title); button.dataset.action = action; button.dataset.index = index; return button; }
+function icon(name, title, action, index) { const button = node('button', 'icon-button'); button.innerHTML = iconMarkup(name); button.type = 'button'; button.title = title; button.setAttribute('aria-label', title); button.dataset.action = action; button.dataset.index = index; return button; }
 
 function renderBlocks() {
   $('block-list').replaceChildren();
   settings.blocks.forEach((block, index) => {
     const card = node('div', 'block-card'), heading = node('div', 'block-heading');
     const name = node('input'); name.type = 'text'; name.value = block.label; name.maxLength = 60; name.placeholder = t('block', { n: index + 1 }); name.setAttribute('aria-label', `${t('blockName')} ${index + 1}`); name.dataset.field = 'label'; name.dataset.index = index;
-    const up = icon('↑', t('moveUp'), 'up', index), down = icon('↓', t('moveDown'), 'down', index), remove = icon('×', t('remove'), 'remove', index);
+    const up = icon('arrow-up', t('moveUp'), 'up', index), down = icon('arrow-down', t('moveDown'), 'down', index), remove = icon('trash', t('remove'), 'remove', index);
     up.disabled = index === 0; down.disabled = index === settings.blocks.length - 1; remove.disabled = settings.blocks.length === 1;
     heading.append(name, up, down, remove); card.append(heading);
     const fields = node('div', 'block-fields');
@@ -93,21 +104,34 @@ function renderBlocks() {
   $('add-block').disabled = settings.blocks.length >= 24;
 }
 
-function renderLibrary() {
+function templateSettings(template, suggested) {
+  const value = normalizeSettings(template.settings);
+  if (suggested && template.id === 'orchestra') ['woodwinds', 'brass', 'percussion', 'harp', 'presetPiano', 'strings'].forEach((key, i) => { value.blocks[i].label = t(key); });
+  if (suggested && template.id === 'choir-piano') value.blocks[1].label = t('presetPiano');
+  return value;
+}
+function renderLibrary() { animateReflow($('templates-library'), () => {
   const saved = $('saved-templates'), suggested = $('suggested-templates'); saved.replaceChildren(); suggested.replaceChildren();
-  if (!library.saved.length) saved.append(node('p', 'field-hint', t('emptySaved')));
+  $('saved-section').hidden = !library.saved.length;
+  const visibleSuggested = DEFAULT_TEMPLATES.filter(template => !library.hidden.includes(template.id));
+  $('suggested-title').hidden = !library.saved.length || !visibleSuggested.length;
+  $('empty-library').hidden = library.saved.length > 0 || visibleSuggested.length > 0;
+  let detailIndex = 0;
   function card(template, isSuggested) {
-    const name = isSuggested ? t(template.key) : template.name, s = normalizeSettings(template.settings), l = createLayout(s);
+    const name = isSuggested ? t(template.key) : template.name, s = templateSettings(template, isSuggested), l = createLayout(s);
     const wrapper = node('div', 'template-card'), load = node('button', 'template-load'); load.type = 'button'; load.dataset.action = 'load'; load.dataset.id = template.id; load.dataset.suggested = String(isSuggested); load.setAttribute('aria-label', name);
-    const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false, source: false });
-    const copy = node('span', 'template-copy'); copy.append(node('span', 'template-name', name), node('span', 'template-description', `${s.paper === 'LETTER' ? 'Letter' : s.paper} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`));
+    wrapper.dataset.motionKey = `${isSuggested ? 'suggested' : 'saved'}-${template.id}`;
+    const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false, source: false }).replace('aria-hidden="true">', 'aria-hidden="true"><rect width="100%" height="100%" fill="#fff"/>');
+    const copy = node('span', 'template-copy'), detail = node('span', 'template-description', `${s.paper === 'LETTER' ? 'Letter' : s.paper} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`);
+    detail.id = `template-details-${detailIndex++}`; load.setAttribute('aria-describedby', detail.id); copy.append(node('span', 'template-name', name), detail);
     load.append(thumbnail, copy);
-    const remove = icon('×', `${t('remove')}: ${name}`, 'delete', 0); remove.dataset.id = template.id; remove.dataset.suggested = String(isSuggested);
-    wrapper.append(load, remove); return wrapper;
+    const actions = node('div', 'template-actions'), share = icon('share-2', `${t('share')}: ${name}`, 'share', 0), remove = icon('trash', `${t('remove')}: ${name}`, 'delete', 0);
+    for (const button of [share, remove]) { button.dataset.id = template.id; button.dataset.suggested = String(isSuggested); }
+    actions.append(share, remove); wrapper.append(load, actions); return wrapper;
   }
   library.saved.forEach(template => saved.append(card(template, false)));
-  DEFAULT_TEMPLATES.filter(template => !library.hidden.includes(template.id)).forEach(template => suggested.append(card(template, true)));
-}
+  visibleSuggested.forEach(template => suggested.append(card(template, true)));
+}); }
 
 function render({ blocks = false, templates = false } = {}) {
   settings = normalizeSettings(settings); layout = createLayout(settings);
@@ -133,7 +157,7 @@ function render({ blocks = false, templates = false } = {}) {
   document.documentElement.style.setProperty('--page-width', `${layout.width}mm`); document.documentElement.style.setProperty('--page-height', `${layout.height}mm`);
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   ['thickness', 'line-spacing', 'group-spacing'].forEach(id => updateRange($(id)));
-  $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').hidden = !templatesOpen; $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
+  $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); if (templates) renderLibrary();
   write(SETTINGS_KEY, settings); fitPreview();
 }
@@ -192,7 +216,8 @@ $('restore-form').addEventListener('submit', event => {
   catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
 $('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
-$('share-template').addEventListener('click', () => { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(settings); copy(url.href); });
+function shareLayout(value) { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(value); copy(url.href); }
+$('share-template').addEventListener('click', () => shareLayout(settings));
 $('toggle-templates').addEventListener('click', () => setTemplatesOpen(!templatesOpen));
 $('close-templates').addEventListener('click', () => { setTemplatesOpen(false); $('toggle-templates').focus(); });
 document.addEventListener('keydown', event => {
@@ -209,11 +234,15 @@ $('save-form').addEventListener('submit', event => {
 $('templates-panel').addEventListener('click', event => {
   const button = event.target.closest('button[data-id]'); if (!button) return;
   const suggested = button.dataset.suggested === 'true', id = button.dataset.id;
-  if (button.dataset.action === 'delete') { library = removeTemplate(library, id, suggested); persistLibrary('templateRemoved'); return; }
+  if (button.dataset.action === 'delete') {
+    const group = $(suggested ? 'suggested-templates' : 'saved-templates'), index = [...group.children].indexOf(button.closest('.template-card'));
+    library = removeTemplate(library, id, suggested); persistLibrary('templateRemoved');
+    (group.children[Math.min(index, group.children.length - 1)]?.querySelector('.template-load') || $('restore-defaults')).focus(); return;
+  }
   const template = (suggested ? DEFAULT_TEMPLATES : library.saved).find(item => item.id === id); if (!template) return;
-  settings = normalizeSettings(template.settings);
-  if (suggested && id === 'orchestra') ['woodwinds', 'brass', 'percussion', 'harp', 'presetPiano', 'strings'].forEach((key, i) => { settings.blocks[i].label = t(key); });
-  if (suggested && id === 'choir-piano') settings.blocks[1].label = t('presetPiano');
+  const value = templateSettings(template, suggested);
+  if (button.dataset.action === 'share') { shareLayout(value); return; }
+  settings = value;
   render({ blocks: true });
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
@@ -254,4 +283,4 @@ window.addEventListener('beforeprint', () => render());
 window.addEventListener('hashchange', () => restoreFromHash(true));
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
-restoreFromHash(); translatePage(); render({ blocks: true, templates: true });
+restoreFromHash(); renderIcons(); translatePage(); render({ blocks: true, templates: true });
