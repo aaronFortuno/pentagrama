@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/kazuhikoarase/qrcode-generator",
+  "revision": "83b7e8fe3fddd3b0368dbafd6ce56995bd25e3c8",
+  "file": "js/dist/qrcode.js",
+  "license": "MIT",
+  "use": "Build-time generation only; no library is loaded in the browser"
+}

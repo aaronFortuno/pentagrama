@@ -1,5 +1,13 @@
 # Canvis
 
+## 1.13.0 · 2026-10-17
+
+- Adreça Lightning presentada com a text seleccionable, amb una icona de còpia i confirmació discreta, sense camp aparentment editable ni instrucció redundant.
+- QR vectorial integrat al diàleg V4V, generat localment a partir de la mateixa adreça mitjançant LNURL. Es pot escanejar o activar per obrir una cartera compatible.
+- Versió discreta al centre del peu; en activar-la s’obre un diàleg amb la data i dos punts de resum, traduït als vuit idiomes i amb les transicions habituals.
+- Versió compartida amb `package.json`, metadades editorials a `src/release.json` i destinació Lightning única a `src/support.json`.
+- Generador QR de Kazuhiko Arase conservat amb llicència MIT i crèdit al projecte; s’utilitza només en preparar els fitxers estàtics.
+
 ## 1.12.0
 
 - Vuit adreces d’idioma indexables, amb HTML traduït abans de JavaScript, canònica pròpia, enllaços `hreflang` recíprocs, alternativa `x-default` i sitemap actualitzat.

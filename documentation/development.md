@@ -41,6 +41,8 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/icons.js`, `docs/vendor/` | Icones, fonts i llicències de tercers |
 | `docs/pdf.js` | Generador vectorial intern; la interfície utilitza el diàleg d’impressió |
 | `docs/analytics.js` | Càrrega i filtratge de l’analítica de producció |
+| `src/release.json`, `docs/release.js` | Data i resum editorial; metadades generades amb la versió de `package.json` |
+| `src/support.json`, `tools/lightning.mjs` | Destinació única de suport, codificació LNURL i QR vectorial |
 | `tests/`, `tools/` | Proves i eines de desenvolupament |
 
 ## Geometria i configuracions compartides
@@ -68,6 +70,12 @@ Edita `src/index.html` o `docs/i18n.js` i executa `node tools/build-locales.mjs`
 Les fletxes de la fila «El teu full» recuperen fins a cent canvis durant la sessió de la pàgina. Les instantànies inclouen totes les opcions del full, els blocs i els seus noms. L’aplicació de plantilles, l’ajust al full, la recuperació de codis i el restabliment també es poden desfer. Un arrossegament complet o una edició continuada d’un camp compten com un sol pas. Un canvi nou després de desfer descarta el futur abandonat; una renderització sense canvis conserva refer.
 
 Les dreceres són Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z i Ctrl+Y. Els camps d’edició de text i els diàlegs conserven les dreceres natives. El zoom, l’idioma, els desplegables i la gestió de la biblioteca no formen part de l’historial de configuració. Només es persisteix la configuració actual; recarregar la pàgina comença un historial nou.
+
+## Suport i versió
+
+L’adreça Lightning és a `src/support.json`. La preparació dels idiomes en deriva el text visible, el vincle `lightning:` i un QR LNURL en majúscules amb quatre mòduls de marge blanc. El QR es genera amb la còpia local MIT de [QR Code Generator](https://github.com/kazuhikoarase/qrcode-generator), a `tools/vendor/qrcode.cjs`; no es carrega aquesta llibreria al navegador ni es consulta cap servidor de QR. La revisió d’origen és a `tools/vendor/qrcode-source.json`. El mateix SVG es conserva a `docs/assets/lightning-qr.svg` i s’integra al diàleg, sense peticions de xarxa. Els formats segueixen [LUD-16](https://github.com/lnurl/luds/blob/luds/16.md) i [LUD-01](https://github.com/lnurl/luds/blob/luds/01.md).
+
+La versió del peu obre un diàleg breu amb la data localitzada i els punts editorials de `src/release.json`. El número s’obté de `package.json` i s’integra a l’HTML i a `docs/release.js` en regenerar les pàgines. La data es formata en UTC per conservar el mateix dia de publicació arreu. Cap d’aquests elements apareix al full imprès.
 
 ## Sidebar i desplegables
 

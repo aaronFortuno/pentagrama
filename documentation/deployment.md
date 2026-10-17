@@ -8,12 +8,12 @@ La publicació actual utilitza GitHub Pages, amb la branca `main` i el directori
 
 Per preparar una versió del web:
 
-1. Actualitza `version` a `package.json` i les notes de `CHANGELOG.md`.
+1. Actualitza `version` a `package.json`, la data i les claus del resum a `src/release.json`, les traduccions corresponents a `docs/i18n.js` i les notes de `CHANGELOG.md`.
 2. Executa `node tools/version-assets.mjs`.
 3. Executa `npm test` i comprova al navegador els canvis d’interfície o d’impressió que hagis fet.
 4. Publica els canvis a `main` i comprova el resultat de GitHub Pages.
 
-L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els vuit directoris d’idioma i `docs/sitemap.xml` a partir de `src/index.html` i les traduccions. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
+L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els vuit directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 
 ## Domini pentagrama.page
 

@@ -1,16 +1,17 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.12.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.12.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.12.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.12.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.12.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.12.0';
-import { bindTouchRange } from './touch-range.js?v=1.12.0';
-import { analytics } from './analytics.js?v=1.12.0';
-import { createLogoNote } from './logo-note.js?v=1.12.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.12.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.12.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.12.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.12.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.13.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.13.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.13.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.13.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.13.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.13.0';
+import { bindTouchRange } from './touch-range.js?v=1.13.0';
+import { analytics } from './analytics.js?v=1.13.0';
+import { createLogoNote } from './logo-note.js?v=1.13.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.13.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.13.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.13.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.13.0';
+import { RELEASE } from './release.js?v=1.13.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -31,7 +32,7 @@ let settingsHistory, historyGroup;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
 const noticeTimers = new Map();
 const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
-const t = (key, variables) => translate(language, key, variables);
+const t = (key, variables) => translate(language, key, { version: RELEASE.version, ...variables });
 const number = value => new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
 const staffCount = count => t(count === 1 ? 'oneStaff' : 'staffCount', { n: count });
 
@@ -51,6 +52,7 @@ function translatePage() {
   });
   document.querySelectorAll('[data-title]').forEach(element => { element.title = t(element.dataset.title); });
   document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
+  $('release-date').textContent = new Intl.DateTimeFormat(language, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${RELEASE.date}T12:00:00Z`));
   $('language-menu').replaceChildren();
   for (const [code, label] of Object.entries(LANGUAGES)) {
     const button = node('a'); button.href = languageURL(code, location.href, siteRoot).href; button.dataset.language = code; button.lang = code; button.hreflang = code; button.tabIndex = -1;
@@ -358,6 +360,7 @@ $('templates-panel').addEventListener('click', event => {
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
 $('about-button').addEventListener('click', () => openDialog($('about-dialog')));
+$('version-button').addEventListener('click', () => openDialog($('version-dialog')));
 $('analytics-excluded').checked = analytics.userExcluded();
 $('analytics-browser-preference').hidden = !analytics.browserPrivacyEnabled();
 $('analytics-excluded').addEventListener('change', event => {
@@ -366,7 +369,13 @@ $('analytics-excluded').addEventListener('change', event => {
   if (!event.target.checked) analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);
   if (!persisted) toast(t('analyticsPreferenceTemporary'));
 });
-$('copy-lightning').addEventListener('click', async () => { if (await copy($('lightning-address').value)) $('about-dialog').querySelector('.field-hint').textContent = t('copied'); });
+let lightningCopyTimer;
+$('copy-lightning').addEventListener('click', async () => {
+  if (!await copy($('lightning-address').textContent)) return;
+  const button = $('copy-lightning'); button.innerHTML = iconMarkup('check'); button.classList.add('copied');
+  $('lightning-copy-status').textContent = t('copied'); clearTimeout(lightningCopyTimer);
+  lightningCopyTimer = setTimeout(() => { button.innerHTML = iconMarkup('copy'); button.classList.remove('copied'); $('lightning-copy-status').textContent = ''; }, 1800);
+});
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeDialog($(button.dataset.close))));
 document.querySelectorAll('dialog').forEach(dialog => {
   dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(dialog); });

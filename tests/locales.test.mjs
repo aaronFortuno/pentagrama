@@ -4,6 +4,7 @@ import { readFile, access } from 'node:fs/promises';
 import { LANGUAGES, translate } from '../docs/i18n.js';
 import { languageFromURL, languageURL } from '../docs/language-routing.js';
 import { renderLocalizedPage, escapeHTML } from '../tools/build-locales.mjs';
+import { RELEASE } from '../tools/site-data.mjs';
 
 const root = new URL('../', import.meta.url), site = 'https://pentagrama.page/';
 const source = await readFile(new URL('src/index.html', root), 'utf8');
@@ -23,7 +24,7 @@ test('every published language has translated HTML, a self canonical and recipro
     }
     assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="${site}">`));
     for (const [, , key, text] of html.matchAll(/<([a-z][\w-]*)\s[^>]*\bdata-i18n="([^"]+)"[^>]*>([\s\S]*?)<\/\1>/g)) {
-      assert.equal(text, escapeHTML(translate(locale, key)), `${locale}: ${key}`);
+      assert.equal(text, escapeHTML(translate(locale, key, { version: RELEASE.version })), `${locale}: ${key}`);
     }
     assert.ok(!html.includes('class="clean-note"')); assert.ok(!html.includes('<!-- localized-head -->'));
   }

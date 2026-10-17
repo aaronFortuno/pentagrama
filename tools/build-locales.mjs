@@ -1,14 +1,17 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { LANGUAGES, translate } from '../docs/i18n.js';
+import { RELEASE, SUPPORT, releaseDate } from './site-data.mjs';
+import { lightningQr } from './lightning.mjs';
 
 const root = new URL('../', import.meta.url);
+const supportQr = lightningQr(SUPPORT.payload).trim();
 export const escapeHTML = text => String(text).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
 export function renderLocalizedPage(source, locale, homepage, { automatic = false } = {}) {
   if (!Object.hasOwn(LANGUAGES, locale)) throw new Error('Unknown language');
   const t = key => {
-    const text = translate(locale, key);
+    const text = translate(locale, key, { version: RELEASE.version });
     if (text === key) throw new Error(`Missing translation: ${key}`);
     return escapeHTML(text);
   };
@@ -20,6 +23,11 @@ export function renderLocalizedPage(source, locale, homepage, { automatic = fals
   const links = Object.entries(LANGUAGES).map(([code, label]) => `<a href="./${code}/" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${code === locale}" tabindex="-1"><span>${escapeHTML(label)}</span><span data-icon="check"></span></a>`).join('');
   let html = source.replace('<html lang="ca">', `<html lang="${locale}">`)
     .replace('<!-- localized-head -->', head).replace('<!-- language-links -->', links)
+    .replaceAll('<!-- app-version -->', RELEASE.version)
+    .replace('<!-- release-date -->', `<time id="release-date" datetime="${RELEASE.date}">${escapeHTML(releaseDate(locale))}</time>`)
+    .replace('<!-- release-changes -->', RELEASE.changes.map(key => `<li data-i18n="${key}">${t(key)}</li>`).join(''))
+    .replaceAll('{{lightning-address}}', escapeHTML(SUPPORT.address)).replaceAll('{{lightning-link}}', escapeHTML(SUPPORT.href))
+    .replace('<!-- lightning-qr -->', supportQr)
     .replace(/<title>[^<]*<\/title>/, `<title>${t('title')}</title>`)
     .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${t('seoDescription')}">`);
   // The controlled template only marks text-only elements for replacement.
@@ -40,6 +48,9 @@ export function renderLocalizedPage(source, locale, homepage, { automatic = fals
 export async function buildLocalizedPages() {
   const source = await readFile(new URL('src/index.html', root), 'utf8');
   const { homepage } = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
+  await mkdir(new URL('docs/assets/', root), { recursive: true });
+  await writeFile(new URL('docs/assets/lightning-qr.svg', root), lightningQr(SUPPORT.payload));
+  await writeFile(new URL('docs/release.js', root), `// Generated from package.json and src/release.json.\nexport const RELEASE = Object.freeze(${JSON.stringify(RELEASE)});\n`);
   await writeFile(new URL('docs/index.html', root), renderLocalizedPage(source, 'ca', homepage, { automatic: true }));
   for (const code of Object.keys(LANGUAGES)) {
     const directory = new URL(`docs/${code}/`, root);
