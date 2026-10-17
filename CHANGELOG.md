@@ -1,5 +1,10 @@
 # Canvis
 
+## 1.5.2
+
+- Domini propi `pentagrama.page` a GitHub Pages, amb adreça canònica i configuració DNS documentada.
+- Adreça opcional al peu dels fulls actualitzada al domini propi.
+
 ## 1.5.1
 
 - Peus impresos amb Noto Serif Thin, pes 100, servida localment i acreditada amb la llicència OFL.

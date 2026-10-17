@@ -2,7 +2,7 @@
 
 Un full en blanc per a la teva música. Paper pautat a mida, previsualització en directe i impressió neta.
 
-**[Obre el web](https://aaronfortuno.github.io/pentagrama/)**
+**[Obre el web](https://pentagrama.page/)**
 
 ## El teu full
 
@@ -30,7 +30,7 @@ Els controls **+**, **−** i la icona d’ajust amplien la previsualització fi
 
 Si fas scroll sobre el full sense el modificador, apareix breument un avís que recorda Ctrl + roda, o ⌘ + roda a macOS. El scroll normal permet continuar desplaçant la pàgina en mòbil.
 
-Per defecte, el full només conté les línies. A **Peu del full** pots activar **Adreça del web** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència** perquè aparegui el codi de configuració a la dreta. Cada opció té una fila amb ajuda breu i l’interruptor a la dreta. Són independents i estan desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos utilitzen **Noto Serif Thin, pes 100 i mida 2,2 mm**, en gris suau (`#a6a6a6`). La font és local i les amplades reals dels caràcters es comparteixen entre la previsualització i el PDF vectorial. El PDF incrusta la font i conserva el text seleccionable; els fulls sense peus no inclouen cap font al PDF vectorial. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
+Per defecte, el full només conté les línies. A **Peu del full** pots activar **Adreça del web** perquè aparegui `pentagrama.page` a l’esquerra, i **Referència** perquè aparegui el codi de configuració a la dreta. Cada opció té una fila amb ajuda breu i l’interruptor a la dreta. Són independents i estan desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos utilitzen **Noto Serif Thin, pes 100 i mida 2,2 mm**, en gris suau (`#a6a6a6`). La font és local i les amplades reals dels caràcters es comparteixen entre la previsualització i el PDF vectorial. El PDF incrusta la font i conserva el text seleccionable; els fulls sense peus no inclouen cap font al PDF vectorial. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
 
 ## Plantilles sense compte
 
@@ -81,7 +81,30 @@ El web està a `docs/` i no necessita compilació ni instal·lació de dependèn
 
 1. A **Settings → Pages**, selecciona **Deploy from a branch**.
 2. Tria **main** i **/docs**.
-3. GitHub publica el web a **https://aaronfortuno.github.io/pentagrama/**.
+3. A **Custom domain**, desa **pentagrama.page**. El fitxer `docs/CNAME` conserva aquest domini en les publicacions següents.
+4. A Spaceship, conserva els servidors DNS `launch1.spaceship.net` i `launch2.spaceship.net` i configura aquests registres a **Advanced DNS**:
+
+   | Tipus | Nom | Valor |
+   |---|---|---|
+   | A | @ | 185.199.108.153 |
+   | A | @ | 185.199.109.153 |
+   | A | @ | 185.199.110.153 |
+   | A | @ | 185.199.111.153 |
+   | AAAA | @ | 2606:50c0:8000::153 |
+   | AAAA | @ | 2606:50c0:8001::153 |
+   | AAAA | @ | 2606:50c0:8002::153 |
+   | AAAA | @ | 2606:50c0:8003::153 |
+   | CNAME | www | aaronfortuno.github.io |
+
+   Utilitza el TTL predeterminat. Substitueix els registres d’aparcament que entrin en conflicte amb `@` o `www`; conserva els registres de correu i verificació que hi pugui haver. El CNAME de `www` apunta al compte de GitHub, sense `/pentagrama`.
+
+5. Quan GitHub hagi validat els DNS i emès el certificat, activa **Enforce HTTPS**. La propagació i el certificat poden trigar fins a 24 hores.
+
+El web es publica a **https://pentagrama.page/**. GitHub redirigeix l’adreça anterior **https://aaronfortuno.github.io/pentagrama/** i, amb aquests DNS, **https://www.pentagrama.page/** al domini principal.
+
+Les plantilles i les preferències desades al navegador pertanyen a cada origen. Les de l’adreça anterior no es transfereixen automàticament al domini nou; conserva les plantilles importants amb els seus enllaços compartits o codis de configuració abans de canviar-hi.
+
+Referència: [configuració de dominis propis a GitHub Pages](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 
 Les actualitzacions a `main` es publiquen automàticament. Les rutes són relatives i permeten utilitzar un subdirectori o un domini propi.
 

@@ -181,7 +181,7 @@ test('website footer is opt-in, shares space with long references and leaves the
         assert.ok(FOOTER_GRAY > 116 && FOOTER_GRAY < 200);
       }
       assert.equal(svg.includes(SERVICE_ADDRESS), source); assert.equal(pdf.includes(SERVICE_ADDRESS), source);
-      if (source) assert.match(pdf, /1 0 0 1 51\.02362 [\d.]+ Tm \(aaronfortuno\.github\.io\/pentagrama\)/);
+      if (source) assert.match(pdf, /1 0 0 1 51\.02362 [\d.]+ Tm \(pentagrama\.page\)/);
       assert.equal(decodeShareHash(encodeShareHash(s)).source, false);
     }
   }

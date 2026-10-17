@@ -1,7 +1,7 @@
-import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.5.1';
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.5.2';
 
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
-export const SERVICE_ADDRESS = 'aaronfortuno.github.io/pentagrama';
+export const SERVICE_ADDRESS = 'pentagrama.page';
 export const FOOTER_GRAY = 166;
 export const FOOTER_SIZE = 2.2;
 export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
