@@ -1,6 +1,9 @@
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.5.1';
+
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
 export const SERVICE_ADDRESS = 'aaronfortuno.github.io/pentagrama';
 export const FOOTER_GRAY = 166;
+export const FOOTER_SIZE = 2.2;
 export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
@@ -119,21 +122,28 @@ export function fitSettings(value) {
   return normalizeSettings(scaled(low));
 }
 
+export function footerTextWidth(text) {
+  return [...text].reduce((sum, character) => sum + FOOTER_FONT.widths[character.charCodeAt(0) - 32], 0) * FOOTER_SIZE / 1000;
+}
+
 export function footerLines(value) {
   const s = normalizeSettings(value), { width, height } = pageDimensions(s);
   const source = s.source ? [{ text: SERVICE_ADDRESS, x: 18, y: height - 9, anchor: 'start' }] : [];
   if (!s.reference) return source;
-  // Courier at 2 mm uses 1.2 mm per character. Reserve a gutter between both footers.
-  const code = encodeReference(s), reserved = s.source ? SERVICE_ADDRESS.length * 1.2 + 8 : 0;
-  const length = Math.floor((width - 36 - reserved) / 1.2);
-  const chunks = code.match(new RegExp(`.{1,${length}}`, 'g')) || [];
-  return [...source, ...chunks.map((text, i) => ({ text, x: width - 18, y: height - 9 - (chunks.length - i - 1) * 2.6, anchor: 'end' }))];
+  const reserved = s.source ? footerTextWidth(SERVICE_ADDRESS) + 8 : 0, available = width - 36 - reserved;
+  const chunks = []; let line = '';
+  for (const character of encodeReference(s)) {
+    if (line && footerTextWidth(line + character) > available) { chunks.push(line); line = ''; }
+    line += character;
+  }
+  if (line) chunks.push(line);
+  return [...source, ...chunks.map((text, i) => ({ text, x: width - 18, y: height - 9 - (chunks.length - i - 1) * 2.9, anchor: 'end' }))];
 }
 
 export function renderSheet(value) {
   const l = createLayout(value);
   const lines = l.staves.flatMap(staff => staff.map(y => `<line x1="18" x2="${l.width - 18}" y1="${y.toFixed(5)}" y2="${y.toFixed(5)}"/>`)).join('');
   const footerColor = `#${FOOTER_GRAY.toString(16).repeat(3)}`;
-  const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="${f.anchor}" font-family="Courier New,monospace" font-size="2" font-weight="400" fill="${footerColor}">${f.text}</text>`).join('');
+  const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="${f.anchor}" font-family="'Pentagrama Footer',serif" font-size="${FOOTER_SIZE}" font-weight="100" style="font-kerning:none;font-variant-ligatures:none" fill="${footerColor}">${f.text}</text>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${l.width}mm" height="${l.height}mm" viewBox="0 0 ${l.width} ${l.height}" aria-hidden="true"><g fill="none" stroke="#000" stroke-width="${l.thickness}">${lines}</g>${footer}</svg>`;
 }

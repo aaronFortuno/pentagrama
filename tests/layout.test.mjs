@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULTS, SERVICE_ADDRESS, FOOTER_GRAY, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, pageDimensions, fitSettings, footerLines, renderSheet } from '../docs/layout.js';
+import { DEFAULTS, SERVICE_ADDRESS, FOOTER_GRAY, FOOTER_SIZE, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, pageDimensions, fitSettings, footerLines, footerTextWidth, renderSheet } from '../docs/layout.js';
+import { FOOTER_FONT } from '../docs/vendor/footer-font-metrics.js';
+import { FOOTER_FONT_DATA } from '../docs/vendor/footer-font-data.js';
 import { createPdf } from '../docs/pdf.js';
 import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from '../docs/library.js';
 import { LANGUAGES, messages, detectLanguage, translate } from '../docs/i18n.js';
@@ -166,10 +168,10 @@ test('website footer is opt-in, shares space with long references and leaves the
       assert.equal(refs.map(f => f.text).join(''), reference ? encodeReference(s) : '');
       if (address) { assert.equal(address.text, SERVICE_ADDRESS); assert.equal(address.x, 18); }
       for (const f of footer) {
-        const left = f.anchor === 'start' ? f.x : f.x - f.text.length * 1.2;
-        assert.ok(left >= 18 - 1e-7); assert.ok(left + f.text.length * 1.2 <= l.width - 18 + 1e-7);
-        assert.ok(f.y - 2 > l.bottom); assert.ok(f.y <= l.height - 9);
-        if (address && f.anchor === 'end') assert.ok(left >= address.x + address.text.length * 1.2 + 8 - 1e-7);
+        const left = f.anchor === 'start' ? f.x : f.x - footerTextWidth(f.text);
+        assert.ok(left >= 18 - 1e-7); assert.ok(left + footerTextWidth(f.text) <= l.width - 18 + 1e-7);
+        assert.ok(f.y - FOOTER_SIZE > l.bottom); assert.ok(f.y <= l.height - 9);
+        if (address && f.anchor === 'end') assert.ok(left >= address.x + footerTextWidth(address.text) + 8 - 1e-7);
       }
       const svg = renderSheet(s), pdf = new TextDecoder().decode(createPdf(s));
       if (source || reference) {
@@ -185,6 +187,28 @@ test('website footer is opt-in, shares space with long references and leaves the
   }
   const saved = addTemplate({}, { id: 'with-source', name: 'Amb adreça', settings: { ...DEFAULTS, source: true } });
   assert.equal(normalizeLibrary(saved).saved[0].settings.source, true);
+});
+
+test('thin serif footers embed their font and use identical advances in SVG and PDF', () => {
+  assert.equal(FOOTER_FONT.weight, 100);
+  assert.notEqual(footerTextWidth('iiii'), footerTextWidth('WWWW'));
+  const s = { ...DEFAULT_TEMPLATES.at(-1).settings, source: true, reference: true, topSpace: 30 };
+  const svg = renderSheet(s), pdf = new TextDecoder().decode(createPdf(s)), footer = footerLines(s);
+  assert.match(svg, /font-weight="100"/); assert.match(svg, /Pentagrama Footer/);
+  assert.match(pdf, /\/Subtype \/TrueType/); assert.match(pdf, /\/FontFile2 7 0 R/);
+  assert.ok(pdf.includes(`/BaseFont /${FOOTER_FONT.name}`));
+  const embedded = /\/Filter \/ASCIIHexDecode >>\nstream\n([a-f0-9]+)>/.exec(pdf);
+  assert.deepEqual(Buffer.from(embedded[1], 'hex'), Buffer.from(FOOTER_FONT_DATA, 'base64'));
+  const texts = [...pdf.matchAll(/\/F1 ([\d.]+) Tf 1 0 0 1 ([\d.]+) ([\d.]+) Tm \(([^)]+)\)/g)];
+  assert.equal(texts.length, footer.length);
+  texts.forEach((match, i) => {
+    const f = footer[i], x = f.anchor === 'start' ? f.x : f.x - footerTextWidth(f.text);
+    assert.ok(Math.abs(Number(match[1]) - FOOTER_SIZE * 72 / 25.4) < 0.00001);
+    assert.ok(Math.abs(Number(match[2]) - x * 72 / 25.4) < 0.00001);
+    assert.equal(match[4], f.text);
+  });
+  const plain = new TextDecoder().decode(createPdf(DEFAULTS));
+  assert.ok(!plain.includes('/FontFile2')); assert.ok(!plain.includes('/BaseFont'));
 });
 
 test('all eight languages have complete matching messages and automatic region fallback works', () => {

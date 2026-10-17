@@ -1,9 +1,9 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.5.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.5.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.5.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.5.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.5.0';
-import { animateReflow } from './motion.js?v=1.5.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.5.1';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.5.1';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.5.1';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.5.1';
+import { iconMarkup, renderIcons } from './icons.js?v=1.5.1';
+import { animateReflow } from './motion.js?v=1.5.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -37,9 +37,11 @@ function translatePage() {
   });
   document.querySelectorAll('[data-title]').forEach(element => { element.title = t(element.dataset.title); });
   document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
-  $('language').replaceChildren(new Option(`${t('automatic')} · ${LANGUAGES[detectLanguage('auto', navigator.languages || [navigator.language])]}`, 'auto'));
+  $('language').replaceChildren();
   for (const [code, label] of Object.entries(LANGUAGES)) $('language').add(new Option(label, code));
-  $('language').value = languageChoice; $('language').setAttribute('aria-label', t('language'));
+  $('language').value = language; $('language').setAttribute('aria-label', t('language'));
+  $('language').title = `${t('language')} · ${LANGUAGES[language]}`;
+  $('language').closest('label').title = $('language').title;
 }
 function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
 const measurements = [['thickness', 'thickness-value', 'thickness', 'mm'], ['line-spacing', 'line-spacing-value', 'lineSpacing', 'mm'], ['group-spacing', 'spacing-value', 'spacing', '×'], ['top-space', 'top-space-value', 'topSpace', 'mm']];
@@ -304,7 +306,7 @@ $('paper-stage').addEventListener('keydown', event => {
   const move = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[event.key];
   if (move) { event.preventDefault(); previewPan.x += move[0]; previewPan.y += move[1]; fitPreview(); }
 });
-$('print-button').addEventListener('click', () => { document.activeElement?.blur(); render(); if (layout.valid) window.print(); });
+$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) window.print(); });
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('hashchange', () => restoreFromHash(true));
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });

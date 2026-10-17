@@ -1,5 +1,13 @@
 # Canvis
 
+## 1.5.1
+
+- Peus impresos amb Noto Serif Thin, pes 100, servida localment i acreditada amb la llicència OFL.
+- Font incrustada al PDF vectorial, text seleccionable i ajust de línies segons les amplades reals dels caràcters.
+- Selector natiu d’idiomes darrere d’una icona Lucide, amb vuit opcions úniques i detecció inicial del navegador conservada.
+- Eliminat l’ajust d’amplada als 1200 px; mateixa distribució d’escriptori fins al pas a mòbil als 760 px.
+- Còpia i recuperació del codi reunides en un únic desplegable.
+
 ## 1.5.0
 
 - Sidebar compacte: format i orientació en una fila, quantitat i agrupació en paral·lel i controls relacionats reunits.

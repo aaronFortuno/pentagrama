@@ -24,13 +24,13 @@ En mode blocs les distàncies són exactes en mil·límetres, entre l’última 
 
 ## Previsualitzar i imprimir
 
-La capçalera reuneix el títol i el selector d’idioma en una sola fila. El títol i la descripció s’oculten a 760 px o menys, quan el web passa a la distribució mòbil. **Imprimeix**, fix a dalt del panell de configuració, obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
+La capçalera reuneix el títol i el selector d’idioma en una sola fila. Manté la mateixa distribució d’amplada fins als 760 px, sense un canvi intermedi als 1200 px. El títol i la descripció s’oculten a 760 px o menys, quan el web passa a la distribució mòbil. **Imprimeix**, fix a dalt del panell de configuració, espera que les fonts estiguin carregades i obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
 
 Els controls **+**, **−** i la icona d’ajust amplien la previsualització fins al 400 % o tornen a mostrar el full sencer. El percentatge apareix temporalment quan canvies el zoom. La icona d’ajust gira segons l’orientació del paper. Quan està ampliat, arrossega’l amb el ratolí o amb un dit per explorar-lo. També pots ampliar amb Ctrl + roda (Cmd + roda a macOS). Amb el focus al full, les tecles + i − amplien o redueixen, les fletxes el desplacen i 0 o Inici ajusten el full. El zoom només afecta la vista en pantalla.
 
 Si fas scroll sobre el full sense el modificador, apareix breument un avís que recorda Ctrl + roda, o ⌘ + roda a macOS. El scroll normal permet continuar desplaçant la pàgina en mòbil.
 
-Per defecte, el full només conté les línies. A **Peu del full** pots activar **Adreça del web** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència** perquè aparegui el codi de configuració a la dreta. Cada opció té una fila amb ajuda breu i l’interruptor a la dreta. Són independents i estan desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos s’imprimeixen en gris suau (`#a6a6a6`), amb el mateix to a la previsualització i al PDF. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
+Per defecte, el full només conté les línies. A **Peu del full** pots activar **Adreça del web** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència** perquè aparegui el codi de configuració a la dreta. Cada opció té una fila amb ajuda breu i l’interruptor a la dreta. Són independents i estan desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos utilitzen **Noto Serif Thin, pes 100 i mida 2,2 mm**, en gris suau (`#a6a6a6`). La font és local i les amplades reals dels caràcters es comparteixen entre la previsualització i el PDF vectorial. El PDF incrusta la font i conserva el text seleccionable; els fulls sense peus no inclouen cap font al PDF vectorial. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
 
 ## Plantilles sense compte
 
@@ -48,7 +48,7 @@ L’emmagatzematge és local: no se sincronitza entre dispositius i es pot perdr
 
 Les referències **P1** de la primera versió continuen funcionant i recuperen el mateix full A4.
 
-El desplegable **Codi de configuració** explica com copiar el codi del full actual. **Recupera una configuració** permet enganxar-hi un codi desat o imprès. El codi complet queda visible només quan s’obre el desplegable.
+El desplegable **Codi de configuració** reuneix les dues accions: copiar el codi del full actual i, a sota, **Recupera una configuració** per enganxar-hi un codi desat o imprès. El codi complet i el formulari queden visibles només quan s’obre aquest únic desplegable.
 
 Les referències **P2** incorporen format, orientació, espai entre línies i distribució:
 
@@ -61,7 +61,7 @@ Les referències impreses codifiquen la geometria. Els enllaços compartits tamb
 
 ## Idiomes
 
-Català, castellà, anglès, alemany, francès, italià, portuguès i neerlandès. El mode automàtic consulta les preferències del navegador i reconeix variants regionals, com `de-AT` o `pt-BR`. Si no hi ha cap idioma compatible, utilitza l’anglès. Es pot canviar manualment i la tria queda guardada al navegador.
+Català, castellà, anglès, alemany, francès, italià, portuguès i neerlandès. Quan encara no s’ha triat cap idioma, es consulten les preferències del navegador i es reconeixen variants regionals, com `de-AT` o `pt-BR`. Si no hi ha cap idioma compatible, s’utilitza l’anglès. La icona Lucide d’idiomes obre un selector natiu amb cadascun dels vuit idiomes una sola vegada, sense una entrada «Automàtic» addicional. El selector conserva el teclat i l’accessibilitat del navegador; l’ajuda de la icona indica l’idioma actual. La tria manual queda guardada al navegador.
 
 Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma. Les proves comproven que no faltin missatges ni variables. Aquesta versió comparteix una sola adreça web: les pàgines indexables per idioma es poden afegir en una fase posterior de SEO.
 
@@ -69,7 +69,9 @@ Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma.
 
 El peu obre un petit diàleg amb la història del projecte i l’adreça Lightning `aptswim903@walletofsatoshi.com` per a aportacions voluntàries. El web permet copiar-la; no es connecta a cap cartera ni processa pagaments. La informació de suport no apareix als fulls ni als PDF.
 
-El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 17 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos. El mateix comandament accepta un SHA de commit com a argument per reproduir una versió concreta.
+El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 18 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos. El mateix comandament accepta un SHA de commit com a argument per reproduir una versió concreta.
+
+El diàleg també acredita [Noto Serif](https://github.com/notofonts/latin-greek-cyrillic), sota SIL OFL 1.1. El subconjunt ASCII del pes Thin 100 es distribueix localment: WOFF2 per al navegador, TrueType per incrustar al PDF i les mateixes mètriques per ajustar els peus. La procedència i la llicència són a `docs/vendor/noto-serif-SOURCE.md` i `docs/vendor/noto-serif-OFL.txt`. Per regenerar-lo, `tools/vendor-footer-font.py` requereix Python amb `fonttools` i `brotli`; aquestes eines no són dependències del web ni de les proves habituals.
 
 Les transicions comparteixen `--motion-duration` (220 ms) i `--motion-ease` a `docs/style.css`. La preferència de moviment reduït les desactiva; la reordenació de targetes llegeix aquests mateixos valors.
 
