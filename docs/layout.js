@@ -1,7 +1,7 @@
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
 export const SERVICE_ADDRESS = 'aaronfortuno.github.io/pentagrama';
 export const FOOTER_GRAY = 166;
-export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
+export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
 const numeric = (v, fallback, min, max) => clamp(Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : fallback, min, max);
@@ -18,7 +18,7 @@ export function normalizeSettings(value = {}) {
   return {
     count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
     reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
-    lineSpacing: round(numeric(value.lineSpacing, 2, 1, 4)), mode: value.mode === 'blocks' ? 'blocks' : 'simple', systems: Math.round(numeric(value.systems, 1, 1, 8)), systemGap: round(numeric(value.systemGap, 18, 1, 60)),
+    lineSpacing: round(numeric(value.lineSpacing, 2, 1, 4)), topSpace: Math.round(numeric(value.topSpace, 0, 0, 100)), mode: value.mode === 'blocks' ? 'blocks' : 'simple', systems: Math.round(numeric(value.systems, 1, 1, 8)), systemGap: round(numeric(value.systemGap, 18, 1, 60)),
     blocks: blocks.length ? blocks : value.mode === 'blocks' ? [{ label: '', count: 4, inside: 12, after: 14 }, { label: '', count: 2, inside: 6, after: 14 }] : [],
   };
 }
@@ -30,7 +30,7 @@ export function pageDimensions(value) {
 
 export function encodeReference(value) {
   const s = normalizeSettings(value);
-  const prefix = `P2-${s.paper === 'LETTER' ? 'LT' : s.paper}-${s.orientation === 'landscape' ? 'L' : 'P'}-I${Math.round(s.lineSpacing * 10)}-T${Math.round(s.thickness * 100)}`;
+  const prefix = `P${s.topSpace ? 3 : 2}-${s.paper === 'LETTER' ? 'LT' : s.paper}-${s.orientation === 'landscape' ? 'L' : 'P'}-I${Math.round(s.lineSpacing * 10)}-T${Math.round(s.thickness * 100)}${s.topSpace ? `-H${s.topSpace}` : ''}`;
   return s.mode === 'simple' ? `${prefix}-N${s.count}-G${s.group}-E${Math.round(s.spacing * 10)}` : `${prefix}-S${s.systems}-J${Math.round(s.systemGap * 10)}-B${s.blocks.map(b => `${b.count}.${Math.round(b.inside * 10)}.${Math.round(b.after * 10)}`).join('_')}`;
 }
 
@@ -43,10 +43,11 @@ export function decodeReference(text) {
     if (n < 1 || n > 24 || (g !== 0 && (g < 2 || g >= n)) || e < 12 || e > 40 || t < 5 || t > 50) throw new Error('invalidRef');
     return normalizeSettings({ ...DEFAULTS, count: n, group: g, spacing: e / 10, thickness: t / 100 });
   }
-  const match = /^P2-(A4|A3|LT)-(P|L)-I(\d{2})-T(\d{1,2})-(.+)$/.exec(code);
+  const match = /^P([23])-(A4|A3|LT)-(P|L)-I(\d{2})-T(\d{1,2})(?:-H(\d{1,3}))?-(.+)$/.exec(code);
   if (!match) throw new Error('invalidRef');
-  const [, paper, orientation, interline, thickness, suffix] = match;
-  let raw = { ...DEFAULTS, paper: paper === 'LT' ? 'LETTER' : paper, orientation: orientation === 'L' ? 'landscape' : 'portrait', lineSpacing: Number(interline) / 10, thickness: Number(thickness) / 100 };
+  const [, version, paper, orientation, interline, thickness, topSpace, suffix] = match;
+  if ((version === '3') !== (topSpace !== undefined)) throw new Error('invalidRef');
+  let raw = { ...DEFAULTS, paper: paper === 'LT' ? 'LETTER' : paper, orientation: orientation === 'L' ? 'landscape' : 'portrait', lineSpacing: Number(interline) / 10, thickness: Number(thickness) / 100, topSpace: Number(topSpace || 0) };
   const simple = /^N(\d{1,2})-G(\d{1,2})-E(\d{2})$/.exec(suffix);
   const complex = /^S([1-8])-J(\d{2,3})-B([\d._]+)$/.exec(suffix);
   if (simple) raw = { ...raw, count: Number(simple[1]), group: Number(simple[2]), spacing: Number(simple[3]) / 10 };
@@ -79,7 +80,7 @@ export function decodeShareHash(hash) {
 
 export function createLayout(value) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
-  const top = 21, bottom = height - 21, available = bottom - top, staffHeight = s.lineSpacing * 4;
+  const top = 21 + s.topSpace, bottom = height - 21, available = bottom - top, staffHeight = s.lineSpacing * 4;
   const count = s.mode === 'blocks' ? s.systems * s.blocks.reduce((n, b) => n + b.count, 0) : s.count;
   let needed, gap = 0, positions = [];
   if (s.mode === 'simple') {

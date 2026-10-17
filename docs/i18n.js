@@ -25,7 +25,7 @@ landscape|Horitzontal|Landscape|Horizontal|Querformat|Paysage|Orizzontale|Horizo
 thickness|Gruix de les línies|Line thickness|Grosor de las líneas|Linienstärke|Épaisseur des lignes|Spessore delle linee|Espessura das linhas|Lijndikte
 thin|Fines|Thin|Finas|Fein|Fines|Sottili|Finas|Dun
 thick|Gruixudes|Thick|Gruesas|Kräftig|Épaisses|Spesse|Grossas|Dik
-lineSpacing|Espai intern del pentagrama|Staff line spacing|Espaciado interno del pentagrama|Abstand der Notenlinien|Interligne de la portée|Interlinea del pentagramma|Espaçamento das linhas da pauta|Afstand tussen notenlijnen
+lineSpacing|Espai entre línies|Staff line spacing|Espacio entre líneas|Abstand der Notenlinien|Interligne de la portée|Spazio tra le linee|Espaço entre linhas|Afstand tussen notenlijnen
 lineSpacingHint|Distància entre dues línies del mateix pentagrama.|Distance between two lines within a staff.|Distancia entre dos líneas del mismo pentagrama.|Abstand zwischen zwei Linien einer Notenzeile.|Distance entre deux lignes d’une même portée.|Distanza tra due linee dello stesso pentagramma.|Distância entre duas linhas da mesma pauta.|Afstand tussen twee lijnen van dezelfde notenbalk.
 distribution|Distribució|Layout|Distribución|Anordnung|Disposition|Disposizione|Distribuição|Indeling
 simple|Senzilla|Simple|Sencilla|Einfach|Simple|Semplice|Simples|Eenvoudig
@@ -34,9 +34,13 @@ staves|Pentagrames per pàgina|Staves per page|Pentagramas por página|Notenzeil
 decrease|Un pentagrama menys|One fewer staff|Un pentagrama menos|Eine Notenzeile weniger|Une portée de moins|Un pentagramma in meno|Menos uma pauta|Een notenbalk minder
 increase|Un pentagrama més|One more staff|Un pentagrama más|Eine Notenzeile mehr|Une portée de plus|Un pentagramma in più|Mais uma pauta|Een notenbalk meer
 group|Agrupació|Grouping|Agrupación|Gruppierung|Regroupement|Raggruppamento|Agrupamento|Groepering
+noGroup|Cap|None|Ninguna|Keine|Aucun|Nessuno|Nenhum|Geen
 none|Sense agrupar|No grouping|Sin agrupar|Ohne Gruppierung|Sans regroupement|Senza gruppi|Sem agrupamento|Geen groepering
 groupEvery|De {n} en {n}|Groups of {n}|De {n} en {n}|Gruppen mit {n}|Par groupes de {n}|Gruppi di {n}|Grupos de {n}|Groepen van {n}
 groupSpace|Espai entre grups|Space between groups|Espacio entre grupos|Abstand zwischen Gruppen|Espace entre groupes|Spazio tra i gruppi|Espaço entre grupos|Afstand tussen groepen
+groupSpaceHint|Respecte de l’espai normal.|Relative to the normal gap.|Respecto al espacio normal.|Im Verhältnis zum normalen Abstand.|Par rapport à l’espacement normal.|Rispetto allo spazio normale.|Em relação ao espaço normal.|Ten opzichte van de normale afstand.
+topSpace|Espai superior extra|Extra space at top|Espacio superior extra|Zusätzlicher Platz oben|Espace supplémentaire en haut|Spazio extra in alto|Espaço extra no topo|Extra ruimte bovenaan
+topSpaceHint|Espai en blanc per al títol o l’autor.|Blank space for a title or composer.|Espacio en blanco para el título o el autor.|Freier Platz für Titel oder Komponist.|Espace libre pour le titre ou le compositeur.|Spazio libero per titolo o autore.|Espaço livre para o título ou o autor.|Vrije ruimte voor titel of componist.
 compact|Més junt|Closer|Más junto|Enger|Plus serré|Più vicino|Mais junto|Dichterbij
 wide|Més separat|Further apart|Más separado|Weiter|Plus espacé|Più distante|Mais afastado|Verder uit elkaar
 blockHint|Combina blocs amb espais diferents. Els noms no s’imprimeixen.|Combine blocks with different spacing. Names are not printed.|Combina bloques con distintos espacios. Los nombres no se imprimen.|Blöcke mit eigenen Abständen kombinieren. Namen werden nicht gedruckt.|Combinez des blocs aux espacements différents. Les noms ne sont pas imprimés.|Combina blocchi con spazi diversi. I nomi non vengono stampati.|Combina blocos com espaços diferentes. Os nomes não são impressos.|Combineer blokken met eigen afstanden. Namen worden niet afgedrukt.
@@ -53,9 +57,10 @@ systems|Repeticions del conjunt|System repetitions|Repeticiones del conjunto|Wie
 systemGap|Espai entre conjunts (mm)|Gap between systems (mm)|Espacio entre conjuntos (mm)|Systemabstand (mm)|Espace entre systèmes (mm)|Spazio tra i sistemi (mm)|Espaço entre sistemas (mm)|Afstand tussen systemen (mm)
 oneStaff|1 pentagrama|1 staff|1 pentagrama|1 Notenzeile|1 portée|1 pentagramma|1 pauta|1 notenbalk
 staffCount|{n} pentagrames|{n} staves|{n} pentagramas|{n} Notenzeilen|{n} portées|{n} pentagrammi|{n} pautas|{n} notenbalken
-reference|Referència al peu|Reference in footer|Referencia al pie|Referenz im Fußbereich|Référence en pied de page|Riferimento a piè di pagina|Referência no rodapé|Referentie onderaan
+sheetFooter|Peu del full|Page footer|Pie de página|Seitenfuß|Pied de page|Piè di pagina|Rodapé da página|Paginavoet
+reference|Referència|Reference|Referencia|Referenz|Référence|Riferimento|Referência|Referentie
 referenceHint|Per tornar a crear exactament el mateix full.|To recreate exactly the same sheet.|Para recrear exactamente la misma hoja.|Um genau dasselbe Blatt wiederherzustellen.|Pour recréer exactement la même feuille.|Per ricreare esattamente lo stesso foglio.|Para recriar exatamente a mesma folha.|Om precies hetzelfde blad te maken.
-source|Adreça del web al peu|Website address in footer|Dirección del sitio al pie|Webadresse im Fußbereich|Adresse du site en pied de page|Indirizzo del sito a piè di pagina|Endereço do site no rodapé|Webadres onderaan
+source|Adreça del web|Website address|Dirección del sitio|Webadresse|Adresse du site|Indirizzo del sito|Endereço do site|Webadres
 sourceHint|Per recordar on has creat el full.|To remember where you made the sheet.|Para recordar dónde has creado la hoja.|Damit du die Seite wiederfindest.|Pour retrouver où vous avez créé la feuille.|Per ricordare dove hai creato il foglio.|Para recordar onde criaste a folha.|Om te onthouden waar je het blad hebt gemaakt.
 configurationCode|Codi de configuració|Layout code|Código de configuración|Vorlagencode|Code de configuration|Codice di configurazione|Código de configuração|Indelingscode
 codeHint|Copia aquest codi per recuperar el mateix full més endavant.|Copy this code to recreate the same sheet later.|Copia este código para recuperar la misma hoja más adelante.|Kopiere diesen Code, um dasselbe Blatt später wiederherzustellen.|Copiez ce code pour recréer la même feuille plus tard.|Copia questo codice per ricreare lo stesso foglio in seguito.|Copia este código para recriar a mesma folha mais tarde.|Kopieer deze code om later hetzelfde blad te maken.

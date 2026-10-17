@@ -1,5 +1,15 @@
 # Canvis
 
+## 1.5.0
+
+- Sidebar compacte: format i orientació en una fila, quantitat i agrupació en paral·lel i controls relacionats reunits.
+- Valors editables al costat dels lliscadors, mantenint la previsualització immediata i les unitats.
+- «Peu del full» amb etiquetes curtes, ajuda conservada i interruptors alineats a la dreta.
+- Camps sense efecte ocults en mode blocs, conservant els valors per quan tornin a ser aplicables.
+- Espai superior extra de 0 a 100 mm, amb avís de desbordament i ajust que conserva aquesta reserva.
+- Referències P3 per conservar l’espai superior, compatibles amb els codis P1 i P2 anteriors, les plantilles locals i els enllaços compartits.
+- Traduccions actualitzades als vuit idiomes i dues icones Lucide d’orientació.
+
 ## 1.4.1
 
 - Nota de full net al centre del peu del web, amb la mida original i sense ocupar el final de la configuració.

@@ -9,15 +9,18 @@ Un full en blanc per a la teva música. Paper pautat a mida, previsualització e
 - **A3, A4 i Letter**, en vertical o horitzontal.
 - **Gruix de línia** de 0,05 a 0,50 mm.
 - **Espai intern del pentagrama** d’1 a 4 mm entre línies.
+- **Espai superior extra** de 0 a 100 mm, afegit al marge habitual de 21 mm, per escriure a mà títol, autor o anotacions. El valor inicial de 0 manté els fulls anteriors.
 - **Distribució senzilla**: d’1 a 64 pentagrames, sense agrupar o agrupats de 2 en 2, de 3 en 3, etc. L’espai disponible es reparteix automàticament.
 - **Distribució per blocs**: fins a 24 blocs amb nom, nombre de pentagrames, distància entre pentagrames i espai fins al bloc següent. Es pot repetir el conjunt d’1 a 8 vegades, amb un espai entre conjunts propi. Els noms dels blocs només serveixen per configurar-los i no s’imprimeixen.
 - **Referència opcional al peu** per recuperar la geometria exacta del full.
 - **Adreça del web opcional al peu esquerre**, desactivada per defecte, per recordar on s’ha creat el full.
 - **Enllaç compartible** que conserva la distribució i els noms dels blocs.
 
-El nombre de pentagrames que hi cap depèn del format, l’espai entre línies i la distribució. Si una configuració no hi cap, el web avisa i desactiva la impressió. **Ajusta al full** fa un ajust explícit: en mode senzill redueix el nombre de pentagrames; en mode blocs redueix els espais i, si és necessari, l’espai entre línies. Els controls mostren els valors resultants. Si tampoc no hi cap amb les mides mínimes, cal reduir manualment el nombre de pentagrames, blocs o repeticions.
+El nombre de pentagrames que hi cap depèn del format, l’espai entre línies, l’espai superior reservat i la distribució. Si una configuració no hi cap, el web avisa i desactiva la impressió. **Ajusta al full** fa un ajust explícit: en mode senzill redueix el nombre de pentagrames; en mode blocs redueix els espais i, si és necessari, l’espai entre línies. Conserva l’espai superior extra. Els controls mostren els valors resultants. Si tampoc no hi cap amb les mides mínimes, cal reduir manualment el nombre de pentagrames, blocs o repeticions.
 
-En mode blocs les distàncies són exactes en mil·límetres, entre l’última línia d’un pentagrama i la primera del següent. El conjunt queda centrat verticalment. L’espai després de l’últim bloc no s’utilitza; entre repeticions s’aplica **Espai entre conjunts**.
+El sidebar combina format i orientació en una fila, amb icones Lucide, i mostra quantitat i agrupació en paral·lel. Els valors de gruix, espai entre línies, separació relativa entre grups i espai superior es poden escriure directament o modificar amb el lliscador. El multiplicador entre grups és respecte de l’espai normal entre pentagrames.
+
+En mode blocs les distàncies són exactes en mil·límetres, entre l’última línia d’un pentagrama i la primera del següent. El conjunt queda centrat dins de l’espai disponible, després de reservar l’espai superior extra. Els camps sense efecte s’oculten: separació interna d’un bloc amb un sol pentagrama, espai després de l’últim bloc i separació entre conjunts quan només n’hi ha un. Els valors es conserven i reapareixen quan tornen a ser aplicables.
 
 ## Previsualitzar i imprimir
 
@@ -27,7 +30,7 @@ Els controls **+**, **−** i la icona d’ajust amplien la previsualització fi
 
 Si fas scroll sobre el full sense el modificador, apareix breument un avís que recorda Ctrl + roda, o ⌘ + roda a macOS. El scroll normal permet continuar desplaçant la pàgina en mòbil.
 
-Per defecte, el full només conté les línies. Pots activar **Adreça del web al peu** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència al peu** perquè aparegui el codi de configuració a la dreta. Les dues opcions es mostren en paral·lel i són independents, desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos s’imprimeixen en gris suau (`#a6a6a6`), amb el mateix to a la previsualització i al PDF. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
+Per defecte, el full només conté les línies. A **Peu del full** pots activar **Adreça del web** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència** perquè aparegui el codi de configuració a la dreta. Cada opció té una fila amb ajuda breu i l’interruptor a la dreta. Són independents i estan desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos s’imprimeixen en gris suau (`#a6a6a6`), amb el mateix to a la previsualització i al PDF. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
 
 ## Plantilles sense compte
 
@@ -47,10 +50,12 @@ Les referències **P1** de la primera versió continuen funcionant i recuperen e
 
 El desplegable **Codi de configuració** explica com copiar el codi del full actual. **Recupera una configuració** permet enganxar-hi un codi desat o imprès. El codi complet queda visible només quan s’obre el desplegable.
 
-Les noves referències **P2** incorporen format, orientació, espai entre línies i distribució:
+Les referències **P2** incorporen format, orientació, espai entre línies i distribució:
 
 - `P2-A3-L-I20-T12-N9-G3-E22`: A3 horitzontal, interlineat de 2 mm, gruix de 0,12 mm, 9 pentagrames agrupats de 3 en 3 i separació relativa de 2,2×.
 - `P2-A4-P-I20-T12-S2-J180-B4.120.140_2.60.140`: dos conjunts SATB + piano; 12 mm entre les quatre veus, 14 mm fins al piano, 6 mm entre els dos pentagrames de piano i 18 mm entre conjunts.
+
+Quan hi ha espai superior extra, es genera una referència **P3** amb el camp `H` en mil·límetres: `P3-A4-P-I20-T12-H30-N9-G3-E22` reserva 30 mm addicionals a dalt. Els codis P1 i P2 continuen recuperant el mateix full, sense espai addicional. Les plantilles desades i els enllaços compartits també conserven aquest valor.
 
 Les referències impreses codifiquen la geometria. Els enllaços compartits també conserven els noms dels blocs, dins del fragment de l’adreça (`#`), sense enviar-los al servidor. L’activació dels peus és una preferència local: recuperar una referència o obrir un enllaç no activa l’adreça del web.
 
@@ -64,7 +69,7 @@ Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma.
 
 El peu obre un petit diàleg amb la història del projecte i l’adreça Lightning `aptswim903@walletofsatoshi.com` per a aportacions voluntàries. El web permet copiar-la; no es connecta a cap cartera ni processa pagaments. La informació de suport no apareix als fulls ni als PDF.
 
-El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 15 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos.
+El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 17 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos. El mateix comandament accepta un SHA de commit com a argument per reproduir una versió concreta.
 
 Les transicions comparteixen `--motion-duration` (220 ms) i `--motion-ease` a `docs/style.css`. La preferència de moviment reduït les desactiva; la reordenació de targetes llegeix aquests mateixos valors.
 

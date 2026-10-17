@@ -81,8 +81,39 @@ test('all suggested templates fit and orchestra includes 23 staves on A3', () =>
   assert.equal(orchestra.count, 23); assert.equal(orchestra.width, 297); assert.equal(orchestra.height, 420);
 });
 
+test('extra top space reserves blank paper and survives references, links and saved templates', () => {
+  assert.equal(normalizeSettings({}).topSpace, 0);
+  assert.equal(normalizeSettings({ topSpace: -5 }).topSpace, 0);
+  assert.equal(normalizeSettings({ topSpace: Infinity }).topSpace, 0);
+  assert.equal(normalizeSettings({ topSpace: 999 }).topSpace, 100);
+  for (const paper of ['A4', 'A3', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
+    for (const base of [DEFAULTS, DEFAULT_TEMPLATES.find(t => t.id === 'choir-piano').settings]) for (const topSpace of [0, 30, 60, 100]) {
+      const s = normalizeSettings({ ...base, paper, orientation, topSpace }), layout = createLayout(s);
+      close(layout.top, 21 + topSpace); close(layout.bottom, layout.height - 21);
+      close(layout.available, layout.height - 42 - topSpace);
+      assert.equal(layout.valid, layout.needed <= layout.available + 1e-6);
+      assert.equal(encodeReference(s).startsWith(topSpace ? 'P3-' : 'P2-'), true);
+      assert.deepEqual(decodeReference(encodeReference(s)), { ...s, blocks: s.blocks.map(b => ({ ...b, label: '' })) });
+      assert.deepEqual(decodeShareHash(encodeShareHash(s)), s);
+      const saved = addTemplate({}, { id: 'title', name: 'Primera pàgina', settings: s });
+      assert.equal(normalizeLibrary(saved).saved[0].settings.topSpace, topSpace);
+      const fitted = fitSettings(s), fittedLayout = createLayout(fitted);
+      assert.equal(fitted.topSpace, topSpace); assert.ok(fittedLayout.valid);
+      assert.ok(fittedLayout.staves[0][0] >= 21 + topSpace - 1e-7);
+      assert.ok(fittedLayout.staves.at(-1).at(-1) <= layout.height - 21 + 1e-7);
+      const svg = renderSheet(fitted), pdf = new TextDecoder().decode(createPdf(fitted));
+      const firstLine = Number(/y1="([\d.]+)"/.exec(svg)[1]);
+      const firstPdfY = Number(/ m ([\d.]+) ([\d.]+) l S/.exec(pdf)[2]);
+      assert.ok(Math.abs(firstPdfY - (fittedLayout.height - firstLine) * 72 / 25.4) < 0.00003);
+      assert.ok(!svg.includes('<text ')); assert.ok(!pdf.includes(' Tj'));
+    }
+  }
+  assert.equal(decodeReference('P1-N9-G3-E22-T12').topSpace, 0);
+  assert.equal(decodeReference('P2-A4-P-I20-T12-N9-G3-E22').topSpace, 0);
+});
+
 test('invalid reference values and oversized inputs are rejected', () => {
-  for (const reference of ['', 'P1-N25-G3-E22-T12', 'P1-N9-G1-E22-T12', 'P2-A3-L-I09-T12-N9-G3-E22', 'P2-A4-P-I20-T99-N9-G3-E22', 'P2-A4-P-I20-T12-N65-G0-E22', 'P2-A4-P-I20-T12-S1-J180-B0.80.140', 'P2-A4-P-I20-T12-S1-J180-B2.999.140', 'P2-A4-P-I20-T12-S1-J180-B2.80.140_'.repeat(50), '<script>']) assert.throws(() => decodeReference(reference), undefined, reference);
+  for (const reference of ['', 'P1-N25-G3-E22-T12', 'P1-N9-G1-E22-T12', 'P2-A3-L-I09-T12-N9-G3-E22', 'P2-A4-P-I20-T99-N9-G3-E22', 'P2-A4-P-I20-T12-N65-G0-E22', 'P2-A4-P-I20-T12-S1-J180-B0.80.140', 'P2-A4-P-I20-T12-S1-J180-B2.999.140', 'P2-A4-P-I20-T12-S1-J180-B2.80.140_'.repeat(50), 'P3-A4-P-I20-T12-N9-G3-E22', 'P3-A4-P-I20-T12-H0-N9-G3-E22', 'P3-A4-P-I20-T12-H101-N9-G3-E22', 'P3-A4-P-I20-T12-H030-N9-G3-E22', 'P2-A4-P-I20-T12-H30-N9-G3-E22', '<script>']) assert.throws(() => decodeReference(reference), undefined, reference);
   assert.equal(encodeReference(decodeReference(' p1-n9-g3-e22-t12 ')), 'P2-A4-P-I20-T12-N9-G3-E22');
 });
 

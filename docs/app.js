@@ -1,9 +1,9 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.4.1';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.4.1';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.4.1';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.4.1';
-import { iconMarkup, renderIcons } from './icons.js?v=1.4.1';
-import { animateReflow } from './motion.js?v=1.4.1';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.5.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.5.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.5.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.5.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.5.0';
+import { animateReflow } from './motion.js?v=1.5.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -42,6 +42,12 @@ function translatePage() {
   $('language').value = languageChoice; $('language').setAttribute('aria-label', t('language'));
 }
 function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
+const measurements = [['thickness', 'thickness-value', 'thickness', 'mm'], ['line-spacing', 'line-spacing-value', 'lineSpacing', 'mm'], ['group-spacing', 'spacing-value', 'spacing', '×'], ['top-space', 'top-space-value', 'topSpace', 'mm']];
+function bindNumber(id, key) {
+  $(id).addEventListener('input', event => { if (event.target.value !== '' && event.target.validity.valid) update(key, Number(event.target.value)); });
+  $(id).addEventListener('change', event => { if (event.target.value !== '') update(key, Number(event.target.value)); event.target.value = settings[key]; });
+  $(id).addEventListener('blur', event => { event.target.value = settings[key]; });
+}
 function updateRange(element) { element.style.setProperty('--progress', `${(Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min)) * 100}%`); }
 function fitPreview() {
   if (!layout) return;
@@ -104,6 +110,18 @@ function renderBlocks() {
   $('add-block').disabled = settings.blocks.length >= 24;
 }
 
+function updateBlockFields() {
+  $('block-list').querySelectorAll('.block-card').forEach((card, index) => {
+    let visible = 0;
+    card.querySelectorAll('.block-fields input').forEach(input => {
+      const hidden = input.dataset.field === 'inside' && settings.blocks[index].count === 1 || input.dataset.field === 'after' && index === settings.blocks.length - 1;
+      input.closest('label').hidden = hidden; input.disabled = hidden;
+      if (!hidden) visible++;
+    });
+    card.querySelector('.block-fields').style.setProperty('--field-count', visible);
+  });
+}
+
 function templateSettings(template, suggested) {
   const value = normalizeSettings(template.settings);
   if (suggested && template.id === 'orchestra') ['woodwinds', 'brass', 'percussion', 'harp', 'presetPiano', 'strings'].forEach((key, i) => { value.blocks[i].label = t(key); });
@@ -135,19 +153,25 @@ function renderLibrary() { animateReflow($('templates-library'), () => {
 
 function render({ blocks = false, templates = false } = {}) {
   settings = normalizeSettings(settings); layout = createLayout(settings);
-  setValue('paper-size', settings.paper); setValue('thickness', settings.thickness); setValue('line-spacing', settings.lineSpacing); setValue('staff-count', settings.count); setValue('group-spacing', settings.spacing); setValue('systems', settings.systems); setValue('system-gap', settings.systemGap);
-  $('thickness-value').textContent = `${number(settings.thickness)} mm`; $('line-spacing-value').textContent = `${number(settings.lineSpacing)} mm`; $('spacing-value').textContent = `${number(settings.spacing)}×`;
+  setValue('paper-size', settings.paper); setValue('staff-count', settings.count);
+  for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) if (document.activeElement !== $(id)) setValue(id, settings[key]);
+  for (const [rangeId, valueId, key, unit] of measurements) {
+    setValue(rangeId, settings[key]);
+    if (document.activeElement !== $(valueId)) setValue(valueId, settings[key]);
+    for (const id of [rangeId, valueId]) $(id).setAttribute('aria-valuetext', `${number(settings[key])} ${unit}`);
+    updateRange($(rangeId));
+  }
   $('portrait-button').setAttribute('aria-pressed', String(settings.orientation === 'portrait')); $('landscape-button').setAttribute('aria-pressed', String(settings.orientation === 'landscape'));
   $('simple-mode').setAttribute('aria-pressed', String(settings.mode === 'simple')); $('blocks-mode').setAttribute('aria-pressed', String(settings.mode === 'blocks'));
   $('simple-controls').hidden = settings.mode !== 'simple'; $('blocks-controls').hidden = settings.mode !== 'blocks';
   $('decrease-count').disabled = settings.count <= 1; $('increase-count').disabled = settings.count >= 64;
-  $('group-size').replaceChildren(new Option(t('none'), '0'));
+  $('group-size').replaceChildren(new Option(t('noGroup'), '0'));
   for (let i = 2; i < settings.count; i++) $('group-size').add(new Option(t('groupEvery', { n: i }), String(i)));
   $('group-size').value = settings.group; $('group-size').disabled = settings.count < 3;
-  $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1;
+  $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1; $('system-gap-field').hidden = settings.systems === 1;
   $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
   const sheet = renderSheet(settings); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = layout.valid ? sheet : '';
-  $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm`);
+  $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}`);
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
   $('layout-summary').textContent = `${staffCount(layout.count)} · ${grouping} · ${number(settings.thickness)} mm`;
   $('layout-summary').title = $('layout-summary').textContent;
@@ -156,9 +180,8 @@ function render({ blocks = false, templates = false } = {}) {
   $('fit-button').disabled = !createLayout(fitSettings(settings)).valid;
   document.documentElement.style.setProperty('--page-width', `${layout.width}mm`); document.documentElement.style.setProperty('--page-height', `${layout.height}mm`);
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
-  ['thickness', 'line-spacing', 'group-spacing'].forEach(id => updateRange($(id)));
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
-  if (blocks) renderBlocks(); if (templates) renderLibrary();
+  if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary();
   write(SETTINGS_KEY, settings); fitPreview();
 }
 
@@ -182,7 +205,10 @@ $('language').addEventListener('change', event => { languageChoice = event.targe
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));
-for (const [id, key] of [['thickness', 'thickness'], ['line-spacing', 'lineSpacing'], ['group-spacing', 'spacing']]) $(id).addEventListener('input', event => update(key, Number(event.target.value)));
+for (const [rangeId, valueId, key] of measurements) {
+  $(rangeId).addEventListener('input', event => update(key, Number(event.target.value)));
+  bindNumber(valueId, key);
+}
 $('group-size').addEventListener('change', event => update('group', Number(event.target.value)));
 $('show-reference').addEventListener('change', event => update('reference', event.target.checked));
 $('show-source').addEventListener('change', event => update('source', event.target.checked));
@@ -207,7 +233,7 @@ $('block-list').addEventListener('click', event => {
   render({ blocks: true });
 });
 $('add-block').addEventListener('click', () => { if (settings.blocks.length < 24) settings.blocks.push({ label: '', count: 2, inside: 8, after: 14 }); render({ blocks: true }); });
-for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) $(id).addEventListener('change', event => update(key, Number(event.target.value)));
+for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) bindNumber(id, key);
 $('fit-button').addEventListener('click', () => { settings = fitSettings(settings); render({ blocks: true }); });
 $('reset-button').addEventListener('click', () => { settings = normalizeSettings(DEFAULTS); $('restore-message').textContent = ''; $('reference-input').value = ''; render({ blocks: true }); toast(t('resetDone')); });
 $('restore-form').addEventListener('submit', event => {
