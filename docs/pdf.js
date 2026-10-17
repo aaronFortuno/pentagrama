@@ -1,4 +1,4 @@
-import { createLayout, footerLines } from './layout.js?v=1.4.0';
+import { createLayout, footerLines, FOOTER_GRAY } from './layout.js?v=1.4.1';
 
 // A vector page in physical units, with no rasterisation or remote service.
 export function createPdf(settings) {
@@ -8,7 +8,7 @@ export function createPdf(settings) {
   for (const staff of l.staves) for (const y of staff) commands += `${points(18)} ${points(l.height - y)} m ${points(l.width - 18)} ${points(l.height - y)} l S\n`;
   for (const f of footerLines(settings)) {
     const x = f.anchor === 'start' ? f.x : f.x - f.text.length * 1.2;
-    commands += `0.455 g BT /F1 ${points(2)} Tf 1 0 0 1 ${points(x)} ${points(l.height - f.y)} Tm (${f.text}) Tj ET\n`;
+    commands += `${(FOOTER_GRAY / 255).toFixed(5)} g BT /F1 ${points(2)} Tf 1 0 0 1 ${points(x)} ${points(l.height - f.y)} Tm (${f.text}) Tj ET\n`;
   }
   const objects = ['<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
     `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${points(l.width)} ${points(l.height)}] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>`,

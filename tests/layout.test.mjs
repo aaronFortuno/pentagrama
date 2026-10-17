@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULTS, SERVICE_ADDRESS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, pageDimensions, fitSettings, footerLines, renderSheet } from '../docs/layout.js';
+import { DEFAULTS, SERVICE_ADDRESS, FOOTER_GRAY, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, pageDimensions, fitSettings, footerLines, renderSheet } from '../docs/layout.js';
 import { createPdf } from '../docs/pdf.js';
 import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from '../docs/library.js';
 import { LANGUAGES, messages, detectLanguage, translate } from '../docs/i18n.js';
@@ -141,6 +141,12 @@ test('website footer is opt-in, shares space with long references and leaves the
         if (address && f.anchor === 'end') assert.ok(left >= address.x + address.text.length * 1.2 + 8 - 1e-7);
       }
       const svg = renderSheet(s), pdf = new TextDecoder().decode(createPdf(s));
+      if (source || reference) {
+        const color = `#${FOOTER_GRAY.toString(16).repeat(3)}`;
+        assert.equal((svg.match(new RegExp(`fill="${color}"`, 'g')) || []).length, footer.length);
+        assert.equal((pdf.match(new RegExp(`${(FOOTER_GRAY / 255).toFixed(5).replace('.', '\\.')} g BT`, 'g')) || []).length, footer.length);
+        assert.ok(FOOTER_GRAY > 116 && FOOTER_GRAY < 200);
+      }
       assert.equal(svg.includes(SERVICE_ADDRESS), source); assert.equal(pdf.includes(SERVICE_ADDRESS), source);
       if (source) assert.match(pdf, /1 0 0 1 51\.02362 [\d.]+ Tm \(aaronfortuno\.github\.io\/pentagrama\)/);
       assert.equal(decodeShareHash(encodeShareHash(s)).source, false);

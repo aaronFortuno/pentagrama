@@ -1,5 +1,12 @@
 # Canvis
 
+## 1.4.1
+
+- Nota de full net al centre del peu del web, amb la mida original i sense ocupar el final de la configuració.
+- Opcions d’adreça i referència impreses en dues columnes, amb el text d’ajuda simplificat.
+- Codi de configuració dins d’un desplegable amb explicació de còpia i recuperació.
+- Textos del peu imprès en un gris més suau, compartit per la previsualització i el PDF.
+
 ## 1.4.0
 
 - Icones Lucide uniformes, servides localment amb les llicències ISC i MIT conservades.

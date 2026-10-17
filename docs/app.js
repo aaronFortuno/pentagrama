@@ -1,9 +1,9 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.4.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.4.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.4.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.4.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.4.0';
-import { animateReflow } from './motion.js?v=1.4.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.4.1';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.4.1';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.4.1';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.4.1';
+import { iconMarkup, renderIcons } from './icons.js?v=1.4.1';
+import { animateReflow } from './motion.js?v=1.4.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';

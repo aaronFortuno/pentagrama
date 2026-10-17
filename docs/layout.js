@@ -1,5 +1,6 @@
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
 export const SERVICE_ADDRESS = 'aaronfortuno.github.io/pentagrama';
+export const FOOTER_GRAY = 166;
 export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
@@ -131,6 +132,7 @@ export function footerLines(value) {
 export function renderSheet(value) {
   const l = createLayout(value);
   const lines = l.staves.flatMap(staff => staff.map(y => `<line x1="18" x2="${l.width - 18}" y1="${y.toFixed(5)}" y2="${y.toFixed(5)}"/>`)).join('');
-  const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="${f.anchor}" font-family="Courier New,monospace" font-size="2" fill="#747474">${f.text}</text>`).join('');
+  const footerColor = `#${FOOTER_GRAY.toString(16).repeat(3)}`;
+  const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="${f.anchor}" font-family="Courier New,monospace" font-size="2" font-weight="400" fill="${footerColor}">${f.text}</text>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${l.width}mm" height="${l.height}mm" viewBox="0 0 ${l.width} ${l.height}" aria-hidden="true"><g fill="none" stroke="#000" stroke-width="${l.thickness}">${lines}</g>${footer}</svg>`;
 }

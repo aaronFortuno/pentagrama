@@ -27,7 +27,7 @@ Els controls **+**, **−** i la icona d’ajust amplien la previsualització fi
 
 Si fas scroll sobre el full sense el modificador, apareix breument un avís que recorda Ctrl + roda, o ⌘ + roda a macOS. El scroll normal permet continuar desplaçant la pàgina en mòbil.
 
-Per defecte, el full només conté les línies. Pots activar **Adreça del web al peu** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència al peu** perquè aparegui el codi de configuració a la dreta. Són opcions independents, desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
+Per defecte, el full només conté les línies. Pots activar **Adreça del web al peu** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència al peu** perquè aparegui el codi de configuració a la dreta. Les dues opcions es mostren en paral·lel i són independents, desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. Els dos textos s’imprimeixen en gris suau (`#a6a6a6`), amb el mateix to a la previsualització i al PDF. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
 
 ## Plantilles sense compte
 
@@ -44,6 +44,8 @@ L’emmagatzematge és local: no se sincronitza entre dispositius i es pot perdr
 ## Referències
 
 Les referències **P1** de la primera versió continuen funcionant i recuperen el mateix full A4.
+
+El desplegable **Codi de configuració** explica com copiar el codi del full actual. **Recupera una configuració** permet enganxar-hi un codi desat o imprès. El codi complet queda visible només quan s’obre el desplegable.
 
 Les noves referències **P2** incorporen format, orientació, espai entre línies i distribució:
 
