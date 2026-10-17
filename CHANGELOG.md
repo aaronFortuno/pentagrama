@@ -1,5 +1,9 @@
 # Canvis
 
+## 1.8.2
+
+- Resum de privadesa més breu als vuit idiomes, amb les accions explicades en línia i els detalls tècnics a la documentació.
+
 ## 1.8.1
 
 - Detalls de privadesa plegats inicialment dins del diàleg V4V, amb l’interruptor d’exclusió sempre visible.

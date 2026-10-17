@@ -4,7 +4,7 @@ La publicació de `pentagrama.page` utilitza Umami Cloud per conèixer l’abast
 
 La finalitat és saber quines funcions resulten útils i orientar les millores futures.
 
-Al diàleg V4V, el detall d’aquesta informació queda plegat sota «Privadesa i estadístiques», amb animació en obrir i tancar. L’interruptor d’exclusió es manté visible fora del desplegable.
+Al diàleg V4V, un resum breu queda plegat sota «Privadesa i estadístiques», amb animació en obrir i tancar. L’interruptor d’exclusió es manté visible fora del desplegable. Els detalls tècnics de la mesura es documenten a continuació.
 
 ## Què es mesura
 
