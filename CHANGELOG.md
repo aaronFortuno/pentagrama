@@ -1,5 +1,16 @@
 # Canvis
 
+## 1.6.0
+
+- Nota del logotip més petita, ovalada i inclinada.
+- Lliscadors tàctils sense canvis en tocar-los per iniciar un desplaçament vertical: toc confirmat en aixecar el dit, ajust horitzontal en directe i recuperació del valor si es cancel·la el gest.
+- Menú d’idiomes amb estil propi, selecció marcada, navegació amb teclat i transicions d’obertura i tancament.
+- Diàlegs V4V, de desar i de còpia, i desplegable de configuració amb la mateixa animació de 220 ms i respecte pel moviment reduït.
+- Selecció més clara als botons d’orientació i distribució, amb fons verd i marca de confirmació als modes.
+- Panell de plantilles i tirador units en una sola transició, sense reordenació de targetes en obrir-lo.
+- Miniatures ampliades fins a l’amplada interior de les targetes, retallant la part inferior quan cal.
+- Cinc proves noves per als gestos i els límits dels lliscadors.
+
 ## 1.5.3
 
 - Estadístiques bàsiques amb Umami: visites, peticions d’impressió i accions de plantilles.

@@ -9,16 +9,16 @@
   <link rel="canonical" href="https://pentagrama.page/">
   <title>Pentagrama · El teu paper pautat</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c44d34'/%3E%3Cpath d='M7 10h18M7 13h18M7 16h18M7 19h18M7 22h18' stroke='white' stroke-width='1'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css?v=1.5.3">
-  <script type="module" src="./app.js?v=1.5.3"></script>
+  <link rel="stylesheet" href="./style.css?v=1.6.0">
+  <script type="module" src="./app.js?v=1.6.0"></script>
   <style id="print-page-style">@page{size:210mm 297mm;margin:0}</style>
 </head>
 <body>
   <div class="app-shell">
     <header class="site-header">
-      <a class="wordmark" href="./" aria-label="Pentagrama"><svg class="brand-mark" width="29" height="28" viewBox="0 0 31 30" aria-hidden="true"><path d="M1 7h29M1 11h29M1 15h29M1 19h29M1 23h29" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="23" cy="19" r="3.4" fill="#c44d34"/></svg><span>pentagrama<span class="brand-period">.</span></span></a>
+      <a class="wordmark" href="./" aria-label="Pentagrama"><svg class="brand-mark" width="29" height="28" viewBox="0 0 31 30" aria-hidden="true"><path d="M1 7h29M1 11h29M1 15h29M1 19h29M1 23h29" fill="none" stroke="currentColor" stroke-width="1.2"/><ellipse cx="23" cy="19" rx="2.7" ry="1.8" transform="rotate(-20 23 19)" fill="#c44d34"/></svg><span>pentagrama<span class="brand-period">.</span></span></a>
       <div class="header-intro"><h1 id="page-title"><span data-i18n="intro">Espai per a la teva</span> <em data-i18n="music">música.</em></h1><p data-i18n="description">Paper pautat a mida, sense marques d’aigua.</p></div>
-      <label class="language-control"><span class="sr-only" data-i18n="language">Idioma</span><span data-icon="languages"></span><span class="language-chevron" data-icon="chevron-down"></span><select id="language" aria-label="Idioma"></select></label>
+      <div class="language-control"><button type="button" id="language-button" class="icon-button" data-aria="language" aria-haspopup="menu" aria-expanded="false" aria-controls="language-menu"><span data-icon="languages"></span><span class="language-chevron" data-icon="chevron-down"></span></button><div id="language-menu" class="language-menu" role="menu" aria-labelledby="language-button" hidden inert></div></div>
     </header>
     <main>
       <div class="workspace" id="workspace" data-templates-open="false">
@@ -28,7 +28,7 @@
             <div class="paper-control-row"><select id="paper-size"><option>A4</option><option>A3</option><option value="LETTER">Letter</option></select><div class="segmented orientation-controls" role="group" data-aria="orientation"><button type="button" class="icon-button" id="portrait-button" aria-pressed="true" data-aria="portrait"><span data-icon="rectangle-vertical"></span></button><button type="button" class="icon-button" id="landscape-button" aria-pressed="false" data-aria="landscape"><span data-icon="rectangle-horizontal"></span></button></div></div>
           </section>
           <section class="control-section distribution-controls">
-            <label class="field-label" data-i18n="distribution">Distribució</label><div class="segmented" role="group" data-aria="distribution"><button id="simple-mode" type="button" aria-pressed="true" data-i18n="simple">Senzilla</button><button id="blocks-mode" type="button" aria-pressed="false" data-i18n="blocks">Per blocs</button></div>
+            <label class="field-label" data-i18n="distribution">Distribució</label><div class="segmented" role="group" data-aria="distribution"><button id="simple-mode" type="button" aria-pressed="true"><span class="selection-check" data-icon="check"></span><span data-i18n="simple">Senzilla</span></button><button id="blocks-mode" type="button" aria-pressed="false"><span class="selection-check" data-icon="check"></span><span data-i18n="blocks">Per blocs</span></button></div>
             <div id="simple-controls">
               <div class="distribution-fields spaced"><div><label class="field-label" for="staff-count" data-i18n="blockCount">Pentagrames</label><div class="stepper"><button type="button" id="decrease-count" data-aria="decrease"><span data-icon="minus"></span></button><input type="number" id="staff-count" min="1" max="64" step="1" value="9" inputmode="numeric"><button type="button" id="increase-count" data-aria="increase"><span data-icon="plus"></span></button></div></div><div><label class="field-label" for="group-size" data-i18n="group">Agrupació</label><select id="group-size"></select></div></div>
               <div id="group-spacing-control" class="spaced"><div class="control-label"><label for="group-spacing" data-i18n="groupSpace">Espai entre grups</label><div class="measurement"><input id="spacing-value" type="number" min="1.2" max="4" step="0.1" value="2.2" inputmode="decimal" data-aria="groupSpace" aria-describedby="group-spacing-hint"><span aria-hidden="true">×</span></div></div><input type="range" id="group-spacing" min="1.2" max="4" step="0.1" value="2.2" aria-describedby="group-spacing-hint"><p id="group-spacing-hint" class="field-hint compact-hint" data-i18n="groupSpaceHint">Respecte de l’espai normal.</p></div>
@@ -53,12 +53,14 @@
           <div class="preview-caption"><span id="layout-summary"></span><span id="paper-dimensions"></span></div>
           <div class="zoom-controls" role="group" data-aria="zoom"><button id="zoom-out" type="button" class="icon-button" data-aria="zoomOut"><span data-icon="minus"></span></button><button id="zoom-in" type="button" class="icon-button" data-aria="zoomIn"><span data-icon="plus"></span></button><button id="zoom-reset" type="button" class="icon-button zoom-reset" data-aria="previewReset" data-title="previewReset"><span data-icon="fullscreen"></span></button><output id="zoom-value" class="zoom-readout transient-label" aria-live="polite" aria-hidden="true">100 %</output></div>
         </section>
+        <div class="templates-layer"><div class="templates-drawer">
         <button id="toggle-templates" type="button" class="templates-handle" aria-expanded="false" aria-controls="templates-panel"><span data-icon="chevron-left"></span><span data-i18n="templates">Plantilles</span></button>
         <aside id="templates-panel" class="templates-panel" aria-labelledby="templates-title" aria-hidden="true" inert>
           <div class="templates-heading"><h2 id="templates-title" data-i18n="templates">Plantilles</h2><div class="template-management"><button id="save-template" type="button" class="icon-button" data-aria="saveTemplate" data-title="saveTemplate"><span data-icon="save"></span></button><button id="share-template" type="button" class="icon-button" data-aria="share" data-title="share"><span data-icon="share-2"></span></button><button id="close-templates" type="button" class="icon-button" data-aria="close" data-title="close"><span data-icon="x"></span></button></div></div>
           <div id="templates-library" class="templates-library scroll-panel"><section id="saved-section" hidden><h3 data-i18n="personalTemplates">Desades</h3><div id="saved-templates" class="template-grid"></div></section><section><h3 id="suggested-title" data-i18n="suggested" hidden>Suggerides</h3><div id="suggested-templates" class="template-grid"></div></section><p id="empty-library" class="field-hint" data-i18n="emptyLibrary" hidden>No hi ha plantilles.</p></div>
           <div class="templates-footer"><button id="restore-defaults" type="button" class="text-button"><span data-icon="rotate-ccw"></span><span data-i18n="restoreDefaults">Restableix les plantilles per defecte</span></button></div>
         </aside>
+        </div></div>
       </div>
     </main>
     <footer class="site-footer"><p data-i18n="footer">La música és teva. El paper, també.</p><p class="clean-note" data-i18n="clean">Només el teu paper. Cap marca d’aigua.</p><button type="button" id="about-button" class="text-button" data-i18n="about">Sobre el projecte · V4V</button></footer>

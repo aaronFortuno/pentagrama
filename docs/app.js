@@ -1,10 +1,11 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.5.3';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.5.3';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.5.3';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.5.3';
-import { iconMarkup, renderIcons } from './icons.js?v=1.5.3';
-import { animateReflow } from './motion.js?v=1.5.3';
-import { analytics } from './analytics.js?v=1.5.3';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.6.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.6.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.6.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.6.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.6.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.6.0';
+import { bindTouchRange } from './touch-range.js?v=1.6.0';
+import { analytics } from './analytics.js?v=1.6.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -15,7 +16,7 @@ let library = normalizeLibrary(read(LIBRARY_KEY, {}));
 let languageChoice = read(LANGUAGE_KEY, 'auto');
 if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
 let language = detectLanguage(languageChoice, navigator.languages || [navigator.language]);
-let templatesOpen = false, toastTimer, layout;
+let templatesOpen = false, languageOpen = false, toastTimer, layout;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
 const noticeTimers = new Map();
 const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
@@ -38,11 +39,14 @@ function translatePage() {
   });
   document.querySelectorAll('[data-title]').forEach(element => { element.title = t(element.dataset.title); });
   document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
-  $('language').replaceChildren();
-  for (const [code, label] of Object.entries(LANGUAGES)) $('language').add(new Option(label, code));
-  $('language').value = language; $('language').setAttribute('aria-label', t('language'));
-  $('language').title = `${t('language')} · ${LANGUAGES[language]}`;
-  $('language').closest('label').title = $('language').title;
+  $('language-menu').replaceChildren();
+  for (const [code, label] of Object.entries(LANGUAGES)) {
+    const button = node('button'); button.type = 'button'; button.dataset.language = code; button.lang = code; button.tabIndex = -1;
+    button.setAttribute('role', 'menuitemradio'); button.setAttribute('aria-checked', String(code === language));
+    const check = node('span'); check.innerHTML = iconMarkup('check');
+    button.append(node('span', '', label), check); $('language-menu').append(button);
+  }
+  $('language-button').title = `${t('language')} · ${LANGUAGES[language]}`;
 }
 function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
 const measurements = [['thickness', 'thickness-value', 'thickness', 'mm'], ['line-spacing', 'line-spacing-value', 'lineSpacing', 'mm'], ['group-spacing', 'spacing-value', 'spacing', '×'], ['top-space', 'top-space-value', 'topSpace', 'mm']];
@@ -52,6 +56,11 @@ function bindNumber(id, key) {
   $(id).addEventListener('blur', event => { event.target.value = settings[key]; });
 }
 function updateRange(element) { element.style.setProperty('--progress', `${(Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min)) * 100}%`); }
+function positionTemplatesHandle() {
+  const layer = document.querySelector('.templates-layer');
+  if (innerWidth <= 760) layer.style.setProperty('--mobile-handle-top', `${document.querySelector('.preview-area').getBoundingClientRect().top + 8}px`);
+  else layer.style.removeProperty('--mobile-handle-top');
+}
 function fitPreview() {
   if (!layout) return;
   const size = `${layout.width}x${layout.height}`;
@@ -70,6 +79,7 @@ function fitPreview() {
   $('zoom-value').textContent = `${number(Math.round(previewZoom * 100))}%`;
   document.querySelector('.zoom-controls').dataset.orientation = settings.orientation;
   $('zoom-out').disabled = previewZoom <= MIN_ZOOM; $('zoom-in').disabled = previewZoom >= MAX_ZOOM;
+  positionTemplatesHandle();
 }
 function zoomPreview(value) {
   hideZoomHint();
@@ -131,7 +141,7 @@ function templateSettings(template, suggested) {
   if (suggested && template.id === 'choir-piano') value.blocks[1].label = t('presetPiano');
   return value;
 }
-function renderLibrary() { animateReflow($('templates-library'), () => {
+function renderLibrary(animate = true) { const change = () => {
   const saved = $('saved-templates'), suggested = $('suggested-templates'); saved.replaceChildren(); suggested.replaceChildren();
   $('saved-section').hidden = !library.saved.length;
   const visibleSuggested = DEFAULT_TEMPLATES.filter(template => !library.hidden.includes(template.id));
@@ -152,7 +162,7 @@ function renderLibrary() { animateReflow($('templates-library'), () => {
   }
   library.saved.forEach(template => saved.append(card(template, false)));
   visibleSuggested.forEach(template => suggested.append(card(template, true)));
-}); }
+}; if (animate && templatesOpen) animateReflow($('templates-library'), change); else change(); }
 
 function render({ blocks = false, templates = false } = {}) {
   settings = normalizeSettings(settings); layout = createLayout(settings);
@@ -184,19 +194,29 @@ function render({ blocks = false, templates = false } = {}) {
   document.documentElement.style.setProperty('--page-width', `${layout.width}mm`); document.documentElement.style.setProperty('--page-height', `${layout.height}mm`);
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
-  if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary();
+  if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
   write(SETTINGS_KEY, settings); fitPreview();
 }
 
 function setTemplatesOpen(value) {
+  if (value) setLanguageOpen(false);
   templatesOpen = value; render({ templates: value });
-  if (value) $('close-templates').focus();
+  if (value) $('close-templates').focus({ preventScroll: true });
 }
+function setLanguageOpen(value, focus = 'selected') {
+  if (value === languageOpen) return;
+  languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
+  if (value) {
+    const buttons = [...$('language-menu').querySelectorAll('button')];
+    (focus === 'first' ? buttons[0] : focus === 'last' ? buttons.at(-1) : buttons.find(button => button.dataset.language === language)).focus({ preventScroll: true });
+  }
+}
+function closeLanguageMenu(returnFocus = false) { if (returnFocus) $('language-button').focus({ preventScroll: true }); setLanguageOpen(false); }
 function update(key, value, options) { settings[key] = value; render(options); }
 function persistLibrary(successMessage) { const persisted = write(LIBRARY_KEY, library); renderLibrary(); toast(t(persisted ? successMessage : 'noStorage')); return persisted; }
 async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast(t('copied')); return true; }
-  catch { $('copy-text').value = text; if (!$('copy-dialog').open) $('copy-dialog').showModal(); $('copy-text').focus(); $('copy-text').select(); return false; }
+  catch { $('copy-text').value = text; if (!$('copy-dialog').open) openDialog($('copy-dialog')); $('copy-text').focus(); $('copy-text').select(); return false; }
 }
 function restoreFromHash(showMessage = false) {
   if (!location.hash) return;
@@ -204,11 +224,34 @@ function restoreFromHash(showMessage = false) {
   catch { if (showMessage) toast(t('invalidRef')); }
 }
 
-$('language').addEventListener('change', event => { languageChoice = event.target.value; language = detectLanguage(languageChoice, navigator.languages || [navigator.language]); write(LANGUAGE_KEY, languageChoice); translatePage(); render({ blocks: true, templates: true }); });
+$('language-button').addEventListener('click', () => { if (languageOpen) closeLanguageMenu(true); else setLanguageOpen(true); });
+$('language-button').addEventListener('keydown', event => {
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); setLanguageOpen(true, event.key === 'ArrowDown' ? 'first' : 'last'); }
+  if (event.key === 'Escape' && languageOpen) { event.preventDefault(); event.stopPropagation(); closeLanguageMenu(true); }
+});
+$('language-menu').addEventListener('click', event => {
+  const button = event.target.closest('button[data-language]'); if (!button) return;
+  closeLanguageMenu(true); languageChoice = button.dataset.language; language = detectLanguage(languageChoice); write(LANGUAGE_KEY, languageChoice);
+  translatePage(); render({ blocks: true, templates: true });
+});
+$('language-menu').addEventListener('keydown', event => {
+  const buttons = [...$('language-menu').querySelectorAll('button')], index = buttons.indexOf(document.activeElement);
+  const next = { ArrowDown: (index + 1) % buttons.length, ArrowUp: (index + buttons.length - 1) % buttons.length, Home: 0, End: buttons.length - 1 }[event.key];
+  if (next !== undefined) { event.preventDefault(); buttons[next].focus({ preventScroll: true }); }
+  else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeLanguageMenu(true); }
+  else if (event.key === 'Tab') closeLanguageMenu(true);
+  else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    const initial = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()[0];
+    const ordered = [...buttons.slice(index + 1), ...buttons.slice(0, index + 1)], button = ordered.find(item => initial(item.textContent) === initial(event.key));
+    if (button) { event.preventDefault(); button.focus({ preventScroll: true }); }
+  }
+});
+document.addEventListener('pointerdown', event => { if (languageOpen && !event.target.closest('.language-control')) closeLanguageMenu(); });
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));
 for (const [rangeId, valueId, key] of measurements) {
+  bindTouchRange($(rangeId));
   $(rangeId).addEventListener('input', event => update(key, Number(event.target.value)));
   bindNumber(valueId, key);
 }
@@ -248,16 +291,16 @@ $('copy-reference').addEventListener('click', () => copy(encodeReference(setting
 function shareLayout(value, kind = 'current') { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(value); analytics.track('share_requested', { kind }); copy(url.href); }
 $('share-template').addEventListener('click', () => shareLayout(settings));
 $('toggle-templates').addEventListener('click', () => setTemplatesOpen(!templatesOpen));
-$('close-templates').addEventListener('click', () => { setTemplatesOpen(false); $('toggle-templates').focus(); });
+$('close-templates').addEventListener('click', () => { setTemplatesOpen(false); $('toggle-templates').focus({ preventScroll: true }); });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && templatesOpen && !document.querySelector('dialog[open]')) {
-    setTemplatesOpen(false); $('toggle-templates').focus();
+    setTemplatesOpen(false); $('toggle-templates').focus({ preventScroll: true });
   }
 });
-$('save-template').addEventListener('click', () => { $('template-name').value = ''; $('save-message').textContent = ''; $('save-dialog').showModal(); $('template-name').focus(); });
-$('save-form').addEventListener('submit', event => {
+$('save-template').addEventListener('click', () => { $('template-name').value = ''; $('save-message').textContent = ''; openDialog($('save-dialog')); $('template-name').focus(); });
+$('save-form').addEventListener('submit', async event => {
   event.preventDefault(); const name = $('template-name').value.trim(); if (!name) return;
-  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); $('save-dialog').close(); setTemplatesOpen(true); if (persistLibrary('templateSaved')) analytics.track('template_saved', { kind: 'personal' }); }
+  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); if (persistLibrary('templateSaved')) analytics.track('template_saved', { kind: 'personal' }); await closeDialog($('save-dialog')); setTemplatesOpen(true); }
   catch (error) { $('save-message').textContent = t(error.message); $('save-message').classList.add('error'); }
 });
 $('templates-panel').addEventListener('click', event => {
@@ -276,7 +319,7 @@ $('templates-panel').addEventListener('click', event => {
   analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal' });
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
-$('about-button').addEventListener('click', () => $('about-dialog').showModal());
+$('about-button').addEventListener('click', () => openDialog($('about-dialog')));
 $('analytics-excluded').checked = analytics.excluded();
 $('analytics-excluded').addEventListener('change', event => {
   const persisted = analytics.setExcluded(event.target.checked);
@@ -285,7 +328,16 @@ $('analytics-excluded').addEventListener('change', event => {
   if (!persisted) toast(t('analyticsPreferenceTemporary'));
 });
 $('copy-lightning').addEventListener('click', async () => { if (await copy($('lightning-address').value)) $('about-dialog').querySelector('.field-hint').textContent = t('copied'); });
-document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => $(button.dataset.close).close()));
+document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeDialog($(button.dataset.close))));
+document.querySelectorAll('dialog').forEach(dialog => {
+  dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(dialog); });
+  dialog.addEventListener('click', event => {
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(dialog);
+  });
+});
+document.querySelectorAll('.configuration-tools details').forEach(bindAnimatedDetails);
 $('zoom-in').addEventListener('click', () => zoomPreview(previewZoom * 1.25));
 $('zoom-out').addEventListener('click', () => zoomPreview(previewZoom / 1.25));
 $('zoom-reset').addEventListener('click', () => zoomPreview(MIN_ZOOM));
@@ -317,6 +369,7 @@ $('paper-stage').addEventListener('keydown', event => {
 });
 $('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
 window.addEventListener('beforeprint', () => render());
+window.addEventListener('scroll', positionTemplatesHandle, { passive: true });
 window.addEventListener('hashchange', () => restoreFromHash(true));
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));

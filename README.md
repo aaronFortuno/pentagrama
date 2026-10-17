@@ -20,6 +20,8 @@ El nombre de pentagrames que hi cap depèn del format, l’espai entre línies, 
 
 El sidebar combina format i orientació en una fila, amb icones Lucide, i mostra quantitat i agrupació en paral·lel. Els valors de gruix, espai entre línies, separació relativa entre grups i espai superior es poden escriure directament o modificar amb el lliscador. El multiplicador entre grups és respecte de l’espai normal entre pentagrames.
 
+En pantalles tàctils, els lliscadors esperen que s’aixequi el dit per confirmar un toc. Un gest horitzontal ajusta el valor en directe, mentre que un gest vertical permet desplaçar la pàgina sense modificar-lo. Si el navegador cancel·la l’ajust, es recupera el valor inicial. El ratolí i el teclat mantenen el comportament natiu. Els botons segmentats destaquen la selecció amb fons verd i una marca als modes de distribució.
+
 En mode blocs les distàncies són exactes en mil·límetres, entre l’última línia d’un pentagrama i la primera del següent. El conjunt queda centrat dins de l’espai disponible, després de reservar l’espai superior extra. Els camps sense efecte s’oculten: separació interna d’un bloc amb un sol pentagrama, espai després de l’últim bloc i separació entre conjunts quan només n’hi ha un. Els valors es conserven i reapareixen quan tornen a ser aplicables.
 
 ## Previsualitzar i imprimir
@@ -34,7 +36,7 @@ Per defecte, el full només conté les línies. A **Peu del full** pots activar 
 
 ## Plantilles sense compte
 
-El tirador **Plantilles** de la dreta obre un panell superposat, amb desplaçament propi. Una sola fila superior reuneix desar, compartir el full actual i tancar. Les plantilles es mostren en una graella de dues columnes, amb el nom visible i els detalls i les accions en passar-hi per sobre o donar-hi focus amb el teclat. En dispositius tàctils, les accions són visibles directament. Cada targeta permet compartir aquella plantilla sense aplicar-la al full actual. El panell es tanca amb el tirador, la creu o Esc.
+El tirador **Plantilles** de la dreta obre un panell superposat, amb desplaçament propi. Tirador i contingut comparteixen un únic moviment. Una sola fila superior reuneix desar, compartir el full actual i tancar. Les plantilles es mostren en una graella de dues columnes, amb miniatures que omplen l’amplada interior de la targeta; els fulls verticals queden retallats per sota. El nom és visible, i els detalls i les accions apareixen en passar-hi per sobre o donar-hi focus amb el teclat. En dispositius tàctils, les accions són visibles directament. Cada targeta permet compartir aquella plantilla sense aplicar-la al full actual. El panell es tanca amb el tirador, la creu o Esc.
 
 Inclou models per a piano, coral SATB, iniciació, trio, SATB amb piano i orquestra en A3. El model orquestral és una proposta editable amb 23 pentagrames distribuïts en sis blocs.
 
@@ -61,7 +63,7 @@ Les referències impreses codifiquen la geometria. Els enllaços compartits tamb
 
 ## Idiomes
 
-Català, castellà, anglès, alemany, francès, italià, portuguès i neerlandès. Quan encara no s’ha triat cap idioma, es consulten les preferències del navegador i es reconeixen variants regionals, com `de-AT` o `pt-BR`. Si no hi ha cap idioma compatible, s’utilitza l’anglès. La icona Lucide d’idiomes obre un selector natiu amb cadascun dels vuit idiomes una sola vegada, sense una entrada «Automàtic» addicional. El selector conserva el teclat i l’accessibilitat del navegador; l’ajuda de la icona indica l’idioma actual. La tria manual queda guardada al navegador.
+Català, castellà, anglès, alemany, francès, italià, portuguès i neerlandès. Quan encara no s’ha triat cap idioma, es consulten les preferències del navegador i es reconeixen variants regionals, com `de-AT` o `pt-BR`. Si no hi ha cap idioma compatible, s’utilitza l’anglès. La icona Lucide d’idiomes obre un menú amb l’estil del web i cadascun dels vuit idiomes una sola vegada, sense una entrada «Automàtic» addicional. L’idioma actual es distingeix amb fons verd i una marca. El menú segueix el patró de botó de menú de WAI-ARIA: fletxes, Inici, Fi i inicials per navegar; Retorn o espai per triar; Esc per tancar i tornar a la icona. Tab continua la navegació habitual. L’ajuda de la icona indica l’idioma actual i la tria manual queda guardada al navegador.
 
 Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma. Les proves comproven que no faltin missatges ni variables. Aquesta versió comparteix una sola adreça web: les pàgines indexables per idioma es poden afegir en una fase posterior de SEO.
 
@@ -69,11 +71,11 @@ Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma.
 
 El peu obre un petit diàleg amb la història del projecte i l’adreça Lightning `aptswim903@walletofsatoshi.com` per a aportacions voluntàries. El web permet copiar-la; no es connecta a cap cartera ni processa pagaments. La informació de suport no apareix als fulls ni als PDF.
 
-El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 18 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos. El mateix comandament accepta un SHA de commit com a argument per reproduir una versió concreta.
+El mateix diàleg enllaça al repositori per fer-ne forks o proposar pull requests i inclou els crèdits de [Lucide](https://lucide.dev/), la llibreria d’icones utilitzada. El subconjunt de 19 SVG es distribueix a `docs/vendor/lucide.js`, amb la procedència fixada a un commit i la llicència completa a `docs/vendor/lucide-LICENSE.txt`. No requereix CDN ni connexions externes en carregar el web. Per actualitzar-lo explícitament: `node tools/vendor-lucide.mjs`, seguit de la preparació de versió dels recursos. El mateix comandament accepta un SHA de commit com a argument per reproduir una versió concreta.
 
 El diàleg també acredita [Noto Serif](https://github.com/notofonts/latin-greek-cyrillic), sota SIL OFL 1.1. El subconjunt ASCII del pes Thin 100 es distribueix localment: WOFF2 per al navegador, TrueType per incrustar al PDF i les mateixes mètriques per ajustar els peus. La procedència i la llicència són a `docs/vendor/noto-serif-SOURCE.md` i `docs/vendor/noto-serif-OFL.txt`. Per regenerar-lo, `tools/vendor-footer-font.py` requereix Python amb `fonttools` i `brotli`; aquestes eines no són dependències del web ni de les proves habituals.
 
-Les transicions comparteixen `--motion-duration` (220 ms) i `--motion-ease` a `docs/style.css`. La preferència de moviment reduït les desactiva; la reordenació de targetes llegeix aquests mateixos valors.
+Les transicions comparteixen `--motion-duration` (220 ms) i `--motion-ease` a `docs/style.css`, inclosos els diàlegs, el menú d’idiomes, el desplegable de configuració i la reordenació de targetes. La preferència de moviment reduït les desactiva. Els diàlegs es tanquen amb animació des de la creu, Cancel·la, Esc o el fons exterior, i retornen el focus al control que els ha obert.
 
 ## Estadístiques
 
@@ -136,7 +138,7 @@ Obre **http://127.0.0.1:4173/pentagrama/**.
 npm test
 ```
 
-Les proves comproven compatibilitat P1, formats i orientacions, distribucions vàlides i desbordaments, blocs desiguals, referències P2, enllaços amb noms Unicode, PDF vectorial, plantilles locals i cobertura de les vuit traduccions.
+Les proves comproven compatibilitat P1, formats i orientacions, distribucions vàlides i desbordaments, blocs desiguals, referències P2, enllaços amb noms Unicode, PDF vectorial, plantilles locals, cobertura de les vuit traduccions i gestos dels lliscadors: toc, desplaçament vertical, ajust horitzontal, cancel·lació i passos fraccionaris.
 
 Fitxers principals:
 
@@ -146,7 +148,8 @@ Fitxers principals:
 - `docs/library.js`: plantilles suggerides i gestió de les personals.
 - `docs/i18n.js`: idiomes, detecció i missatges.
 - `docs/icons.js`: ús del subconjunt local d’icones Lucide.
-- `docs/motion.js`: transicions de reordenació de targetes.
+- `docs/motion.js`: transicions compartides de diàlegs, menú, desplegable i targetes.
+- `docs/touch-range.js`: gestos tàctils dels lliscadors sense interferir amb el desplaçament vertical.
 - `docs/app.js`: interfície i persistència local.
 
 ## Llicència
