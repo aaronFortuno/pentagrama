@@ -1,4 +1,4 @@
-import { DEFAULTS, normalizeSettings } from './layout.js?v=1.8.2';
+import { DEFAULTS, normalizeSettings } from './layout.js?v=1.9.0';
 
 export const DEFAULT_TEMPLATES = [
   { id: 'blank', key: 'presetBlank', settings: { ...DEFAULTS, group: 0 } },

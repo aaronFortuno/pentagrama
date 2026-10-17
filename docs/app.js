@@ -1,13 +1,13 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.8.2';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.8.2';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.8.2';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.8.2';
-import { iconMarkup, renderIcons } from './icons.js?v=1.8.2';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.8.2';
-import { bindTouchRange } from './touch-range.js?v=1.8.2';
-import { analytics } from './analytics.js?v=1.8.2';
-import { createLogoNote } from './logo-note.js?v=1.8.2';
-import { connectLogoSound } from './glockenspiel.js?v=1.8.2';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.9.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.9.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.9.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.9.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.9.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.9.0';
+import { bindTouchRange } from './touch-range.js?v=1.9.0';
+import { analytics } from './analytics.js?v=1.9.0';
+import { createLogoNote } from './logo-note.js?v=1.9.0';
+import { connectLogoSound } from './glockenspiel.js?v=1.9.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -340,7 +340,22 @@ document.querySelectorAll('dialog').forEach(dialog => {
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(dialog);
   });
 });
-document.querySelectorAll('.configuration-tools details, .privacy-details').forEach(bindAnimatedDetails);
+const settingsAccordion = $('settings-accordion'), settingsDetails = new Map();
+for (const details of settingsAccordion.children) {
+  settingsDetails.set(details, bindAnimatedDetails(details, { onOpen() {
+    for (const [other, controller] of settingsDetails) if (other !== details) controller.setOpen(false);
+  } }));
+}
+// Reserve every heading before giving the open section the remaining height.
+// Only its contents scroll when a long block layout exceeds the viewport.
+function sizeSettingsAccordion() {
+  const headings = [...settingsDetails.keys()].reduce((height, details) => height + details.querySelector('summary').getBoundingClientRect().height + 1, 0);
+  settingsAccordion.style.setProperty('--settings-content-height', `${Math.max(0, settingsAccordion.clientHeight - headings)}px`);
+}
+const settingsResize = new ResizeObserver(sizeSettingsAccordion);
+settingsResize.observe(settingsAccordion);
+for (const details of settingsDetails.keys()) settingsResize.observe(details.querySelector('summary'));
+document.querySelectorAll('.privacy-details').forEach(details => bindAnimatedDetails(details));
 $('zoom-in').addEventListener('click', () => zoomPreview(previewZoom * 1.25));
 $('zoom-out').addEventListener('click', () => zoomPreview(previewZoom / 1.25));
 $('zoom-reset').addEventListener('click', () => zoomPreview(MIN_ZOOM));

@@ -41,20 +41,32 @@ export function showPopover(element, visible) {
   animate(element, [from, visible ? { opacity: 1, transform: 'none' } : { opacity: 0, transform: 'translateY(-6px) scale(.98)' }], () => { element.hidden = !visible; });
 }
 
-export function bindAnimatedDetails(details) {
+export function bindAnimatedDetails(details, { onOpen } = {}) {
   const summary = details.querySelector('summary'), content = document.createElement('div');
   content.className = 'details-content';
   while (summary.nextSibling) content.append(summary.nextSibling);
   details.append(content);
-  summary.addEventListener('click', event => {
-    event.preventDefault();
-    const opening = !details.open || details.dataset.motion === 'closing';
+  let expanded = details.open;
+  summary.setAttribute('aria-expanded', String(expanded)); content.inert = !expanded;
+  function setOpen(opening) {
+    if (expanded === opening) return;
+    expanded = opening;
+    if (opening) onOpen?.();
     const from = details.open ? content.getBoundingClientRect().height : 0;
+    const opacity = details.open ? getComputedStyle(content).opacity : 0;
     details.open = true; details.dataset.motion = opening ? 'opening' : 'closing'; content.style.overflow = 'hidden';
-    animate(content, [{ height: `${from}px`, opacity: opening && !from ? 0 : 1 }, { height: `${opening ? content.scrollHeight : 0}px`, opacity: opening ? 1 : 0 }], () => {
+    summary.setAttribute('aria-expanded', String(opening)); content.inert = !opening;
+    if (!opening && content.contains(document.activeElement)) summary.focus({ preventScroll: true });
+    const limit = parseFloat(getComputedStyle(content).maxHeight);
+    const height = Math.min(content.scrollHeight, Number.isFinite(limit) ? limit : Infinity);
+    animate(content, [{ height: `${from}px`, opacity }, { height: `${opening ? height : 0}px`, opacity: opening ? 1 : 0 }], () => {
       details.open = opening; content.style.overflow = ''; delete details.dataset.motion;
     });
+  }
+  summary.addEventListener('click', event => {
+    event.preventDefault(); setOpen(!expanded);
   });
+  return { setOpen };
 }
 
 // Animate surviving cards into their new positions after library changes.

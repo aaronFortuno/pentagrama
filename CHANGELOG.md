@@ -1,5 +1,13 @@
 # Canvis
 
+## 1.9.0
+
+- Sidebar amb cinc seccions replegables: distribució, línies del pentagrama, espai superior extra, peu del full i codi de configuració. La distribució s’obre d’entrada; el format i la impressió sempre són visibles.
+- Obrir una secció replega l’anterior amb la transició compartida de 220 ms, també amb teclat i respectant el moviment reduït.
+- Alçada del contingut ajustada a l’espai disponible: els blocs llargs es desplacen dins de la seva secció, mantenint accessibles les altres capçaleres.
+- Espaiat més compacte en pantalles de poca alçada i comportament natural al mòbil, sense desplaçaments interiors.
+- Nou títol de secció traduït als vuit idiomes, sense canvis a les plantilles ni a la impressió.
+
 ## 1.8.2
 
 - Resum de privadesa més breu als vuit idiomes, amb les accions explicades en línia i els detalls tècnics a la documentació.

@@ -27,6 +27,7 @@ landscape|Horitzontal|Landscape|Horizontal|Querformat|Paysage|Orizzontale|Horizo
 thickness|Gruix de les línies|Line thickness|Grosor de las líneas|Linienstärke|Épaisseur des lignes|Spessore delle linee|Espessura das linhas|Lijndikte
 thin|Fines|Thin|Finas|Fein|Fines|Sottili|Finas|Dun
 thick|Gruixudes|Thick|Gruesas|Kräftig|Épaisses|Spesse|Grossas|Dik
+staffLines|Línies del pentagrama|Staff lines|Líneas del pentagrama|Notenlinien|Lignes de la portée|Linee del pentagramma|Linhas da pauta|Notenlijnen
 lineSpacing|Espai entre línies|Staff line spacing|Espacio entre líneas|Abstand der Notenlinien|Interligne de la portée|Spazio tra le linee|Espaço entre linhas|Afstand tussen notenlijnen
 lineSpacingHint|Distància entre dues línies del mateix pentagrama.|Distance between two lines within a staff.|Distancia entre dos líneas del mismo pentagrama.|Abstand zwischen zwei Linien einer Notenzeile.|Distance entre deux lignes d’une même portée.|Distanza tra due linee dello stesso pentagramma.|Distância entre duas linhas da mesma pauta.|Afstand tussen twee lijnen van dezelfde notenbalk.
 distribution|Distribució|Layout|Distribución|Anordnung|Disposition|Disposizione|Distribuição|Indeling

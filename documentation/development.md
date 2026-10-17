@@ -56,6 +56,12 @@ Els missatges són a `docs/i18n.js`, amb una entrada per idioma. Les proves comp
 
 La interfície comparteix una sola URL; actualment no hi ha pàgines indexables separades per idioma.
 
+## Sidebar i desplegables
+
+El format del paper i la impressió es mantenen visibles. `#settings-accordion` conté cinc desplegables natius; només la distribució s’obre inicialment. `bindAnimatedDetails()` retorna `setOpen()` i accepta `onOpen` per replegar els altres desplegables amb la mateixa transició, sense interferir amb els detalls de privadesa del diàleg V4V. El contingut replegat queda inert i els canvis ràpids reprenen l’animació des de la posició actual.
+
+Un `ResizeObserver` reserva l’alçada de totes les capçaleres i limita el contingut obert a l’espai restant. En pantalles baixes o configuracions amb molts blocs, només es desplaça aquest contingut. Al mòbil s’elimina aquest límit i la pàgina conserva el desplaçament natural. L’estat dels desplegables no forma part de la configuració del full, de les referències ni de les plantilles desades.
+
 ## Nota del logotip
 
 `docs/logo-note.js` és independent del generador de fulls. Calcula una trajectòria parabòlica amb gravetat constant i deforma el cap de nota abans de l’impuls i en aterrar. El petit rebot perd altura i acaba amb una oscil·lació amortida. Tot es dibuixa amb transformacions dels dos grups SVG; les línies del logotip i el layout del web es mantenen fixos.
