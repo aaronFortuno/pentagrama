@@ -1,108 +1,196 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, renderSheet } from './layout.js';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js';
+import { createPdf } from './pdf.js';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js';
 
-const $ = (id) => document.getElementById(id);
-const storageKey = 'pentagrama.settings.v1';
-let settings = { ...DEFAULTS };
-try { const saved = JSON.parse(localStorage.getItem(storageKey)); if (saved && typeof saved === 'object') settings = normalizeSettings(saved); } catch { /* The page also works with browser storage disabled. */ }
-const caNumber = new Intl.NumberFormat('ca-ES', { maximumFractionDigits: 2 });
-let toastTimer;
+const $ = id => document.getElementById(id);
+const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
+function read(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }
+function write(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
+let settings = normalizeSettings(read(SETTINGS_KEY, read('pentagrama.settings.v1', DEFAULTS)));
+let library = normalizeLibrary(read(LIBRARY_KEY, {}));
+let languageChoice = read(LANGUAGE_KEY, 'auto');
+if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
+let language = detectLanguage(languageChoice, navigator.languages || [navigator.language]);
+let templatesOpen = false, toastTimer, layout;
+const t = (key, variables) => translate(language, key, variables);
+const number = value => new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
+const staffCount = count => t(count === 1 ? 'oneStaff' : 'staffCount', { n: count });
 
 function toast(message) {
-  $('toast').textContent = message;
-  $('toast').classList.add('visible');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 3200);
+  $('toast').textContent = message; $('toast').classList.add('visible');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 3500);
+}
+function translatePage() {
+  document.documentElement.lang = language; document.title = t('title');
+  document.querySelector('meta[name=description]').content = t('description');
+  document.querySelectorAll('[data-i18n]').forEach(element => { element.textContent = t(element.dataset.i18n); });
+  document.querySelectorAll('[data-aria]').forEach(element => { element.setAttribute('aria-label', t(element.dataset.aria)); });
+  document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
+  $('language').replaceChildren(new Option(`${t('automatic')} · ${LANGUAGES[detectLanguage('auto', navigator.languages || [navigator.language])]}`, 'auto'));
+  for (const [code, label] of Object.entries(LANGUAGES)) $('language').add(new Option(label, code));
+  $('language').value = languageChoice; $('language').setAttribute('aria-label', t('language'));
+}
+function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
+function updateRange(element) { element.style.setProperty('--progress', `${(Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min)) * 100}%`); }
+function fitPreview() {
+  if (!layout) return;
+  const stage = $('paper-stage'), style = getComputedStyle(stage);
+  const availableWidth = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  const availableHeight = stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+  const scale = Math.max(0, Math.min(availableWidth / layout.width, availableHeight / layout.height));
+  $('preview-paper').style.width = `${layout.width * scale}px`; $('preview-paper').style.height = `${layout.height * scale}px`;
+}
+function node(tag, className, text) { const element = document.createElement(tag); if (className) element.className = className; if (text !== undefined) element.textContent = text; return element; }
+function icon(text, title, action, index) { const button = node('button', 'icon-button', text); button.type = 'button'; button.title = title; button.setAttribute('aria-label', title); button.dataset.action = action; button.dataset.index = index; return button; }
+
+function renderBlocks() {
+  $('block-list').replaceChildren();
+  settings.blocks.forEach((block, index) => {
+    const card = node('div', 'block-card'), heading = node('div', 'block-heading');
+    const name = node('input'); name.type = 'text'; name.value = block.label; name.maxLength = 60; name.placeholder = t('block', { n: index + 1 }); name.setAttribute('aria-label', `${t('blockName')} ${index + 1}`); name.dataset.field = 'label'; name.dataset.index = index;
+    const up = icon('↑', t('moveUp'), 'up', index), down = icon('↓', t('moveDown'), 'down', index), remove = icon('×', t('remove'), 'remove', index);
+    up.disabled = index === 0; down.disabled = index === settings.blocks.length - 1; remove.disabled = settings.blocks.length === 1;
+    heading.append(name, up, down, remove); card.append(heading);
+    const fields = node('div', 'block-fields');
+    for (const [key, labelKey, max, step] of [['count', 'blockCount', 32, 1], ['inside', 'inside', 40, 0.1], ['after', 'after', 60, 0.1]]) {
+      const label = node('label'), input = node('input'); label.append(node('span', '', t(labelKey)));
+      input.type = 'number'; input.min = 1; input.max = max; input.step = step; input.value = block[key]; input.dataset.field = key; input.dataset.index = index;
+      input.setAttribute('aria-label', `${t('block', { n: index + 1 })}: ${t(labelKey)}`);
+      if (key === 'after' && index === settings.blocks.length - 1) input.disabled = true;
+      label.append(input); fields.append(label);
+    }
+    card.append(fields); $('block-list').append(card);
+  });
+  $('add-block').disabled = settings.blocks.length >= 24;
 }
 
-function updateRange(element) {
-  const progress = (Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min)) * 100;
-  element.style.setProperty('--progress', `${progress}%`);
+function renderLibrary() {
+  const saved = $('saved-templates'), suggested = $('suggested-templates'); saved.replaceChildren(); suggested.replaceChildren();
+  if (!library.saved.length) saved.append(node('p', 'field-hint', t('emptySaved')));
+  function card(template, isSuggested) {
+    const name = isSuggested ? t(template.key) : template.name, s = normalizeSettings(template.settings), l = createLayout(s);
+    const wrapper = node('div', 'template-card'), load = node('button', 'template-load'); load.type = 'button'; load.dataset.action = 'load'; load.dataset.id = template.id; load.dataset.suggested = String(isSuggested); load.setAttribute('aria-label', name);
+    const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false });
+    const copy = node('span', 'template-copy'); copy.append(node('span', 'template-name', name), node('span', 'template-description', `${s.paper === 'LETTER' ? 'Letter' : s.paper} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`));
+    load.append(thumbnail, copy);
+    const remove = icon('×', `${t('remove')}: ${name}`, 'delete', 0); remove.dataset.id = template.id; remove.dataset.suggested = String(isSuggested);
+    wrapper.append(load, remove); return wrapper;
+  }
+  library.saved.forEach(template => saved.append(card(template, false)));
+  DEFAULT_TEMPLATES.filter(template => !library.hidden.includes(template.id)).forEach(template => suggested.append(card(template, true)));
 }
 
-function groupDescription() {
-  if (!settings.group) return 'Espai uniforme entre tots els pentagrames.';
-  const whole = Math.floor(settings.count / settings.group), remaining = settings.count % settings.group;
-  return `${whole} ${whole === 1 ? 'bloc' : 'blocs'} de ${settings.group} pentagrames${remaining ? ` i un bloc de ${remaining}` : ''}.`;
+function render({ blocks = false, templates = false } = {}) {
+  settings = normalizeSettings(settings); layout = createLayout(settings);
+  setValue('paper-size', settings.paper); setValue('thickness', settings.thickness); setValue('line-spacing', settings.lineSpacing); setValue('staff-count', settings.count); setValue('group-spacing', settings.spacing); setValue('systems', settings.systems); setValue('system-gap', settings.systemGap);
+  $('thickness-value').textContent = `${number(settings.thickness)} mm`; $('line-spacing-value').textContent = `${number(settings.lineSpacing)} mm`; $('spacing-value').textContent = `${number(settings.spacing)}×`;
+  $('portrait-button').setAttribute('aria-pressed', String(settings.orientation === 'portrait')); $('landscape-button').setAttribute('aria-pressed', String(settings.orientation === 'landscape'));
+  $('simple-mode').setAttribute('aria-pressed', String(settings.mode === 'simple')); $('blocks-mode').setAttribute('aria-pressed', String(settings.mode === 'blocks'));
+  $('simple-controls').hidden = settings.mode !== 'simple'; $('blocks-controls').hidden = settings.mode !== 'blocks';
+  $('decrease-count').disabled = settings.count <= 1; $('increase-count').disabled = settings.count >= 64;
+  $('group-size').replaceChildren(new Option(t('none'), '0'));
+  for (let i = 2; i < settings.count; i++) $('group-size').add(new Option(t('groupEvery', { n: i }), String(i)));
+  $('group-size').value = settings.group; $('group-size').disabled = settings.count < 3;
+  $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1;
+  $('show-reference').checked = settings.reference; $('current-reference').value = encodeReference(settings);
+  const sheet = renderSheet(settings); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = layout.valid ? sheet : '';
+  $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm`);
+  const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
+  $('layout-summary').textContent = `${staffCount(layout.count)} · ${grouping} · ${number(settings.thickness)} mm`;
+  $('layout-summary').title = $('layout-summary').textContent;
+  $('paper-dimensions').textContent = `${settings.paper === 'LETTER' ? 'Letter' : settings.paper} · ${number(layout.width)} × ${number(layout.height)} mm`;
+  $('layout-warning').hidden = layout.valid; $('pdf-button').disabled = !layout.valid; $('print-button').disabled = !layout.valid;
+  $('fit-button').disabled = !createLayout(fitSettings(settings)).valid;
+  document.documentElement.style.setProperty('--page-width', `${layout.width}mm`); document.documentElement.style.setProperty('--page-height', `${layout.height}mm`);
+  $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
+  ['thickness', 'line-spacing', 'group-spacing'].forEach(id => updateRange($(id)));
+  $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').hidden = !templatesOpen; $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
+  if (blocks) renderBlocks(); if (templates) renderLibrary();
+  write(SETTINGS_KEY, settings); fitPreview();
 }
 
-function render() {
-  settings = normalizeSettings(settings);
-  $('thickness').value = settings.thickness;
-  $('thickness-value').textContent = `${caNumber.format(settings.thickness)} mm`;
-  $('staff-count').value = settings.count;
-  $('decrease-count').disabled = settings.count <= 1;
-  $('increase-count').disabled = settings.count >= 24;
-  const select = $('group-size');
-  select.replaceChildren(new Option('Sense agrupar', '0'));
-  for (let i = 2; i < settings.count; i++) select.add(new Option(`De ${i} en ${i}`, String(i)));
-  select.value = settings.group;
-  select.disabled = settings.count < 3;
-  $('group-spacing').value = settings.spacing;
-  $('spacing-value').textContent = `${caNumber.format(settings.spacing)}×`;
-  $('group-spacing-control').hidden = !settings.group;
-  $('group-hint').textContent = groupDescription();
-  $('show-reference').checked = settings.reference;
-  const reference = encodeReference(settings);
-  $('current-reference').textContent = reference;
-  const sheet = renderSheet(settings);
-  $('preview-paper').innerHTML = sheet;
-  $('print-root').innerHTML = sheet;
-  const groupText = settings.group ? `Grups de ${settings.group}` : 'Sense agrupar';
-  $('layout-summary').textContent = `${settings.count} ${settings.count === 1 ? 'pentagrama' : 'pentagrames'} · ${groupText} · Línia de ${caNumber.format(settings.thickness)} mm`;
-  $('preview-paper').setAttribute('aria-label', `Full A4 amb ${settings.count} pentagrames. ${groupDescription()} Gruix de ${caNumber.format(settings.thickness)} mil·límetres.${settings.reference ? ' Amb referència al peu.' : ''}`);
-  updateRange($('thickness'));
-  updateRange($('group-spacing'));
-  try { localStorage.setItem(storageKey, JSON.stringify(settings)); } catch { /* Storage is optional. */ }
+function setTemplatesOpen(value) { templatesOpen = value; render({ templates: value }); }
+function update(key, value, options) { settings[key] = value; render(options); }
+function persistLibrary(successMessage) { const persisted = write(LIBRARY_KEY, library); renderLibrary(); toast(t(persisted ? successMessage : 'noStorage')); }
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); toast(t('copied')); return true; }
+  catch { $('copy-text').value = text; if (!$('copy-dialog').open) $('copy-dialog').showModal(); $('copy-text').focus(); $('copy-text').select(); return false; }
+}
+function restoreFromHash(showMessage = false) {
+  if (!location.hash) return;
+  try { const restored = decodeShareHash(location.hash.slice(1)); settings = { ...restored, reference: settings.reference }; if (showMessage) { render({ blocks: true }); toast(t('restored')); } }
+  catch { if (showMessage) toast(t('invalidRef')); }
 }
 
-$('thickness').addEventListener('input', event => { settings.thickness = Number(event.target.value); render(); });
-$('group-spacing').addEventListener('input', event => { settings.spacing = Number(event.target.value); render(); });
-$('group-size').addEventListener('change', event => { settings.group = Number(event.target.value); render(); });
-$('show-reference').addEventListener('change', event => { settings.reference = event.target.checked; render(); });
-$('staff-count').addEventListener('input', event => {
-  const value = Number(event.target.value);
-  if (event.target.value !== '' && Number.isInteger(value) && value >= 1 && value <= 24) { settings.count = value; render(); }
+$('language').addEventListener('change', event => { languageChoice = event.target.value; language = detectLanguage(languageChoice, navigator.languages || [navigator.language]); write(LANGUAGE_KEY, languageChoice); translatePage(); render({ blocks: true, templates: true }); });
+$('paper-size').addEventListener('change', event => update('paper', event.target.value));
+$('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
+$('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));
+for (const [id, key] of [['thickness', 'thickness'], ['line-spacing', 'lineSpacing'], ['group-spacing', 'spacing']]) $(id).addEventListener('input', event => update(key, Number(event.target.value)));
+$('group-size').addEventListener('change', event => update('group', Number(event.target.value)));
+$('show-reference').addEventListener('change', event => update('reference', event.target.checked));
+$('staff-count').addEventListener('input', event => { const n = Number(event.target.value); if (event.target.value && Number.isInteger(n) && n >= 1 && n <= 64) update('count', n); });
+$('staff-count').addEventListener('change', event => { if (event.target.value !== '') settings.count = Number(event.target.value); render(); });
+$('decrease-count').addEventListener('click', () => update('count', settings.count - 1));
+$('increase-count').addEventListener('click', () => update('count', settings.count + 1));
+$('simple-mode').addEventListener('click', () => update('mode', 'simple'));
+$('blocks-mode').addEventListener('click', () => update('mode', 'blocks', { blocks: true }));
+$('block-list').addEventListener('input', event => {
+  const { field, index } = event.target.dataset; if (!field || !settings.blocks[index]) return;
+  if (field !== 'label' && event.target.value === '') return;
+  settings.blocks[index][field] = field === 'label' ? event.target.value : Number(event.target.value); render();
 });
-$('staff-count').addEventListener('change', event => {
-  if (event.target.value.trim() !== '' && Number.isFinite(Number(event.target.value))) settings.count = Number(event.target.value);
-  render();
+$('block-list').addEventListener('focusout', event => { const { field, index } = event.target.dataset; if (field && settings.blocks[index]) event.target.value = settings.blocks[index][field]; });
+$('block-list').addEventListener('click', event => {
+  const button = event.target.closest('button[data-action]'); if (!button) return;
+  const index = Number(button.dataset.index), action = button.dataset.action;
+  if (action === 'remove' && settings.blocks.length > 1) settings.blocks.splice(index, 1);
+  else if (action === 'up' && index > 0) [settings.blocks[index - 1], settings.blocks[index]] = [settings.blocks[index], settings.blocks[index - 1]];
+  else if (action === 'down' && index < settings.blocks.length - 1) [settings.blocks[index + 1], settings.blocks[index]] = [settings.blocks[index], settings.blocks[index + 1]];
+  render({ blocks: true });
 });
-$('decrease-count').addEventListener('click', () => { settings.count--; render(); });
-$('increase-count').addEventListener('click', () => { settings.count++; render(); });
-$('reset-button').addEventListener('click', () => { settings = { ...DEFAULTS }; $('restore-message').textContent = ''; $('reference-input').value = ''; render(); toast('S’ha restablert el full inicial.'); });
+$('add-block').addEventListener('click', () => { if (settings.blocks.length < 24) settings.blocks.push({ label: '', count: 2, inside: 8, after: 14 }); render({ blocks: true }); });
+for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) $(id).addEventListener('change', event => update(key, Number(event.target.value)));
+$('fit-button').addEventListener('click', () => { settings = fitSettings(settings); render({ blocks: true }); });
+$('reset-button').addEventListener('click', () => { settings = normalizeSettings(DEFAULTS); $('restore-message').textContent = ''; $('reference-input').value = ''; render({ blocks: true }); toast(t('resetDone')); });
 $('restore-form').addEventListener('submit', event => {
   event.preventDefault();
-  try {
-    const restored = decodeReference($('reference-input').value);
-    settings = { ...restored, reference: settings.reference };
-    render();
-    $('restore-message').textContent = 'Configuració recuperada.';
-    $('restore-message').classList.remove('error');
-    $('reference-input').removeAttribute('aria-invalid');
-    toast('Ja tens el full amb aquesta configuració.');
-  } catch (error) {
-    $('restore-message').textContent = error.message;
-    $('restore-message').classList.add('error');
-    $('reference-input').setAttribute('aria-invalid', 'true');
-  }
+  try { const restored = decodeReference($('reference-input').value); settings = { ...restored, reference: settings.reference }; render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
+  catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
-$('copy-reference').addEventListener('click', async () => {
-  const reference = encodeReference(settings);
-  try {
-    await navigator.clipboard.writeText(reference);
-    toast('Referència copiada.');
-  } catch {
-    $('restore-details').open = true;
-    $('reference-input').value = reference;
-    $('reference-input').focus();
-    $('reference-input').select();
-    toast('Selecciona i copia la referència.');
-  }
+$('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
+$('share-template').addEventListener('click', () => { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(settings); copy(url.href); });
+$('toggle-templates').addEventListener('click', () => setTemplatesOpen(!templatesOpen));
+$('close-templates').addEventListener('click', () => { setTemplatesOpen(false); $('toggle-templates').focus(); });
+$('save-template').addEventListener('click', () => { $('template-name').value = ''; $('save-message').textContent = ''; $('save-dialog').showModal(); $('template-name').focus(); });
+$('save-form').addEventListener('submit', event => {
+  event.preventDefault(); const name = $('template-name').value.trim(); if (!name) return;
+  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); $('save-dialog').close(); setTemplatesOpen(true); persistLibrary('templateSaved'); }
+  catch (error) { $('save-message').textContent = t(error.message); $('save-message').classList.add('error'); }
 });
-$('print-button').addEventListener('click', () => {
-  $('staff-count').blur();
-  render();
-  window.print();
+$('templates-panel').addEventListener('click', event => {
+  const button = event.target.closest('button[data-id]'); if (!button) return;
+  const suggested = button.dataset.suggested === 'true', id = button.dataset.id;
+  if (button.dataset.action === 'delete') { library = removeTemplate(library, id, suggested); persistLibrary('templateRemoved'); return; }
+  const template = (suggested ? DEFAULT_TEMPLATES : library.saved).find(item => item.id === id); if (!template) return;
+  settings = normalizeSettings(template.settings);
+  if (suggested && id === 'orchestra') ['woodwinds', 'brass', 'percussion', 'harp', 'presetPiano', 'strings'].forEach((key, i) => { settings.blocks[i].label = t(key); });
+  if (suggested && id === 'choir-piano') settings.blocks[1].label = t('presetPiano');
+  render({ blocks: true });
 });
-window.addEventListener('beforeprint', render);
-render();
+$('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
+$('about-button').addEventListener('click', () => $('about-dialog').showModal());
+$('copy-lightning').addEventListener('click', async () => { if (await copy($('lightning-address').value)) $('about-dialog').querySelector('.field-hint').textContent = t('copied'); });
+document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => $(button.dataset.close).close()));
+$('pdf-button').addEventListener('click', () => {
+  if (!layout.valid) { toast(t('layoutInvalid')); return; }
+  const data = createPdf(settings), url = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
+  const link = node('a'); link.href = url; link.download = `pentagrama-${settings.paper.toLowerCase()}-${settings.orientation}-${layout.count}.pdf`; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
+});
+$('print-button').addEventListener('click', () => { document.activeElement?.blur(); render(); if (layout.valid) window.print(); });
+window.addEventListener('beforeprint', () => render());
+window.addEventListener('hashchange', () => restoreFromHash(true));
+window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
+new ResizeObserver(fitPreview).observe($('paper-stage'));
+restoreFromHash(); translatePage(); render({ blocks: true, templates: true });

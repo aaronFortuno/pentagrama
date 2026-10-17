@@ -1,62 +1,96 @@
 # Pentagrama
 
-Un full en blanc per a la teva música. Web en català per crear i imprimir fulls A4 de pentagrames, amb previsualització en directe.
+Un full en blanc per a la teva música. Paper pautat a mida, previsualització en directe i impressió neta.
 
 **[Obre el web](https://aaronfortuno.github.io/pentagrama/)**
 
-## Què pots ajustar
+## El teu full
 
-- El gruix de les línies: de 0,05 a 0,50 mm.
-- La quantitat de pentagrames: d’1 a 24 per pàgina.
-- L’agrupació: de 2 en 2, de 3 en 3, de 4 en 4, etc., o amb espai uniforme.
-- La separació extra entre blocs: d’1,2 a 4 vegades l’espai habitual.
-- Una referència opcional al peu que permet recuperar exactament la plantilla.
+- **A3, A4 i Letter**, en vertical o horitzontal.
+- **Gruix de línia** de 0,05 a 0,50 mm.
+- **Espai intern del pentagrama** d’1 a 4 mm entre línies.
+- **Distribució senzilla**: d’1 a 64 pentagrames, sense agrupar o agrupats de 2 en 2, de 3 en 3, etc. L’espai disponible es reparteix automàticament.
+- **Distribució per blocs**: fins a 24 blocs amb nom, nombre de pentagrames, distància entre pentagrames i espai fins al bloc següent. Es pot repetir el conjunt d’1 a 8 vegades, amb un espai entre conjunts propi. Els noms dels blocs només serveixen per configurar-los i no s’imprimeixen.
+- **Referència opcional al peu** per recuperar la geometria exacta del full.
+- **Enllaç compartible** que conserva la distribució i els noms dels blocs.
 
-El full imprès només conté els pentagrames i, si l’actives, la referència. Sense notes, silencis, claus, armadures, línies de compàs ni marques d’aigua. El navegador conserva la configuració localment quan l’emmagatzematge està disponible.
+El nombre de pentagrames que hi cap depèn del format, l’espai entre línies i la distribució. Si una configuració no hi cap, el web avisa i desactiva la impressió i la descàrrega PDF. **Ajusta al full** fa un ajust explícit: en mode senzill redueix el nombre de pentagrames; en mode blocs redueix els espais i, si és necessari, l’espai entre línies. Els controls mostren els valors resultants. Si tampoc no hi cap amb les mides mínimes, cal reduir manualment el nombre de pentagrames, blocs o repeticions.
 
-## Imprimir o desar un PDF
+En mode blocs les distàncies són exactes en mil·límetres, entre l’última línia d’un pentagrama i la primera del següent. El conjunt queda centrat verticalment. L’espai després de l’últim bloc no s’utilitza; entre repeticions s’aplica **Espai entre conjunts**.
 
-Prem **Imprimeix el full** i tria una impressora o l’opció de desar com a PDF. Per respectar les mides, selecciona A4 vertical i escala 100 %. Desactiva les capçaleres i els peus de pàgina del navegador perquè no hi apareguin l’adreça web, el títol o la data.
+## Imprimir i descarregar
 
-## Recuperar una plantilla
+**Descarrega PDF** genera un PDF vectorial d’una pàgina en el mateix navegador, amb les dimensions exactes del format seleccionat. No hi ha cap connexió amb un servidor per generar-lo.
 
-Per exemple, `P1-N9-G3-E22-T12` representa 9 pentagrames, grups de 3, separació de 2,2× i gruix de 0,12 mm. La versió P1 fixa A4 vertical, marges i espai de línia. Enganxa el codi a **Recupera una configuració** per recuperar el mateix dibuix. El peu es pot mostrar o ocultar independentment.
+**Imprimeix el full** obre el diàleg habitual del navegador. Tria el mateix format de paper, escala 100 % i desactiva les capçaleres i els peus de pàgina del navegador.
+
+El full només conté les línies i, si l’actives, la referència de configuració. Sense notes, claus, silencis, armadures, barres de compàs, noms d’instruments ni publicitat.
+
+## Plantilles sense compte
+
+El panell de plantilles inclou models per a piano, coral SATB, iniciació, trio, SATB amb piano i orquestra en A3. El model orquestral és una proposta editable amb 23 pentagrames distribuïts en sis blocs.
+
+- **Desa plantilla** guarda una còpia de la configuració amb el nom que triïs en aquest navegador.
+- Pots eliminar plantilles pròpies i ocultar qualsevol plantilla suggerida.
+- **Restableix les plantilles per defecte** recupera les suggerides, conservant les pròpies i la configuració actual.
+
+L’emmagatzematge és local: no se sincronitza entre dispositius i es pot perdre si s’esborren les dades del navegador. Pots conservar un enllaç compartit o una referència com a còpia. Si el navegador impedeix desar plantilles, el web ho indica i manté els canvis només durant la sessió.
+
+## Referències
+
+Les referències **P1** de la primera versió continuen funcionant i recuperen el mateix full A4.
+
+Les noves referències **P2** incorporen format, orientació, espai entre línies i distribució:
+
+- `P2-A3-L-I20-T12-N9-G3-E22`: A3 horitzontal, interlineat de 2 mm, gruix de 0,12 mm, 9 pentagrames agrupats de 3 en 3 i separació relativa de 2,2×.
+- `P2-A4-P-I20-T12-S2-J180-B4.120.140_2.60.140`: dos conjunts SATB + piano; 12 mm entre les quatre veus, 14 mm fins al piano, 6 mm entre els dos pentagrames de piano i 18 mm entre conjunts.
+
+Les referències impreses codifiquen la geometria. Els enllaços compartits també conserven els noms dels blocs, dins del fragment de l’adreça (`#`), sense enviar-los al servidor.
+
+## Idiomes
+
+Català, castellà, anglès, alemany, francès, italià, portuguès i neerlandès. El mode automàtic consulta les preferències del navegador i reconeix variants regionals, com `de-AT` o `pt-BR`. Si no hi ha cap idioma compatible, utilitza l’anglès. Es pot canviar manualment i la tria queda guardada al navegador.
+
+Les traduccions són a `docs/i18n.js`; cada missatge té una entrada per idioma. Les proves comproven que no faltin missatges ni variables. Aquesta versió comparteix una sola adreça web: les pàgines indexables per idioma es poden afegir en una fase posterior de SEO.
+
+## Value for Value
+
+El peu obre un petit diàleg amb la història del projecte i l’adreça Lightning `aptswim903@walletofsatoshi.com` per a aportacions voluntàries. El web permet copiar-la; no es connecta a cap cartera ni processa pagaments. La informació de suport no apareix als fulls ni als PDF.
 
 ## Publicar a GitHub Pages
 
-El web està a `docs/` i no necessita cap compilació, instal·lació de dependències ni servei extern.
+El web està a `docs/` i no necessita compilació ni instal·lació de dependències.
 
 1. A **Settings → Pages**, selecciona **Deploy from a branch**.
-2. Tria la branca **main** i la carpeta **/docs**; desa la configuració.
-3. GitHub publicarà el web a **https://aaronfortuno.github.io/pentagrama/**.
+2. Tria **main** i **/docs**.
+3. GitHub publica el web a **https://aaronfortuno.github.io/pentagrama/**.
 
-Les modificacions que es pugin a `main` es publicaran automàticament. El fitxer `docs/.nojekyll` indica que els fitxers s’han de servir directament.
+Les actualitzacions a `main` es publiquen automàticament. Les rutes són relatives i permeten utilitzar un subdirectori o un domini propi.
 
-Totes les rutes del web són relatives: es pot allotjar en un subdirectori com `/pentagrama/` o a l’arrel d’un domini propi. Per a un altre allotjament estàtic, copia el contingut de `docs/` a la carpeta pública del servidor.
+## Desenvolupament i comprovacions
 
-## Desenvolupament local
-
-Amb Node.js 22 o posterior:
+Amb Node.js 22 o posterior, sense necessitat d’executar `npm install`:
 
 ```sh
 npm run dev
 ```
 
-Obre **http://127.0.0.1:4173/pentagrama/**. La previsualització local utilitza el mateix subdirectori que GitHub Pages. No cal executar `npm install`.
+Obre **http://127.0.0.1:4173/pentagrama/**.
 
 ```sh
 npm test
 ```
 
-Les proves comproven totes les quantitats i agrupacions admeses, els límits de la pàgina, la separació entre blocs, les referències reproduïbles i l’absència de text al full net.
+Les proves comproven compatibilitat P1, formats i orientacions, distribucions vàlides i desbordaments, blocs desiguals, referències P2, enllaços amb noms Unicode, PDF vectorial, plantilles locals i cobertura de les vuit traduccions.
 
-## Fitxers
+Fitxers principals:
 
-- `docs/`: el web publicable, amb HTML, CSS i JavaScript sense dependències.
-- `tests/`: proves de la distribució dels pentagrames i de les referències.
-- `tools/serve.mjs`: servidor local per fer proves.
-- `LICENSE`: la llicència GNU GPL v3 del projecte, conservada del repositori original.
+- `docs/layout.js`: mesures, distribució, referències i SVG.
+- `docs/pdf.js`: generació local del PDF a partir de la mateixa geometria.
+- `docs/library.js`: plantilles suggerides i gestió de les personals.
+- `docs/i18n.js`: idiomes, detecció i missatges.
+- `docs/app.js`: interfície i persistència local.
 
 ## Llicència
 
-Aquest projecte es distribueix sota la **GNU General Public License, versió 3**. Consulta el text complet a [LICENSE](LICENSE).
+GNU General Public License, versió 3. Consulta [LICENSE](LICENSE), conservada del repositori original.
