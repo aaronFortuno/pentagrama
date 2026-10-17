@@ -1,9 +1,10 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.5.2';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.5.2';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.5.2';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.5.2';
-import { iconMarkup, renderIcons } from './icons.js?v=1.5.2';
-import { animateReflow } from './motion.js?v=1.5.2';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.5.3';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.5.3';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.5.3';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.5.3';
+import { iconMarkup, renderIcons } from './icons.js?v=1.5.3';
+import { animateReflow } from './motion.js?v=1.5.3';
+import { analytics } from './analytics.js?v=1.5.3';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -192,7 +193,7 @@ function setTemplatesOpen(value) {
   if (value) $('close-templates').focus();
 }
 function update(key, value, options) { settings[key] = value; render(options); }
-function persistLibrary(successMessage) { const persisted = write(LIBRARY_KEY, library); renderLibrary(); toast(t(persisted ? successMessage : 'noStorage')); }
+function persistLibrary(successMessage) { const persisted = write(LIBRARY_KEY, library); renderLibrary(); toast(t(persisted ? successMessage : 'noStorage')); return persisted; }
 async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast(t('copied')); return true; }
   catch { $('copy-text').value = text; if (!$('copy-dialog').open) $('copy-dialog').showModal(); $('copy-text').focus(); $('copy-text').select(); return false; }
@@ -244,7 +245,7 @@ $('restore-form').addEventListener('submit', event => {
   catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
 $('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
-function shareLayout(value) { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(value); copy(url.href); }
+function shareLayout(value, kind = 'current') { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(value); analytics.track('share_requested', { kind }); copy(url.href); }
 $('share-template').addEventListener('click', () => shareLayout(settings));
 $('toggle-templates').addEventListener('click', () => setTemplatesOpen(!templatesOpen));
 $('close-templates').addEventListener('click', () => { setTemplatesOpen(false); $('toggle-templates').focus(); });
@@ -256,7 +257,7 @@ document.addEventListener('keydown', event => {
 $('save-template').addEventListener('click', () => { $('template-name').value = ''; $('save-message').textContent = ''; $('save-dialog').showModal(); $('template-name').focus(); });
 $('save-form').addEventListener('submit', event => {
   event.preventDefault(); const name = $('template-name').value.trim(); if (!name) return;
-  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); $('save-dialog').close(); setTemplatesOpen(true); persistLibrary('templateSaved'); }
+  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); $('save-dialog').close(); setTemplatesOpen(true); if (persistLibrary('templateSaved')) analytics.track('template_saved', { kind: 'personal' }); }
   catch (error) { $('save-message').textContent = t(error.message); $('save-message').classList.add('error'); }
 });
 $('templates-panel').addEventListener('click', event => {
@@ -269,12 +270,20 @@ $('templates-panel').addEventListener('click', event => {
   }
   const template = (suggested ? DEFAULT_TEMPLATES : library.saved).find(item => item.id === id); if (!template) return;
   const value = templateSettings(template, suggested);
-  if (button.dataset.action === 'share') { shareLayout(value); return; }
+  if (button.dataset.action === 'share') { shareLayout(value, suggested ? 'suggested' : 'personal'); return; }
   settings = value;
   render({ blocks: true });
+  analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal' });
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
 $('about-button').addEventListener('click', () => $('about-dialog').showModal());
+$('analytics-excluded').checked = analytics.excluded();
+$('analytics-excluded').addEventListener('change', event => {
+  const persisted = analytics.setExcluded(event.target.checked);
+  event.target.checked = analytics.excluded();
+  if (!event.target.checked) analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);
+  if (!persisted) toast(t('analyticsPreferenceTemporary'));
+});
 $('copy-lightning').addEventListener('click', async () => { if (await copy($('lightning-address').value)) $('about-dialog').querySelector('.field-hint').textContent = t('copied'); });
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => $(button.dataset.close).close()));
 $('zoom-in').addEventListener('click', () => zoomPreview(previewZoom * 1.25));
@@ -306,9 +315,10 @@ $('paper-stage').addEventListener('keydown', event => {
   const move = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[event.key];
   if (move) { event.preventDefault(); previewPan.x += move[0]; previewPan.y += move[1]; fitPreview(); }
 });
-$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) window.print(); });
+$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('hashchange', () => restoreFromHash(true));
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
 restoreFromHash(); renderIcons(); translatePage(); render({ blocks: true, templates: true });
+analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);

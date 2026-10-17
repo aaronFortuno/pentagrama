@@ -75,6 +75,18 @@ El diàleg també acredita [Noto Serif](https://github.com/notofonts/latin-greek
 
 Les transicions comparteixen `--motion-duration` (220 ms) i `--motion-ease` a `docs/style.css`. La preferència de moviment reduït les desactiva; la reordenació de targetes llegeix aquests mateixos valors.
 
+## Estadístiques
+
+El web utilitza **Umami Cloud Hobby** per comptar visites i quatre accions: petició d’impressió, aplicació i desament persistent de plantilles, i petició de compartir. Només la petició d’impressió incorpora format, mode de distribució i idioma; les plantilles es distingeixen per categoria, sense noms personals.
+
+`docs/analytics.js` filtra totes les peticions abans d’enviar-les: elimina el fragment dels enllaços compartits, els camps lliures, els noms i els identificadors de plantilles personals. Del referent només conserva l’origen; dels paràmetres de campanya només admet `utm_source`, `utm_medium` i `utm_campaign` amb valors simples. No utilitza cookies ni identificadors propis per seguir persones entre webs. Les peticions d’impressió no confirmen una impressió física, un PDF desat o el resultat del diàleg.
+
+L’analítica només es carrega a `pentagrama.page`, de manera asíncrona. Si falla o queda bloquejada, el generador i la impressió continuen funcionant. Respecta Do Not Track i Global Privacy Control. A **Sobre el projecte · V4V → Privadesa i estadístiques** es poden excloure les visites d’aquest navegador; la preferència es desa localment amb la clau `umami.disabled`. Aquesta opció permet que les proves del creador no alterin el seguiment habitual.
+
+Panell privat del propietari: [Pentagrama a Umami](https://cloud.umami.is/analytics/eu/websites/20ee7f51-6ba8-4486-86a5-f347851105b2). El seu identificador públic és al meta `umami-website-id` de l’HTML; no és una credencial d’accés al panell.
+
+Search Console es configura amb la propietat de domini `pentagrama.page` i el TXT de verificació del compte del propietari. El mapa del lloc és **https://pentagrama.page/sitemap.xml**. Les dades de Search Console expliquen aparicions i clics a Google; les d’Umami, l’ús del web. Els panells poden trigar a mostrar informació i no representen un recompte exacte de persones.
+
 ## Publicar a GitHub Pages
 
 El web està a `docs/` i no necessita compilació ni instal·lació de dependències.

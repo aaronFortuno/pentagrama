@@ -1,5 +1,13 @@
 # Canvis
 
+## 1.5.3
+
+- Estadístiques bàsiques amb Umami: visites, peticions d’impressió i accions de plantilles.
+- Filtre que exclou noms, fragments de configuració i camps lliures abans d’enviar dades.
+- Informació de privadesa als vuit idiomes i exclusió d’aquest navegador des de «Sobre el projecte».
+- Analítica independent de la impressió, amb respecte per Do Not Track i Global Privacy Control.
+- Mapa del lloc i robots.txt per al domini propi.
+
 ## 1.5.2
 
 - Domini propi `pentagrama.page` a GitHub Pages, amb adreça canònica i configuració DNS documentada.
