@@ -45,14 +45,20 @@ export function sanitizePayload(type, payload) {
 }
 
 export function createAnalytics(env = globalThis) {
-  let excludedForPage = false, configured = false;
-  function excluded() {
-    if (excludedForPage || env.navigator?.doNotTrack === '1' || env.doNotTrack === '1'
-      || env.navigator?.globalPrivacyControl === true) return true;
+  let pagePreference, configured = false;
+  // The switch represents the user's saved choice, not browser-wide signals.
+  // A fresh browser has no manual exclusion, even when DNT/GPC blocks tracking.
+  function userExcluded() {
+    if (pagePreference !== undefined) return pagePreference;
     try { return env.localStorage?.getItem('umami.disabled') === 'true'; } catch { return false; }
   }
+  function browserPrivacyEnabled() {
+    return env.navigator?.doNotTrack === '1' || env.doNotTrack === '1'
+      || env.navigator?.globalPrivacyControl === true;
+  }
+  function excluded() { return userExcluded() || browserPrivacyEnabled(); }
   function setExcluded(value) {
-    excludedForPage = Boolean(value);
+    pagePreference = Boolean(value);
     try {
       if (value) env.localStorage.setItem('umami.disabled', 'true');
       else env.localStorage.removeItem('umami.disabled');
@@ -83,7 +89,7 @@ export function createAnalytics(env = globalThis) {
       return true;
     } catch { return false; }
   }
-  return { init, track, excluded, setExcluded };
+  return { init, track, excluded, userExcluded, browserPrivacyEnabled, setExcluded };
 }
 
 export const analytics = createAnalytics();

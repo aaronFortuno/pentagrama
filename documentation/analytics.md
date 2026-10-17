@@ -2,6 +2,8 @@
 
 La publicació de `pentagrama.page` utilitza Umami Cloud per conèixer l’abast i l’ús bàsic del generador. No utilitza cookies, gravacions de sessions, mapes de calor ni identificadors propis per seguir persones entre webs.
 
+La finalitat és saber quines funcions resulten útils i orientar les millores futures.
+
 ## Què es mesura
 
 A més de les visites, s’envien aquestes quatre accions:
@@ -19,9 +21,13 @@ Una petició d’impressió no confirma una impressió física o un PDF desat: e
 
 `docs/analytics.js` filtra les peticions abans d’enviar-les. Elimina el fragment de l’URL, els noms de blocs o plantilles, els camps lliures i els identificadors personals de plantilles. Del referent només conserva l’origen; dels paràmetres de campanya admet `utm_source`, `utm_medium` i `utm_campaign` amb valors simples.
 
+Les estadístiques també inclouen informació bàsica de navegador, sistema, dispositiu, pantalla, idioma i ubicació aproximada. Segons la [documentació d’Umami](https://docs.umami.is/docs/metric-definitions), la IP de la connexió es processa per obtenir estadístiques, però no s’emmagatzema. Per això no s’afirma que el proveïdor no rebi mai cap IP ni que només es recullin clics.
+
 L’script es carrega de manera asíncrona i només a `pentagrama.page`. Si falla o queda bloquejat, el generador i la impressió continuen funcionant. Respecta Do Not Track i Global Privacy Control.
 
-Per excloure les proves pròpies, activa **Sobre el projecte · V4V → Privadesa i estadístiques → No comptis les visites d’aquest navegador**. La preferència es desa amb la clau local `umami.disabled` i només afecta aquell navegador i perfil.
+El switch **Sobre el projecte · V4V → Privadesa i estadístiques → Exclou aquest navegador de les estadístiques** està desactivat per defecte. Si s’activa, la preferència es desa amb la clau local `umami.disabled` i només afecta aquell navegador i perfil. Les exclusions triades anteriorment es conserven.
+
+El switch reflecteix només l’exclusió manual. Si el navegador envia Do Not Track o Global Privacy Control, l’analítica queda bloquejada igualment i el diàleg ho explica en un avís separat. Desactivar el switch no anul·la aquestes preferències del navegador. Si falla l’emmagatzematge, la tria manual es respecta durant la pàgina actual i es mostra un avís.
 
 ## Panells del propietari
 

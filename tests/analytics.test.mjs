@@ -28,6 +28,8 @@ test('analytics strips private shared configurations, names and arbitrary proper
 
 test('tracking loads once in production and respects opt-out, Do Not Track and Global Privacy Control', () => {
   const env = environment(), analytics = createAnalytics(env);
+  assert.equal(analytics.userExcluded(), false);
+  assert.equal(analytics.excluded(), false);
   assert.equal(analytics.init(website), true); assert.equal(analytics.init(website), true);
   assert.equal(env.scripts.length, 1); assert.equal(env.scripts[0].async, true);
   assert.equal(env.scripts[0].dataset.excludeHash, 'true');
@@ -37,13 +39,21 @@ test('tracking loads once in production and respects opt-out, Do Not Track and G
   }
   for (const preference of [{ doNotTrack: '1' }, { globalPrivacyControl: true }]) {
     const privateEnv = environment(); Object.assign(privateEnv.navigator, preference);
-    assert.equal(createAnalytics(privateEnv).init(website), false); assert.equal(privateEnv.scripts.length, 0);
+    const privateAnalytics = createAnalytics(privateEnv);
+    assert.equal(privateAnalytics.userExcluded(), false);
+    assert.equal(privateAnalytics.browserPrivacyEnabled(), true);
+    assert.equal(privateAnalytics.excluded(), true);
+    privateAnalytics.setExcluded(false);
+    assert.equal(privateAnalytics.userExcluded(), false);
+    assert.equal(privateAnalytics.init(website), false); assert.equal(privateEnv.scripts.length, 0);
   }
   analytics.setExcluded(true);
   assert.equal(analytics.track('print_requested', { paper: 'A4' }), false);
   assert.equal(env.pentagramaBeforeSend('event', { website, url: '/' }), false);
   assert.equal(createAnalytics(env).excluded(), true);
   analytics.setExcluded(false); assert.equal(analytics.excluded(), false);
+  const reopened = createAnalytics(env);
+  assert.equal(reopened.userExcluded(), false); assert.equal(reopened.init(website), true);
 });
 
 test('blocked or failing analytics never throws and only bounded event properties can leave the app', async () => {
@@ -59,4 +69,10 @@ test('blocked or failing analytics never throws and only bounded event propertie
   env.localStorage.setItem = () => { throw new Error('storage disabled'); };
   assert.equal(analytics.setExcluded(true), false); assert.equal(analytics.excluded(), true);
   assert.equal(analytics.track('share_requested'), false);
+  const savedEnv = environment(); savedEnv.localStorage.setItem('umami.disabled', 'true');
+  savedEnv.localStorage.removeItem = () => { throw new Error('storage disabled'); };
+  const savedAnalytics = createAnalytics(savedEnv);
+  assert.equal(savedAnalytics.setExcluded(false), false);
+  assert.equal(savedAnalytics.userExcluded(), false); assert.equal(savedAnalytics.init(website), true);
+  assert.equal(createAnalytics(savedEnv).userExcluded(), true);
 });

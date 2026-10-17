@@ -1,6 +1,6 @@
 {
   "name": "pentagrama",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "private": true,
   "description": "Fulls de pentagrames en blanc amb previsualització i impressió.",
   "license": "SEE LICENSE IN LICENSE",
@@ -10,7 +10,9 @@
     "type": "git",
     "url": "https://github.com/aaronFortuno/pentagrama.git"
   },
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "node tools/serve.mjs",
     "version:assets": "node tools/version-assets.mjs",

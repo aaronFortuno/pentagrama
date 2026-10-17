@@ -1,12 +1,12 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.7.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.7.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.7.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.7.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.7.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.7.0';
-import { bindTouchRange } from './touch-range.js?v=1.7.0';
-import { analytics } from './analytics.js?v=1.7.0';
-import { createLogoNote } from './logo-note.js?v=1.7.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.7.1';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.7.1';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.7.1';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.7.1';
+import { iconMarkup, renderIcons } from './icons.js?v=1.7.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.7.1';
+import { bindTouchRange } from './touch-range.js?v=1.7.1';
+import { analytics } from './analytics.js?v=1.7.1';
+import { createLogoNote } from './logo-note.js?v=1.7.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -321,10 +321,11 @@ $('templates-panel').addEventListener('click', event => {
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
 $('about-button').addEventListener('click', () => openDialog($('about-dialog')));
-$('analytics-excluded').checked = analytics.excluded();
+$('analytics-excluded').checked = analytics.userExcluded();
+$('analytics-browser-preference').hidden = !analytics.browserPrivacyEnabled();
 $('analytics-excluded').addEventListener('change', event => {
   const persisted = analytics.setExcluded(event.target.checked);
-  event.target.checked = analytics.excluded();
+  event.target.checked = analytics.userExcluded();
   if (!event.target.checked) analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);
   if (!persisted) toast(t('analyticsPreferenceTemporary'));
 });

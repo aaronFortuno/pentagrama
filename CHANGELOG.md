@@ -1,5 +1,11 @@
 # Canvis
 
+## 1.7.1
+
+- Exclusió manual d’analítica desactivada per defecte i independent de Do Not Track i Global Privacy Control.
+- Explicació als vuit idiomes de les visites, les quatre accions mesurades, les dades tècniques i el tractament de la IP.
+- Preferència manual respectada durant la sessió encara que falli l’emmagatzematge local.
+
 ## 1.7.0
 
 - Nota interactiva al logotip: anticipació, deformació, impuls, trajectòria amb gravetat, compressió d’aterratge, rebot petit i repòs.
