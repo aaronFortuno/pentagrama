@@ -66,6 +66,18 @@ test('warming only fetches; a gesture creates one context and concurrent prepara
   assert.equal(player.play(72, { when: NaN }), null);
 });
 
+test('visual timing follows the audio device timestamp and falls back without creating a context', async () => {
+  const f = audioEnvironment(), player = createGlockenspiel({ env: f.env });
+  assert.equal(player.presentationTime, 0); assert.equal(f.contexts.length, 0);
+  await player.prepare(67); const context = f.contexts[0];
+  assert.equal(player.presentationTime, context.currentTime);
+  f.env.performance = { now: () => 1000 };
+  context.getOutputTimestamp = () => ({ contextTime: 9.9, performanceTime: 980 });
+  assert.ok(Math.abs(player.presentationTime - 9.92) < 1e-9);
+  context.getOutputTimestamp = () => ({ contextTime: 12, performanceTime: 980 });
+  assert.equal(player.presentationTime, context.currentTime);
+});
+
 test('overlapping tails are bounded and stopping or disposing cannot leave scheduled sound behind', async () => {
   const f = audioEnvironment(), player = createGlockenspiel({ env: f.env }); await player.prepare(67);
   for (let i = 0; i < 10; i++) player.play(67);

@@ -33,6 +33,8 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/motion.js`, `docs/touch-range.js` | Transicions i gestos tàctils |
 | `docs/logo-note.js` | Trajectòria, deformació i control de la nota del logotip |
 | `docs/glockenspiel.js`, `docs/vendor/glock/` | Reproductor del logotip i gravacions locals amb procedència i llicència |
+| `docs/melodies.js`, `docs/melody-player.js` | Catàleg de fragments i reproducció sincronitzada amb el rellotge d’àudio |
+| `docs/melody-discovery.js`, `docs/wordmark.js` | Descoberta, canvi del títol i diàleg musical |
 | `docs/icons.js`, `docs/vendor/` | Icones, fonts i llicències de tercers |
 | `docs/pdf.js` | Generador vectorial intern; la interfície utilitza el diàleg d’impressió |
 | `docs/analytics.js` | Càrrega i filtratge de l’analítica de producció |
@@ -63,6 +65,8 @@ El format del paper i la impressió es mantenen visibles. `#settings-accordion` 
 Un `ResizeObserver` reserva l’alçada de totes les capçaleres i limita el contingut obert a l’espai restant. En pantalles baixes o configuracions amb molts blocs, només es desplaça aquest contingut. Al mòbil s’elimina aquest límit i la pàgina conserva el desplaçament natural. L’estat dels desplegables no forma part de la configuració del full, de les referències ni de les plantilles desades.
 
 ## Nota del logotip
+
+Les melodies, les fonts i el procediment per ampliar el catàleg s’expliquen a [melodies.md](melodies.md).
 
 `docs/logo-note.js` és independent del generador de fulls. Calcula una trajectòria parabòlica amb gravetat constant i deforma el cap de nota abans de l’impuls i en aterrar. El petit rebot perd altura i acaba amb una oscil·lació amortida. Tot es dibuixa amb transformacions dels dos grups SVG; les línies del logotip i el layout del web es mantenen fixos.
 

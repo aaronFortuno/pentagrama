@@ -113,3 +113,24 @@ test('hiding the page drops queued jumps and settles without a delayed landing; 
   f.document.hidden = false; f.controller.destroy(); f.button.dispatchEvent(new Event('click'));
   assert.equal(f.controller.jumpTo(INITIAL_NOTE), false); assert.equal(f.events.length, 2);
 });
+
+test('musical control cancels queued clicks, preserves the current note and never emits duplicate sound events', () => {
+  const f = fixture(), target = logoNote({ column: 0, step: 6, accidental: 1 });
+  f.controller.jumpTo(target); f.controller.jumpTo(INITIAL_NOTE);
+  const control = f.controller.takeControl(); assert.equal(f.controller.current.pitch, 'D#5');
+  assert.equal(f.events.at(-1).cancelled, true); assert.equal(f.controller.jumpTo(), false);
+  const count = f.events.length, plan = planNoteJump(target, INITIAL_NOTE, { duration: 300, landingAfter: 225 });
+  control.paint(plan, plan.takeoff + plan.rise / 2); assert.equal(f.button.dataset.notePhase, 'rise');
+  control.paint(plan, 300); control.release(); assert.deepEqual(f.controller.current, INITIAL_NOTE);
+  assert.equal(f.events.length, count); assert.equal(f.callbacks.size, 0);
+  assert.equal(f.controller.jumpTo(target), true);
+});
+
+test('reduced motion keeps musical timing but changes pitch only on the planned contact', () => {
+  const f = fixture(true), target = logoNote({ column: 0, step: 6, accidental: 1 }), control = f.controller.takeControl();
+  const plan = planNoteJump(INITIAL_NOTE, target, { duration: 300, landingAfter: 225 });
+  control.paint(plan, 200); assert.equal(f.position.transform, 'translate(23 19)');
+  control.paint(plan, 225); assert.equal(f.position.transform, 'translate(7 11)');
+  assert.equal(f.body.transform, 'scale(1 1)'); assert.equal(f.events.length, 0);
+  control.release(); assert.equal(f.controller.current.midi, 75);
+});

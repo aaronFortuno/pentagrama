@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.10.0
+
+- Ou de pasqua musical després de cinc clics al logotip, amb sis fragments breus de Beethoven, Petzold, Grieg, Mozart i Pachelbel.
+- Melodies programades sobre el rellotge d’àudio, amb aterratges al temps exacte de cada nota, ritmes variables i alteracions correctes. Els salts individuals conserven el seu comportament.
+- «Pentagrama» es replega lletra a lletra i es transforma en el títol breu de la melodia, mantenint el punt vermell.
+- Títol clicable amb història, motiu de la tria i font de la partitura, traduïts als vuit idiomes. Permet repetir, descobrir una altra melodia o recuperar el nom del web.
+- Clic a la nota per aturar, cancel·lació en amagar o imprimir la pàgina, moviment reduït i errors de càrrega gestionats sense reproduccions ajornades.
+- Catàleg, planificador musical, reproductor i animació del títol en mòduls independents, amb proves de sincronització, cancel·lació i accessibilitat del moviment.
+
 ## 1.9.0
 
 - Sidebar amb cinc seccions replegables: distribució, línies del pentagrama, espai superior extra, peu del full i codi de configuració. La distribució s’obre d’entrada; el format i la impressió sempre són visibles.

@@ -1,4 +1,4 @@
-import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.9.0';
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.10.0';
 
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
 export const SERVICE_ADDRESS = 'pentagrama.page';

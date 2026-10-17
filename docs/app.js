@@ -1,13 +1,14 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.9.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.9.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.9.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.9.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.9.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.9.0';
-import { bindTouchRange } from './touch-range.js?v=1.9.0';
-import { analytics } from './analytics.js?v=1.9.0';
-import { createLogoNote } from './logo-note.js?v=1.9.0';
-import { connectLogoSound } from './glockenspiel.js?v=1.9.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.10.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.10.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.10.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.10.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.10.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.10.0';
+import { bindTouchRange } from './touch-range.js?v=1.10.0';
+import { analytics } from './analytics.js?v=1.10.0';
+import { createLogoNote } from './logo-note.js?v=1.10.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.10.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.10.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -19,6 +20,7 @@ let languageChoice = read(LANGUAGE_KEY, 'auto');
 if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
 let language = detectLanguage(languageChoice, navigator.languages || [navigator.language]);
 let templatesOpen = false, languageOpen = false, toastTimer, layout;
+let melodyDiscovery;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
 const noticeTimers = new Map();
 const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
@@ -49,6 +51,7 @@ function translatePage() {
     button.append(node('span', '', label), check); $('language-menu').append(button);
   }
   $('language-button').title = `${t('language')} · ${LANGUAGES[language]}`;
+  melodyDiscovery?.refresh();
 }
 function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
 const measurements = [['thickness', 'thickness-value', 'thickness', 'mm'], ['line-spacing', 'line-spacing-value', 'lineSpacing', 'mm'], ['group-spacing', 'spacing-value', 'spacing', '×'], ['top-space', 'top-space-value', 'topSpace', 'mm']];
@@ -392,5 +395,8 @@ window.addEventListener('hashchange', () => restoreFromHash(true));
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
 restoreFromHash(); renderIcons(); translatePage(); render({ blocks: true, templates: true });
-connectLogoSound($('logo-note')); createLogoNote($('logo-note'));
+const logoPlayer = createGlockenspiel(), logoNote = createLogoNote($('logo-note'), { interactive: false });
+connectLogoSound($('logo-note'), { player: logoPlayer });
+melodyDiscovery = createMelodyDiscovery({ button: $('logo-note'), note: logoNote, player: logoPlayer,
+  home: $('brand-home'), trigger: $('melody-info'), dialog: $('melody-dialog'), t, notify: toast });
 analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);

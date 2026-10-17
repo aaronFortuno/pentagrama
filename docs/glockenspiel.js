@@ -1,4 +1,4 @@
-import { GLOCK_SAMPLES, TRANSPOSE } from './vendor/glock/bank.js?v=1.9.0';
+import { GLOCK_SAMPLES, TRANSPOSE } from './vendor/glock/bank.js?v=1.10.0';
 
 export function glockSample(midi) {
   if (!Number.isFinite(midi) || midi < 0 || midi > 127) throw new RangeError('Invalid MIDI note');
@@ -91,6 +91,14 @@ export function createGlockenspiel({ env = globalThis } = {}) {
     warm() { return disposed ? Promise.resolve([]) : Promise.allSettled(GLOCK_SAMPLES.map(file)); },
     stopAll() { for (const voice of voices) voice.stop(); },
     get currentTime() { return context?.currentTime || 0; },
+    // Match animation to the samples reaching the output, including device latency.
+    get presentationTime() {
+      const stamp = context?.getOutputTimestamp?.();
+      if (stamp?.performanceTime > 0 && Number.isFinite(stamp.contextTime) && env.performance?.now) {
+        return Math.max(0, Math.min(context.currentTime, stamp.contextTime + (env.performance.now() - stamp.performanceTime) / 1000));
+      }
+      return context?.currentTime || 0;
+    },
     destroy() { disposed = true; this.stopAll(); context?.close().catch(() => {}); },
   };
 }
