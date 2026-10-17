@@ -1,6 +1,6 @@
 # Desenvolupament
 
-Pentagrama és un web estàtic d’HTML, CSS i JavaScript amb mòduls ES. No necessita compilació, servidor d’aplicacions ni dependències d’npm.
+Pentagrama és un web estàtic d’HTML, CSS i JavaScript amb mòduls ES. No necessita servidor d’aplicacions ni dependències d’npm. Una eina petita de Node genera les pàgines traduïdes; els fitxers generats es versionen a `docs/` i es poden publicar directament.
 
 ## Treballar en local
 
@@ -24,12 +24,15 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 
 | Fitxer o directori | Funció |
 |---|---|
-| `docs/index.html`, `docs/style.css` | Estructura, estils i impressió |
+| `src/index.html`, `docs/style.css` | Estructura comuna, estils i impressió |
+| `docs/index.html`, `docs/{idioma}/index.html` | Pàgines generades, amb text traduït i metadades abans d’executar JavaScript |
 | `docs/app.js` | Interfície i persistència local |
+| `docs/settings-history.js` | Historial temporal de configuracions i dreceres de teclat |
 | `docs/layout.js` | Mesures, distribució, referències i SVG |
 | `docs/preview.js` | Zoom i desplaçament de la previsualització |
 | `docs/library.js` | Plantilles suggerides i personals |
 | `docs/i18n.js` | Traduccions, detecció i selecció d’idioma |
+| `docs/language-routing.js`, `tools/build-locales.mjs` | Adreces per idioma i generació de l’HTML i el sitemap |
 | `docs/motion.js`, `docs/touch-range.js` | Transicions i gestos tàctils |
 | `docs/logo-note.js` | Trajectòria, deformació i control de la nota del logotip |
 | `docs/glockenspiel.js`, `docs/vendor/glock/` | Reproductor del logotip i gravacions locals amb procedència i llicència |
@@ -56,7 +59,15 @@ Es manté la compatibilitat amb els formats anteriors:
 
 Els missatges són a `docs/i18n.js`, amb una entrada per idioma. Les proves comproven que no faltin claus ni variables. La detecció inicial consulta les preferències del navegador, reconeix variants regionals i utilitza l’anglès si no troba cap idioma compatible. La tria manual es desa localment.
 
-La interfície comparteix una sola URL; actualment no hi ha pàgines indexables separades per idioma.
+Cada idioma té una URL estable: `/ca/`, `/en/`, `/es/`, `/de/`, `/fr/`, `/it/`, `/pt/` i `/nl/`. Aquest idioma explícit preval sobre la preferència desada i la del navegador. L’arrel `/` manté la detecció automàtica i és l’alternativa `x-default`, sense redireccions obligatòries. El selector conté enllaços reals; en activar-los normalment, actualitza l’adreça i els textos sense recarregar la pàgina, conservant l’historial i la configuració. Enrere i endavant respecten l’idioma de cada adreça.
+
+Edita `src/index.html` o `docs/i18n.js` i executa `node tools/build-locales.mjs` per regenerar les nou pàgines i el sitemap. `node tools/version-assets.mjs` també ho fa després de versionar els recursos. No editis manualment l’HTML de `docs/`. Cada pàgina inclou una canònica pròpia, els vuit enllaços `hreflang` recíprocs i `x-default`, amb URLs absolutes a partir de `homepage` de `package.json`. Els recursos relatius també funcionen sota un subdirectori de GitHub Pages.
+
+## Desfer i refer
+
+Les fletxes de la fila «El teu full» recuperen fins a cent canvis durant la sessió de la pàgina. Les instantànies inclouen totes les opcions del full, els blocs i els seus noms. L’aplicació de plantilles, l’ajust al full, la recuperació de codis i el restabliment també es poden desfer. Un arrossegament complet o una edició continuada d’un camp compten com un sol pas. Un canvi nou després de desfer descarta el futur abandonat; una renderització sense canvis conserva refer.
+
+Les dreceres són Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z i Ctrl+Y. Els camps d’edició de text i els diàlegs conserven les dreceres natives. El zoom, l’idioma, els desplegables i la gestió de la biblioteca no formen part de l’historial de configuració. Només es persisteix la configuració actual; recarregar la pàgina comença un historial nou.
 
 ## Sidebar i desplegables
 

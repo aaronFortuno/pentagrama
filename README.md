@@ -10,6 +10,7 @@ Paper pautat a mida per escriure música a mà. Configura el full, comprova’l 
 - Ajustar el nombre de pentagrames, el gruix de les línies, l’interlineat i l’espai superior.
 - Agrupar pentagrames o crear blocs amb separacions diferents, per exemple per a veus i piano o famílies instrumentals.
 - Partir de plantilles suggerides, desar-ne de pròpies i compartir configuracions amb un enllaç.
+- Desfer i refer els canvis de configuració amb les fletxes o les dreceres de teclat.
 - Explorar el full amb zoom i imprimir-lo o desar-lo com a PDF des del diàleg del navegador.
 
 Per defecte, el full només conté les línies dels pentagrames. Pots afegir-hi voluntàriament una referència de configuració o l’adreça del web al peu.
@@ -18,7 +19,7 @@ Per defecte, el full només conté les línies dels pentagrames. Pots afegir-hi 
 
 ## Desenvolupament local
 
-Web estàtic d’HTML, CSS i JavaScript, sense compilació ni instal·lació de dependències. Amb **Node.js 22 o posterior**, des de l’arrel del repositori:
+Web estàtic d’HTML, CSS i JavaScript, sense instal·lació de dependències. Les pàgines dels vuit idiomes es generen des d’una sola estructura i es conserven a `docs/`, llestes per publicar. Amb **Node.js 22 o posterior**, des de l’arrel del repositori:
 
 ```sh
 npm run dev
@@ -30,7 +31,7 @@ Obre **http://127.0.0.1:4173/pentagrama/**. Per executar les proves:
 npm test
 ```
 
-El web publicable és a `docs/`; les proves, a `tests/`, i les eines de manteniment, a `tools/`.
+El web publicable és a `docs/`; l’estructura comuna, a `src/index.html`; les proves, a `tests/`, i les eines de manteniment, a `tools/`. Després de canviar l’estructura o les traduccions, executa `npm run build:locales` per regenerar les pàgines. Cada idioma disposa d’una adreça pròpia, com `/ca/`, `/en/` o `/fr/`.
 
 ## Documentació i contribucions
 

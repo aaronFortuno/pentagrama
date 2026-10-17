@@ -10,7 +10,7 @@ if (!sha) {
 }
 if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('Invalid upstream commit');
 const raw = `https://raw.githubusercontent.com/lucide-icons/lucide/${sha}`;
-const names = ['printer', 'copy', 'plus', 'minus', 'fullscreen', 'chevron-left', 'chevron-down', 'x', 'arrow-up', 'arrow-down', 'trash', 'share-2', 'save', 'rotate-ccw', 'external-link', 'rectangle-vertical', 'rectangle-horizontal', 'languages', 'check'];
+const names = ['printer', 'copy', 'plus', 'minus', 'fullscreen', 'chevron-left', 'chevron-down', 'x', 'arrow-up', 'arrow-down', 'trash', 'share-2', 'save', 'rotate-ccw', 'external-link', 'rectangle-vertical', 'rectangle-horizontal', 'languages', 'check', 'undo-2', 'redo-2'];
 const entries = await Promise.all(names.map(async name => {
   const response = await fetch(`${raw}/icons/${name}.svg`);
   if (!response.ok) throw new Error(`${name}: ${response.status}`);

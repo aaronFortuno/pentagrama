@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://pentagrama.page/</loc></url>
+  <url><loc>https://pentagrama.page/ca/</loc></url>
+  <url><loc>https://pentagrama.page/en/</loc></url>
+  <url><loc>https://pentagrama.page/es/</loc></url>
+  <url><loc>https://pentagrama.page/de/</loc></url>
+  <url><loc>https://pentagrama.page/fr/</loc></url>
+  <url><loc>https://pentagrama.page/it/</loc></url>
+  <url><loc>https://pentagrama.page/pt/</loc></url>
+  <url><loc>https://pentagrama.page/nl/</loc></url>
 </urlset>

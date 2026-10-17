@@ -1,6 +1,6 @@
 # Desplegament
 
-El contingut publicable és a `docs/`. Es pot servir directament com a fitxers estàtics, sense compilació.
+El contingut publicable és a `docs/`, incloses les pàgines traduïdes ja generades. Es pot servir directament com a fitxers estàtics, sense executar cap eina al servidor.
 
 ## Publicació del projecte
 
@@ -13,7 +13,7 @@ Per preparar una versió del web:
 3. Executa `npm test` i comprova al navegador els canvis d’interfície o d’impressió que hagis fet.
 4. Publica els canvis a `main` i comprova el resultat de GitHub Pages.
 
-L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. No compila ni instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
+L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els vuit directoris d’idioma i `docs/sitemap.xml` a partir de `src/index.html` i les traduccions. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 
 ## Domini pentagrama.page
 
@@ -43,7 +43,9 @@ Referència de GitHub: [gestió d’un domini propi](https://docs.github.com/en/
 
 ## Publicar una còpia en un altre domini
 
-Les rutes dels recursos són relatives. Per publicar una còpia pròpia, adapta o elimina `docs/CNAME` i revisa les adreces del projecte a `package.json`, la canònica de `docs/index.html`, `docs/robots.txt`, `docs/sitemap.xml` i l’adreça opcional impresa que defineix `docs/layout.js`.
+Les rutes dels recursos són relatives. Per publicar una còpia pròpia, adapta o elimina `docs/CNAME`, actualitza `homepage` a `package.json` i executa `node tools/version-assets.mjs`: les canòniques, els `hreflang` i el sitemap es generen amb aquesta adreça. Revisa també `docs/robots.txt` i l’adreça opcional impresa que defineix `docs/layout.js`.
+
+Les adreces d’idioma són directoris estàtics amb el seu `index.html`; GitHub Pages serveix `/en/`, `/ca/`, etc. sense regles de reescriptura. Les traduccions, els títols, les descripcions i els enllaços entre idiomes ja són presents a l’HTML. El sitemap enumera l’arrel i els vuit idiomes. La publicació facilita el rastreig, però la indexació i els terminis depenen dels cercadors.
 
 L’analítica només s’activa al domini fixat a `docs/analytics.js`. Per mesurar una altra publicació cal configurar el domini i un identificador d’Umami propi, al meta `umami-website-id` de `docs/index.html`. Sense identificador vàlid no es carrega l’analítica. Vegeu [Analítica](analytics.md).
 

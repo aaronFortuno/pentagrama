@@ -1,14 +1,16 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.11.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.11.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.11.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.11.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.11.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.11.0';
-import { bindTouchRange } from './touch-range.js?v=1.11.0';
-import { analytics } from './analytics.js?v=1.11.0';
-import { createLogoNote } from './logo-note.js?v=1.11.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.11.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.11.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.12.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.12.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.12.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.12.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.12.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.12.0';
+import { bindTouchRange } from './touch-range.js?v=1.12.0';
+import { analytics } from './analytics.js?v=1.12.0';
+import { createLogoNote } from './logo-note.js?v=1.12.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.12.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.12.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.12.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.12.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -18,9 +20,14 @@ let settings = normalizeSettings(read(SETTINGS_KEY, read('pentagrama.settings.v1
 let library = normalizeLibrary(read(LIBRARY_KEY, {}));
 let languageChoice = read(LANGUAGE_KEY, 'auto');
 if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
-let language = detectLanguage(languageChoice, navigator.languages || [navigator.language]);
+const siteRoot = new URL('./', import.meta.url);
+// Keep relative portraits and license links stable after an in-place language switch.
+document.querySelector('base').href = siteRoot.href;
+const preferredLanguage = () => detectLanguage(languageChoice, navigator.languages || [navigator.language]);
+let language = languageFromURL(location.href, siteRoot) || preferredLanguage();
 let templatesOpen = false, languageOpen = false, toastTimer, layout;
 let melodyDiscovery;
+let settingsHistory, historyGroup;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
 const noticeTimers = new Map();
 const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
@@ -35,7 +42,8 @@ function toast(message) {
 function translatePage() {
   hideZoomHint();
   document.documentElement.lang = language; document.title = t('title');
-  document.querySelector('meta[name=description]').content = t('description');
+  document.querySelector('meta[name=description]').content = t('seoDescription');
+  document.querySelector('link[rel=canonical]').href = new URL(languageFromURL(location.href, siteRoot) ? `${language}/` : './', document.querySelector('link[hreflang=x-default]').href).href;
   document.querySelectorAll('[data-i18n]').forEach(element => { element.textContent = t(element.dataset.i18n); });
   document.querySelectorAll('[data-aria]').forEach(element => {
     element.setAttribute('aria-label', t(element.dataset.aria));
@@ -45,7 +53,7 @@ function translatePage() {
   document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
   $('language-menu').replaceChildren();
   for (const [code, label] of Object.entries(LANGUAGES)) {
-    const button = node('button'); button.type = 'button'; button.dataset.language = code; button.lang = code; button.tabIndex = -1;
+    const button = node('a'); button.href = languageURL(code, location.href, siteRoot).href; button.dataset.language = code; button.lang = code; button.hreflang = code; button.tabIndex = -1;
     button.setAttribute('role', 'menuitemradio'); button.setAttribute('aria-checked', String(code === language));
     const check = node('span'); check.innerHTML = iconMarkup('check');
     button.append(node('span', '', label), check); $('language-menu').append(button);
@@ -169,8 +177,10 @@ function renderLibrary(animate = true) { const change = () => {
   visibleSuggested.forEach(template => suggested.append(card(template, true)));
 }; if (animate && templatesOpen) animateReflow($('templates-library'), change); else change(); }
 
-function render({ blocks = false, templates = false } = {}) {
+function render({ blocks = false, templates = false, record = true } = {}) {
   settings = normalizeSettings(settings); layout = createLayout(settings);
+  if (record) settingsHistory?.record(settings, { group: historyGroup });
+  $('undo-button').disabled = !settingsHistory?.canUndo; $('redo-button').disabled = !settingsHistory?.canRedo;
   setValue('paper-size', settings.paper); setValue('staff-count', settings.count);
   for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) if (document.activeElement !== $(id)) setValue(id, settings[key]);
   for (const [rangeId, valueId, key, unit] of measurements) {
@@ -212,12 +222,19 @@ function setLanguageOpen(value, focus = 'selected') {
   if (value === languageOpen) return;
   languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
   if (value) {
-    const buttons = [...$('language-menu').querySelectorAll('button')];
+    const buttons = [...$('language-menu').querySelectorAll('[data-language]')];
     (focus === 'first' ? buttons[0] : focus === 'last' ? buttons.at(-1) : buttons.find(button => button.dataset.language === language)).focus({ preventScroll: true });
   }
 }
 function closeLanguageMenu(returnFocus = false) { if (returnFocus) $('language-button').focus({ preventScroll: true }); setLanguageOpen(false); }
 function update(key, value, options) { settings[key] = value; render(options); }
+function finishHistoryGroup() { historyGroup = undefined; settingsHistory?.endGroup(); }
+function travelHistory(direction) {
+  finishHistoryGroup();
+  const restored = settingsHistory[direction](); if (!restored) return;
+  if (document.activeElement?.matches('input')) document.activeElement.blur();
+  settings = restored; render({ blocks: true, record: false });
+}
 function persistLibrary(successMessage) { const persisted = write(LIBRARY_KEY, library); renderLibrary(); toast(t(persisted ? successMessage : 'noStorage')); return persisted; }
 async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast(t('copied')); return true; }
@@ -235,15 +252,19 @@ $('language-button').addEventListener('keydown', event => {
   if (event.key === 'Escape' && languageOpen) { event.preventDefault(); event.stopPropagation(); closeLanguageMenu(true); }
 });
 $('language-menu').addEventListener('click', event => {
-  const button = event.target.closest('button[data-language]'); if (!button) return;
+  const button = event.target.closest('a[data-language]'); if (!button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
   closeLanguageMenu(true); languageChoice = button.dataset.language; language = detectLanguage(languageChoice); write(LANGUAGE_KEY, languageChoice);
+  const url = languageURL(language, location.href, siteRoot);
+  if (url.href !== location.href) history.pushState(null, '', url);
   translatePage(); render({ blocks: true, templates: true });
 });
 $('language-menu').addEventListener('keydown', event => {
-  const buttons = [...$('language-menu').querySelectorAll('button')], index = buttons.indexOf(document.activeElement);
+  const buttons = [...$('language-menu').querySelectorAll('[data-language]')], index = buttons.indexOf(document.activeElement);
   const next = { ArrowDown: (index + 1) % buttons.length, ArrowUp: (index + buttons.length - 1) % buttons.length, Home: 0, End: buttons.length - 1 }[event.key];
   if (next !== undefined) { event.preventDefault(); buttons[next].focus({ preventScroll: true }); }
   else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeLanguageMenu(true); }
+  else if (event.key === ' ') { event.preventDefault(); document.activeElement?.click(); }
   else if (event.key === 'Tab') closeLanguageMenu(true);
   else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
     const initial = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()[0];
@@ -252,6 +273,18 @@ $('language-menu').addEventListener('keydown', event => {
   }
 });
 document.addEventListener('pointerdown', event => { if (languageOpen && !event.target.closest('.language-control')) closeLanguageMenu(); });
+// A drag or a field edit is one step; discrete buttons remain separate steps.
+const settingsPanel = document.querySelector('.settings');
+settingsPanel.addEventListener('input', event => {
+  if (event.target.matches('input[type=range],input[type=number],input[data-field=label]')) historyGroup = event.target;
+}, true);
+for (const type of ['change', 'focusout', 'pointercancel', 'lostpointercapture']) settingsPanel.addEventListener(type, finishHistoryGroup);
+$('undo-button').addEventListener('click', () => travelHistory('undo'));
+$('redo-button').addEventListener('click', () => travelHistory('redo'));
+document.addEventListener('keydown', event => {
+  const direction = historyShortcut(event);
+  if (direction && !document.querySelector('dialog[open]')) { event.preventDefault(); travelHistory(direction); }
+});
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));
@@ -392,9 +425,13 @@ $('print-button').addEventListener('click', async () => { document.activeElement
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('scroll', positionTemplatesHandle, { passive: true });
 window.addEventListener('hashchange', () => restoreFromHash(true));
+window.addEventListener('popstate', () => {
+  language = languageFromURL(location.href, siteRoot) || preferredLanguage();
+  closeLanguageMenu(); translatePage(); render({ blocks: true, templates: true });
+});
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
-restoreFromHash(); renderIcons(); translatePage(); render({ blocks: true, templates: true });
+restoreFromHash(); settingsHistory = createSettingsHistory(settings); renderIcons(); translatePage(); render({ blocks: true, templates: true });
 const logoPlayer = createGlockenspiel(), logoNote = createLogoNote($('logo-note'), { interactive: false });
 connectLogoSound($('logo-note'), { player: logoPlayer });
 melodyDiscovery = createMelodyDiscovery({ button: $('logo-note'), note: logoNote, player: logoPlayer,

@@ -39,12 +39,12 @@ h1 em{font-weight:400;color:#858b75}
 .language-chevron .lucide{width:12px;height:12px;transition:transform var(--motion-duration) var(--motion-ease)}
 #language-button[aria-expanded=true] .language-chevron .lucide{transform:rotate(180deg)}
 .language-menu{position:absolute;right:0;top:calc(100% + 8px);width:184px;max-width:calc(100vw - 32px);padding:6px;border:1px solid #d7ddcb;border-radius:7px;background:var(--bg);box-shadow:0 12px 36px #26371d24;transform-origin:top right;z-index:40}
-.language-menu button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:10px 11px;border:0;border-radius:4px;background:transparent;text-align:left;font-size:12px;color:#677456}
-.language-menu button:hover,.language-menu button:focus-visible{background:#e9eedf;color:#35472c}
-.language-menu button:focus-visible{outline-offset:-2px}
-.language-menu button[aria-checked=true]{background:#dce5cc;color:#34452a;font-weight:600}
+.language-menu a{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:10px 11px;border:0;border-radius:4px;background:transparent;text-align:left;font-size:12px;color:#677456;text-decoration:none}
+.language-menu a:hover,.language-menu a:focus-visible{background:#e9eedf;color:#35472c}
+.language-menu a:focus-visible{outline-offset:-2px}
+.language-menu a[aria-checked=true]{background:#dce5cc;color:#34452a;font-weight:600}
 .language-menu .lucide{width:15px;height:15px}
-.language-menu button[aria-checked=false] .lucide{opacity:0}
+.language-menu a[aria-checked=false] .lucide{opacity:0}
 main{min-height:0;min-width:0;display:grid;grid-template-rows:minmax(0,1fr);padding-top:18px}
 .button{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--accent);border-radius:5px;background:var(--accent);color:white;font-size:12px;font-weight:550;padding:12px 15px}
 .button:hover:not(:disabled){background:#a83e29}
@@ -58,6 +58,10 @@ main{min-height:0;min-width:0;display:grid;grid-template-rows:minmax(0,1fr);padd
 .settings-top>.button{width:100%;margin-bottom:14px}
 .panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:34px}
 .panel-heading h2{font-size:16px;font-weight:600;letter-spacing:-.3px}
+.history-controls{display:flex;gap:1px;margin-left:auto}
+.history-controls .icon-button{width:28px;height:30px;padding:5px;color:var(--muted)}
+.history-controls .lucide{width:16px;height:16px}
+.history-controls button:disabled{opacity:.25}
 .text-button{border:0;padding:5px 0;background:none;color:#7e8772;font-size:10px;text-decoration:underline;text-decoration-color:#b9c0af;text-underline-offset:3px}
 .text-button:hover{color:var(--accent)}
 .control-section{padding:14px 0;border-bottom:1px solid var(--line)}
@@ -218,8 +222,7 @@ details[data-motion=closing] .restore-chevron{transform:rotate(0deg)}
 @media(hover:none){.template-description{max-height:30px;opacity:1;translate:0 0}.template-actions{opacity:1;translate:0 0}}
 .site-footer{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:20px}
 .site-footer p{font-family:Georgia,"Times New Roman",serif;font-size:11px;font-style:italic;color:#879378}
-.site-footer .clean-note{font:400 9px/1.5 Inter,"Segoe UI",Arial,sans-serif;color:#8e9981;margin:0;text-align:center}
-.site-footer .text-button{font-size:9px;justify-self:end}
+.site-footer .text-button{grid-column:3;font-size:9px;justify-self:end}
 dialog{max-height:calc(100dvh - 32px);overflow-y:auto;max-width:min(470px,calc(100vw - 32px));width:470px;border:1px solid #d7ddcb;background:var(--bg);color:var(--ink);border-radius:9px;padding:26px;box-shadow:0 20px 80px #26371d25}
 dialog::backdrop{background:#303b2459;backdrop-filter:blur(3px)}
 dialog[data-motion=opening]::backdrop{animation:backdrop-in var(--motion-duration) var(--motion-ease) both}
@@ -296,7 +299,7 @@ main{display:block;padding-top:16px}
 .settings .panel-heading h2{font-size:18px}
 .text-button{font-size:11px}
 .site-footer{grid-template-columns:minmax(0,1fr) auto;gap:7px 14px;padding:10px 0}
-.site-footer .clean-note{grid-row:2;grid-column:1/-1}
+.site-footer .text-button{grid-column:2}
 .site-footer p{font-size:11px}
 .layout-warning{font-size:9px;padding:7px 40px 7px 10px;gap:8px}
 .layout-warning .text-button{font-size:9px;max-width:75px}

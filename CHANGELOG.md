@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.12.0
+
+- Vuit adreces d’idioma indexables, amb HTML traduït abans de JavaScript, canònica pròpia, enllaços `hreflang` recíprocs, alternativa `x-default` i sitemap actualitzat.
+- Selector d’idioma amb enllaços reals que conserva la configuració i l’historial en canviar de llengua sense recarregar; suport d’enrere/endavant i de publicacions en subdirectoris.
+- Estructura comuna a `src/index.html` i generació de les pàgines amb Node, sense dependències noves. La publicació continua sent completament estàtica.
+- Fletxes discretes de desfer i refer al costat d’«El teu full», amb etiquetes accessibles i dreceres Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z i Ctrl+Y.
+- Historial de cent canvis de configuració durant la sessió, inclosos blocs, noms, peu, plantilles aplicades i restabliment. Cada arrossegament o edició continuada compta com un pas.
+- Eliminat el missatge central redundant del peu del web; es conserven la frase de l’esquerra i V4V a la dreta.
+
 ## 1.11.0
 
 - La melodia continua en obrir la història. El popup permet aturar, repetir i descobrir un altre fragment sense tancar-se.

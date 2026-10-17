@@ -79,6 +79,9 @@ previewNavigation|Full de mostra. Amplia amb els botons o Ctrl + roda i arrosseg
 pdf|Descarrega PDF|Download PDF|Descargar PDF|PDF herunterladen|Télécharger le PDF|Scarica PDF|Descarregar PDF|PDF downloaden
 settings|El teu full|Your sheet|Tu hoja|Dein Blatt|Votre feuille|Il tuo foglio|A tua folha|Jouw blad
 reset|Restableix|Reset|Restablecer|Zurücksetzen|Réinitialiser|Ripristina|Repor|Herstellen
+undo|Desfés|Undo|Deshacer|Rückgängig|Annuler|Annulla|Desfazer|Ongedaan maken
+redo|Refés|Redo|Rehacer|Wiederholen|Rétablir|Ripeti|Refazer|Opnieuw uitvoeren
+seoDescription|Crea i imprimeix paper pautat en blanc, sense marques d’aigua. A3, A4 i Letter, línies ajustables, agrupacions i plantilles gratuïtes.|Create and print blank manuscript paper without watermarks. A3, A4 and Letter, adjustable staff lines, grouping and free templates.|Crea e imprime papel pautado en blanco, sin marcas de agua. A3, A4 y Letter, líneas ajustables, agrupaciones y plantillas gratuitas.|Erstelle und drucke leeres Notenpapier ohne Wasserzeichen. A3, A4 und Letter, anpassbare Notenlinien, Gruppen und kostenlose Vorlagen.|Créez et imprimez du papier à musique vierge sans filigrane. A3, A4 et Letter, lignes réglables, groupements et modèles gratuits.|Crea e stampa carta pentagrammata vuota senza filigrane. A3, A4 e Letter, righi regolabili, raggruppamenti e modelli gratuiti.|Cria e imprime papel de música em branco, sem marcas de água. A3, A4 e Letter, linhas ajustáveis, agrupamentos e modelos gratuitos.|Maak en print leeg muziekpapier zonder watermerken. A3, A4 en Letter, instelbare notenlijnen, groeperingen en gratis sjablonen.
 paper|Format del paper|Paper size|Formato del papel|Papierformat|Format du papier|Formato carta|Formato do papel|Papierformaat
 orientation|Orientació|Orientation|Orientación|Ausrichtung|Orientation|Orientamento|Orientação|Oriëntatie
 portrait|Vertical|Portrait|Vertical|Hochformat|Portrait|Verticale|Vertical|Staand
