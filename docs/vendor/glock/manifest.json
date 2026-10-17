@@ -1,0 +1,37 @@
+{
+  "revision": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+  "transpose": 24,
+  "samples": [
+    {
+      "file": "g6.mp3",
+      "rootMidi": 91.118606,
+      "source": "Percussion/Glock/glock_medium_G5.wav",
+      "sourceBlob": "dbaf80bc3975016095de3a611a202b581931311c",
+      "sha256": "46627cb83dd9e326a71313139f93bde35b6fc88d05a6444a327dbd6bbb63def5",
+      "sampleRate": 44100,
+      "frames": 176400,
+      "pcmSha256": "11cbeefefbab60ccfe2afde84875917ca4bb69f294f846a1a6c8f879ab9b6092"
+    },
+    {
+      "file": "c7.mp3",
+      "rootMidi": 96.153502,
+      "source": "Percussion/Glock/glock_medium_C6.wav",
+      "sourceBlob": "c02ff721d10eb3551372806653368f45ea5dc367",
+      "sha256": "e6d7166d8b3c0bfaeb9ac8d8804a1ce3c8e3d62e8ce72458e08d31d915cea9e5",
+      "sampleRate": 44100,
+      "frames": 176400,
+      "pcmSha256": "c8445e4931ebb8e322b6e0af8d5315eb28a428cb57be7ab9bddd1aaca398ea25"
+    },
+    {
+      "file": "g7.mp3",
+      "rootMidi": 103.157132,
+      "source": "Percussion/Glock/glock_medium_G6.wav",
+      "sourceBlob": "e95738492bdc207b11ad32891a9a1ea090b6719e",
+      "sha256": "6020ce78a91bca88820f78ca7b83ad1413743570efe59952eb5e7f61f791f553",
+      "sampleRate": 44100,
+      "frames": 176400,
+      "pcmSha256": "9872d7a510f9f33b1ca552caf722e396a9af4b0e8e7dd22401adafe039ad1b34"
+    }
+  ],
+  "encoding": "MP3 mono 160 kbps / 44.1 kHz, lamejs 1.2.1"
+}

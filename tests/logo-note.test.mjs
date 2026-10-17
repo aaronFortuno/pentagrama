@@ -46,6 +46,21 @@ test('every jump keeps the entire deformed notehead inside the logo', () => {
   }
 });
 
+test('musical durations scale the whole jump without changing its path, deformation or destination pitch', () => {
+  const target = logoNote({ column: 0, step: 7 }), natural = planNoteJump(INITIAL_NOTE, target);
+  for (const duration of [250, 500, 2000]) {
+    const timed = planNoteJump(INITIAL_NOTE, target, { duration });
+    assert.ok(Math.abs(timed.duration - duration) < 1e-9);
+    assert.ok(Math.abs(timed.touchdown / timed.duration - natural.touchdown / natural.duration) < 1e-9);
+    for (let step = 0; step <= 100; step++) {
+      const a = sampleNoteJump(natural, natural.duration * step / 100), b = sampleNoteJump(timed, duration * step / 100);
+      for (const key of ['x', 'y', 'scaleX', 'scaleY']) assert.ok(Math.abs(a[key] - b[key]) < 1e-9);
+    }
+    assert.equal(timed.to.midi, natural.to.midi);
+  }
+  assert.throws(() => planNoteJump(INITIAL_NOTE, target, { duration: 0 }), RangeError);
+});
+
 function fixture(reduced = false) {
   const document = Object.assign(new EventTarget(), { hidden: false });
   const position = { setAttribute(name, value) { this[name] = value; } }, body = { ...position };

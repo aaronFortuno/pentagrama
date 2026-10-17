@@ -22,42 +22,47 @@ export function nextLogoNote(current, random = Math.random) {
   return logoNote({ column: Math.floor(index / 9), step: index % 9 });
 }
 
-export function planNoteJump(from, to) {
+export function planNoteJump(from, to, { duration } = {}) {
   const apex = Math.max(3.6, Math.min(from.y, to.y) - 5.5 - Math.abs(to.x - from.x) * 0.08);
   const rise = Math.sqrt(2 * (from.y - apex) / GRAVITY), fall = Math.sqrt(2 * (to.y - apex) / GRAVITY);
   const flight = rise + fall, takeoff = PREPARE + LAUNCH, touchdown = takeoff + flight;
-  return { from, to, rise, flight, takeoff, touchdown, duration: touchdown + IMPACT + REBOUND + SETTLE };
+  const naturalDuration = touchdown + IMPACT + REBOUND + SETTLE;
+  if (duration !== undefined && (!Number.isFinite(duration) || duration < 160 || duration > 5000)) throw new RangeError('Invalid jump duration');
+  const scale = duration === undefined ? 1 : duration / naturalDuration;
+  return { from, to, rise: rise * scale, flight: flight * scale, takeoff: takeoff * scale, touchdown: touchdown * scale,
+    duration: naturalDuration * scale, prepare: PREPARE * scale, launch: LAUNCH * scale,
+    impact: IMPACT * scale, rebound: REBOUND * scale, settle: SETTLE * scale, gravity: GRAVITY / scale ** 2 };
 }
 
 // Sampling by elapsed time keeps the same trajectory at 60, 120 or 144 Hz.
 export function sampleNoteJump(plan, elapsed) {
-  const { from, to, takeoff, touchdown, duration } = plan;
+  const { from, to, takeoff, touchdown, duration, prepare, launch, impact, rebound, settle, gravity } = plan;
   let x = from.x, y = from.y, scaleY = 1, phase = 'rest';
-  if (elapsed < PREPARE) {
-    phase = 'prepare'; scaleY = mix(1, 0.68, smooth(Math.max(0, elapsed) / PREPARE));
+  if (elapsed < prepare) {
+    phase = 'prepare'; scaleY = mix(1, 0.68, smooth(Math.max(0, elapsed) / prepare));
   } else if (elapsed < takeoff) {
-    phase = 'launch'; scaleY = mix(0.68, 1.18, smooth((elapsed - PREPARE) / LAUNCH));
+    phase = 'launch'; scaleY = mix(0.68, 1.18, smooth((elapsed - prepare) / launch));
   } else if (elapsed < touchdown) {
     const time = elapsed - takeoff, progress = time / plan.flight;
     phase = time < plan.rise ? 'rise' : 'fall';
     x = mix(from.x, to.x, progress);
-    y = from.y - GRAVITY * plan.rise * time + GRAVITY * time * time / 2;
+    y = from.y - gravity * plan.rise * time + gravity * time * time / 2;
     scaleY = time < plan.rise
       ? mix(1.18, 1, smooth(time / plan.rise))
       : mix(1, 1.1, smooth((time - plan.rise) / (plan.flight - plan.rise)));
   } else {
     x = to.x; y = to.y;
     const time = elapsed - touchdown;
-    if (time < IMPACT) {
-      phase = 'impact'; scaleY = mix(1.1, 0.66, smooth(time / IMPACT));
-    } else if (time < IMPACT + REBOUND) {
-      phase = 'rebound'; const progress = (time - IMPACT) / REBOUND;
-      y -= GRAVITY * REBOUND * REBOUND / 2 * progress * (1 - progress);
+    if (time < impact) {
+      phase = 'impact'; scaleY = mix(1.1, 0.66, smooth(time / impact));
+    } else if (time < impact + rebound) {
+      phase = 'rebound'; const progress = (time - impact) / rebound;
+      y -= gravity * rebound * rebound / 2 * progress * (1 - progress);
       scaleY = progress < 0.24
         ? mix(0.66, 1.12, smooth(progress / 0.24))
         : mix(1.12, 1.06, smooth((progress - 0.24) / 0.76));
     } else if (elapsed < duration) {
-      phase = 'settle'; const progress = (time - IMPACT - REBOUND) / SETTLE;
+      phase = 'settle'; const progress = (time - impact - rebound) / settle;
       scaleY = 1 + 0.06 * Math.cos(progress * Math.PI * 3) * (1 - progress) ** 2;
     }
   }
@@ -77,14 +82,15 @@ export function createLogoNote(button, { random = Math.random, env = globalThis 
   };
   const rest = note => paint({ ...note, scaleX: 1, scaleY: 1, phase: 'rest' });
   const emit = (phase, jump, extra = {}) => button.dispatchEvent(new env.CustomEvent(`pentagrama:note-${phase}`, {
-    bubbles: true, detail: Object.freeze({ note: jump.plan.to, sequence: jump.sequence, reducedMotion: jump.reducedMotion, ...extra }),
+    bubbles: true, detail: Object.freeze({ note: jump.plan.to, sequence: jump.sequence, reducedMotion: jump.reducedMotion,
+      timing: Object.freeze({ duration: jump.plan.duration, touchdown: jump.plan.touchdown }), ...extra }),
   }));
   function finish(cancelled = false) {
     if (!active) return;
     env.cancelAnimationFrame(request); request = null;
     const jump = active; active = undefined; current = jump.plan.to; rest(current);
     emit('rest', jump, { cancelled });
-    if (queued && !cancelled) { const next = queuedNote; queued = false; queuedNote = undefined; jumpTo(next); }
+    if (queued && !cancelled) { const next = queuedNote; queued = false; queuedNote = undefined; jumpTo(next?.note, next?.timing); }
     else { queued = false; queuedNote = undefined; }
   }
   function tick(timestamp) {
@@ -97,13 +103,13 @@ export function createLogoNote(button, { random = Math.random, env = globalThis 
     if (elapsed >= jump.plan.duration) finish();
     else request = env.requestAnimationFrame(tick);
   }
-  function jumpTo(destination) {
+  function jumpTo(destination, timing = {}) {
     if (disposed || document.hidden) return false;
     const target = destination ? logoNote(destination) : undefined;
     // Keep at most one next jump. Repeated clicks cannot interrupt an airborne note.
-    if (active) { queued = true; queuedNote = target; return true; }
+    if (active) { queued = true; queuedNote = { note: target, timing: { ...timing } }; return true; }
     const to = target || nextLogoNote(current, random);
-    const jump = { plan: planNoteJump(current, to), sequence: ++sequence, reducedMotion: preference.matches, landed: false };
+    const jump = { plan: planNoteJump(current, to, timing), sequence: ++sequence, reducedMotion: preference.matches, landed: false };
     active = jump; emit('start', jump);
     if (active !== jump) return true;
     if (jump.reducedMotion) { rest(to); jump.landed = true; emit('land', jump); finish(); }

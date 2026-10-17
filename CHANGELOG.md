@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.8.0
+
+- So de glockenspiel real a cada primer aterratge del logotip, amb mostres de VSCO 2 Community Edition sota CC0 i crèdits al diàleg del projecte.
+- Petit banc local de tres mostres, uns 243 kB en total, amb afinació compensada, transposició pròpia de l’instrument i inici de la gravació ajustat al contacte visual.
+- Àudio activat pel clic, toc o teclat, sense reproducció automàtica ni interruptor addicional. Les cues s’aturen en amagar la pàgina.
+- Reproductor independent amb càrrega reutilitzable, polifonia limitada i programació per temps d’àudio, preparat per a les melodies futures.
+- Durada dels salts configurable sense alterar la trajectòria ni l’afinació; l’animació dels clics conserva el ritme anterior.
+- Proves del banc, afinació, càrrega, sincronització, errors, moviment reduït i durades musicals.
+
 ## 1.7.1
 
 - Exclusió manual d’analítica desactivada per defecte i independent de Do Not Track i Global Privacy Control.
