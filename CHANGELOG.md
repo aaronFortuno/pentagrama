@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.7.0
+
+- Nota interactiva al logotip: anticipació, deformació, impuls, trajectòria amb gravetat, compressió d’aterratge, rebot petit i repòs.
+- Destinacions aleatòries entre tres columnes i les línies i espais del pentagrama, sense repetir la posició anterior.
+- Icona amb botó propi, accessible amb ratolí, dit i teclat; el nom del web conserva l’enllaç d’inici.
+- Mòdul independent amb esdeveniments d’inici, contacte i repòs, i dades de la nota de destí preparades per al so i les melodies futures.
+- Un únic salt pendent per als clics ràpids, moviment reduït respectat i cancel·lació quan s’amaga la pàgina.
+- Proves de trajectòria, continuïtat, límits de la icona i cicle de vida de l’animació.
+
 ## 1.6.0
 
 - Nota del logotip més petita, ovalada i inclinada.

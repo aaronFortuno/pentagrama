@@ -8,6 +8,7 @@ intro|Espai per a la teva|Space for your|Espacio para tu|Raum für deine|De la p
 music|música.|music.|música.|Musik.|musique.|musica.|música.|muziek.
 description|Paper pautat a mida, sense marques d’aigua.|Custom manuscript paper, without watermarks.|Papel pautado a medida, sin marcas de agua.|Notenpapier nach Maß, ohne Wasserzeichen.|Du papier à musique sur mesure, sans filigrane.|Carta pentagrammata su misura, senza filigrane.|Papel de música à medida, sem marcas de água.|Muziekpapier op maat, zonder watermerken.
 print|Imprimeix|Print|Imprimir|Drucken|Imprimer|Stampa|Imprimir|Afdrukken
+jumpNote|Fes saltar la nota|Make the note jump|Haz saltar la nota|Lass die Note hüpfen|Faites sauter la note|Fai saltare la nota|Faz a nota saltar|Laat de noot springen
 zoom|Zoom de la previsualització|Preview zoom|Zoom de la vista previa|Vorschau-Zoom|Zoom de l’aperçu|Zoom dell’anteprima|Zoom da pré-visualização|Voorbeeldzoom
 zoomIn|Amplia|Zoom in|Ampliar|Vergrößern|Agrandir|Ingrandisci|Ampliar|Inzoomen
 zoomOut|Redueix|Zoom out|Reducir|Verkleinern|Réduire|Riduci|Reduzir|Uitzoomen

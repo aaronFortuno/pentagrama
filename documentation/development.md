@@ -31,6 +31,7 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/library.js` | Plantilles suggerides i personals |
 | `docs/i18n.js` | Traduccions, detecció i selecció d’idioma |
 | `docs/motion.js`, `docs/touch-range.js` | Transicions i gestos tàctils |
+| `docs/logo-note.js` | Trajectòria, deformació i control de la nota del logotip |
 | `docs/icons.js`, `docs/vendor/` | Icones, fonts i llicències de tercers |
 | `docs/pdf.js` | Generador vectorial intern; la interfície utilitza el diàleg d’impressió |
 | `docs/analytics.js` | Càrrega i filtratge de l’analítica de producció |
@@ -53,6 +54,26 @@ Es manté la compatibilitat amb els formats anteriors:
 Els missatges són a `docs/i18n.js`, amb una entrada per idioma. Les proves comproven que no faltin claus ni variables. La detecció inicial consulta les preferències del navegador, reconeix variants regionals i utilitza l’anglès si no troba cap idioma compatible. La tria manual es desa localment.
 
 La interfície comparteix una sola URL; actualment no hi ha pàgines indexables separades per idioma.
+
+## Nota del logotip
+
+`docs/logo-note.js` és independent del generador de fulls. Calcula una trajectòria parabòlica amb gravetat constant i deforma el cap de nota abans de l’impuls i en aterrar. El petit rebot perd altura i acaba amb una oscil·lació amortida. Tot es dibuixa amb transformacions dels dos grups SVG; les línies del logotip i el layout del web es mantenen fixos.
+
+L’animació utilitza el temps de `requestAnimationFrame`, no el nombre de fotogrames, i té un ritme físic propi d’aproximadament un segon. Les transicions ordinàries de la interfície conserven els 220 ms. La preferència `prefers-reduced-motion` canvia directament la posició, sense salt. Amagar la pàgina acaba el moviment sense un contacte ajornat ni salts pendents; no hi ha activació automàtica.
+
+`createLogoNote(button)` retorna `jumpTo({ column, step })` i `destroy()`. Les columnes són 0–2 i els passos diatònics 0–8, d’E4 a F5 en clau de sol. Sense destí explícit, `jumpTo()` tria una posició aleatòria diferent de l’actual. Durant un salt només es conserva l’última petició pendent.
+
+El botó emet tres esdeveniments que es propaguen pel DOM:
+
+- `pentagrama:note-start`: inici del gest, on un futur mòdul de so pot preparar el context d’àudio.
+- `pentagrama:note-land`: primer contacte amb el destí, una vegada per salt; el rebot no el repeteix.
+- `pentagrama:note-rest`: repòs final; `detail.cancelled` indica si s’ha aturat en amagar la pàgina o reduir el moviment.
+
+Tots inclouen `detail.note` (`column`, `step`, `x`, `y`, `pitch`, `midi`), `sequence` i `reducedMotion`. Això permet vincular-hi el so o un controlador de melodies sense modificar la física. Aquesta versió implementa el moviment visual; el so i la informació sobre melodies es poden afegir després.
+
+Les proves comproven les posicions musicals, la continuïtat entre fases, els límits del cap de nota deformat per a totes les combinacions, els clics ràpids, diferents ritmes de fotogrames, el moviment reduït i la neteja dels recursos.
+
+Referències: [requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) i [preferència de moviment reduït](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
 
 ## Recursos de tercers
 

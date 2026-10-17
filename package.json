@@ -1,6 +1,6 @@
 {
   "name": "pentagrama",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "Fulls de pentagrames en blanc amb previsualització i impressió.",
   "license": "SEE LICENSE IN LICENSE",
@@ -14,6 +14,6 @@
   "scripts": {
     "dev": "node tools/serve.mjs",
     "version:assets": "node tools/version-assets.mjs",
-    "test": "node --test tests/layout.test.mjs tests/analytics.test.mjs tests/interactions.test.mjs"
+    "test": "node --test tests/layout.test.mjs tests/analytics.test.mjs tests/interactions.test.mjs tests/logo-note.test.mjs"
   }
 }
