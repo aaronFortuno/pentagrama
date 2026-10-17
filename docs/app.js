@@ -14,6 +14,8 @@ if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
 let language = detectLanguage(languageChoice, navigator.languages || [navigator.language]);
 let templatesOpen = false, toastTimer, layout;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
+let zoomHintTimer;
+const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
 const t = (key, variables) => translate(language, key, variables);
 const number = value => new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
 const staffCount = count => t(count === 1 ? 'oneStaff' : 'staffCount', { n: count });
@@ -23,6 +25,7 @@ function toast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 3500);
 }
 function translatePage() {
+  hideZoomHint();
   document.documentElement.lang = language; document.title = t('title');
   document.querySelector('meta[name=description]').content = t('description');
   document.querySelectorAll('[data-i18n]').forEach(element => { element.textContent = t(element.dataset.i18n); });
@@ -54,10 +57,17 @@ function fitPreview() {
   $('zoom-out').disabled = previewZoom <= MIN_ZOOM; $('zoom-in').disabled = previewZoom >= MAX_ZOOM;
 }
 function zoomPreview(value) {
+  hideZoomHint();
   const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, value));
   const ratio = next / previewZoom;
   previewPan = next === MIN_ZOOM ? { x: 0, y: 0 } : { x: previewPan.x * ratio, y: previewPan.y * ratio };
   previewZoom = next; fitPreview();
+}
+function hideZoomHint() { clearTimeout(zoomHintTimer); $('zoom-hint').hidden = true; }
+function showZoomHint() {
+  const hint = $('zoom-hint');
+  if (hint.hidden) hint.textContent = t('scrollZoomHint', { key: zoomModifier });
+  hint.hidden = false; clearTimeout(zoomHintTimer); zoomHintTimer = setTimeout(hideZoomHint, 2200);
 }
 function node(tag, className, text) { const element = document.createElement(tag); if (className) element.className = className; if (text !== undefined) element.textContent = text; return element; }
 function icon(text, title, action, index) { const button = node('button', 'icon-button', text); button.type = 'button'; button.title = title; button.setAttribute('aria-label', title); button.dataset.action = action; button.dataset.index = index; return button; }
@@ -89,7 +99,7 @@ function renderLibrary() {
   function card(template, isSuggested) {
     const name = isSuggested ? t(template.key) : template.name, s = normalizeSettings(template.settings), l = createLayout(s);
     const wrapper = node('div', 'template-card'), load = node('button', 'template-load'); load.type = 'button'; load.dataset.action = 'load'; load.dataset.id = template.id; load.dataset.suggested = String(isSuggested); load.setAttribute('aria-label', name);
-    const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false });
+    const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false, source: false });
     const copy = node('span', 'template-copy'); copy.append(node('span', 'template-name', name), node('span', 'template-description', `${s.paper === 'LETTER' ? 'Letter' : s.paper} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`));
     load.append(thumbnail, copy);
     const remove = icon('×', `${t('remove')}: ${name}`, 'delete', 0); remove.dataset.id = template.id; remove.dataset.suggested = String(isSuggested);
@@ -111,7 +121,7 @@ function render({ blocks = false, templates = false } = {}) {
   for (let i = 2; i < settings.count; i++) $('group-size').add(new Option(t('groupEvery', { n: i }), String(i)));
   $('group-size').value = settings.group; $('group-size').disabled = settings.count < 3;
   $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1;
-  $('show-reference').checked = settings.reference; $('current-reference').value = encodeReference(settings);
+  $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
   const sheet = renderSheet(settings); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = layout.valid ? sheet : '';
   $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm`);
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
@@ -140,7 +150,7 @@ async function copy(text) {
 }
 function restoreFromHash(showMessage = false) {
   if (!location.hash) return;
-  try { const restored = decodeShareHash(location.hash.slice(1)); settings = { ...restored, reference: settings.reference }; if (showMessage) { render({ blocks: true }); toast(t('restored')); } }
+  try { const restored = decodeShareHash(location.hash.slice(1)); settings = { ...restored, reference: settings.reference, source: settings.source }; if (showMessage) { render({ blocks: true }); toast(t('restored')); } }
   catch { if (showMessage) toast(t('invalidRef')); }
 }
 
@@ -151,6 +161,7 @@ $('landscape-button').addEventListener('click', () => update('orientation', 'lan
 for (const [id, key] of [['thickness', 'thickness'], ['line-spacing', 'lineSpacing'], ['group-spacing', 'spacing']]) $(id).addEventListener('input', event => update(key, Number(event.target.value)));
 $('group-size').addEventListener('change', event => update('group', Number(event.target.value)));
 $('show-reference').addEventListener('change', event => update('reference', event.target.checked));
+$('show-source').addEventListener('change', event => update('source', event.target.checked));
 $('staff-count').addEventListener('input', event => { const n = Number(event.target.value); if (event.target.value && Number.isInteger(n) && n >= 1 && n <= 64) update('count', n); });
 $('staff-count').addEventListener('change', event => { if (event.target.value !== '') settings.count = Number(event.target.value); render(); });
 $('decrease-count').addEventListener('click', () => update('count', settings.count - 1));
@@ -177,7 +188,7 @@ $('fit-button').addEventListener('click', () => { settings = fitSettings(setting
 $('reset-button').addEventListener('click', () => { settings = normalizeSettings(DEFAULTS); $('restore-message').textContent = ''; $('reference-input').value = ''; render({ blocks: true }); toast(t('resetDone')); });
 $('restore-form').addEventListener('submit', event => {
   event.preventDefault();
-  try { const restored = decodeReference($('reference-input').value); settings = { ...restored, reference: settings.reference }; render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
+  try { const restored = decodeReference($('reference-input').value); settings = { ...restored, reference: settings.reference, source: settings.source }; render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
   catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
 $('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
@@ -213,11 +224,13 @@ $('zoom-in').addEventListener('click', () => zoomPreview(previewZoom * 1.25));
 $('zoom-out').addEventListener('click', () => zoomPreview(previewZoom / 1.25));
 $('zoom-reset').addEventListener('click', () => zoomPreview(MIN_ZOOM));
 $('paper-stage').addEventListener('wheel', event => {
-  if ((!event.ctrlKey && !event.metaKey) || !event.deltaY) return;
-  event.preventDefault(); zoomPreview(previewZoom * (event.deltaY < 0 ? 1.1 : 1 / 1.1));
+  const delta = event.deltaY || event.deltaX; if (!delta) return;
+  if (!event.ctrlKey && !event.metaKey) { showZoomHint(); return; }
+  event.preventDefault(); zoomPreview(previewZoom * (delta < 0 ? 1.1 : 1 / 1.1));
 }, { passive: false });
 $('paper-stage').addEventListener('pointerdown', event => {
   if (previewZoom <= MIN_ZOOM || !event.isPrimary || event.button !== 0) return;
+  hideZoomHint();
   const stage = $('paper-stage');
   drag = { id: event.pointerId, x: event.clientX, y: event.clientY, pan: { ...previewPan } };
   stage.setPointerCapture(event.pointerId); stage.classList.add('dragging'); stage.focus({ preventScroll: true }); event.preventDefault();

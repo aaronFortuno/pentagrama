@@ -1,5 +1,6 @@
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
-export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
+export const SERVICE_ADDRESS = 'aaronfortuno.github.io/pentagrama';
+export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
 const numeric = (v, fallback, min, max) => clamp(Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : fallback, min, max);
@@ -15,7 +16,7 @@ export function normalizeSettings(value = {}) {
   })) : [];
   return {
     count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
-    reference: value.reference === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
+    reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
     lineSpacing: round(numeric(value.lineSpacing, 2, 1, 4)), mode: value.mode === 'blocks' ? 'blocks' : 'simple', systems: Math.round(numeric(value.systems, 1, 1, 8)), systemGap: round(numeric(value.systemGap, 18, 1, 60)),
     blocks: blocks.length ? blocks : value.mode === 'blocks' ? [{ label: '', count: 4, inside: 12, after: 14 }, { label: '', count: 2, inside: 6, after: 14 }] : [],
   };
@@ -117,15 +118,19 @@ export function fitSettings(value) {
 }
 
 export function footerLines(value) {
-  const s = normalizeSettings(value); if (!s.reference) return [];
-  const { width, height } = pageDimensions(s), code = encodeReference(s), length = Math.floor((width - 36) / 1.2);
+  const s = normalizeSettings(value), { width, height } = pageDimensions(s);
+  const source = s.source ? [{ text: SERVICE_ADDRESS, x: 18, y: height - 9, anchor: 'start' }] : [];
+  if (!s.reference) return source;
+  // Courier at 2 mm uses 1.2 mm per character. Reserve a gutter between both footers.
+  const code = encodeReference(s), reserved = s.source ? SERVICE_ADDRESS.length * 1.2 + 8 : 0;
+  const length = Math.floor((width - 36 - reserved) / 1.2);
   const chunks = code.match(new RegExp(`.{1,${length}}`, 'g')) || [];
-  return chunks.map((text, i) => ({ text, x: width - 18, y: height - 9 - (chunks.length - i - 1) * 2.6 }));
+  return [...source, ...chunks.map((text, i) => ({ text, x: width - 18, y: height - 9 - (chunks.length - i - 1) * 2.6, anchor: 'end' }))];
 }
 
 export function renderSheet(value) {
   const l = createLayout(value);
   const lines = l.staves.flatMap(staff => staff.map(y => `<line x1="18" x2="${l.width - 18}" y1="${y.toFixed(5)}" y2="${y.toFixed(5)}"/>`)).join('');
-  const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="end" font-family="Courier New,monospace" font-size="2" fill="#747474">${f.text}</text>`).join('');
+  const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="${f.anchor}" font-family="Courier New,monospace" font-size="2" fill="#747474">${f.text}</text>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${l.width}mm" height="${l.height}mm" viewBox="0 0 ${l.width} ${l.height}" aria-hidden="true"><g fill="none" stroke="#000" stroke-width="${l.thickness}">${lines}</g>${footer}</svg>`;
 }

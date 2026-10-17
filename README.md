@@ -12,6 +12,7 @@ Un full en blanc per a la teva música. Paper pautat a mida, previsualització e
 - **Distribució senzilla**: d’1 a 64 pentagrames, sense agrupar o agrupats de 2 en 2, de 3 en 3, etc. L’espai disponible es reparteix automàticament.
 - **Distribució per blocs**: fins a 24 blocs amb nom, nombre de pentagrames, distància entre pentagrames i espai fins al bloc següent. Es pot repetir el conjunt d’1 a 8 vegades, amb un espai entre conjunts propi. Els noms dels blocs només serveixen per configurar-los i no s’imprimeixen.
 - **Referència opcional al peu** per recuperar la geometria exacta del full.
+- **Adreça del web opcional al peu esquerre**, desactivada per defecte, per recordar on s’ha creat el full.
 - **Enllaç compartible** que conserva la distribució i els noms dels blocs.
 
 El nombre de pentagrames que hi cap depèn del format, l’espai entre línies i la distribució. Si una configuració no hi cap, el web avisa i desactiva la impressió. **Ajusta al full** fa un ajust explícit: en mode senzill redueix el nombre de pentagrames; en mode blocs redueix els espais i, si és necessari, l’espai entre línies. Els controls mostren els valors resultants. Si tampoc no hi cap amb les mides mínimes, cal reduir manualment el nombre de pentagrames, blocs o repeticions.
@@ -20,11 +21,13 @@ En mode blocs les distàncies són exactes en mil·límetres, entre l’última 
 
 ## Previsualitzar i imprimir
 
-La capçalera reuneix el títol, el selector d’idioma i **Imprimeix**, que obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
+La capçalera reuneix el títol i el selector d’idioma en una sola fila. El títol i la descripció s’oculten a 800 px o menys. **Imprimeix**, fix a dalt del panell de configuració, obre el diàleg habitual del navegador. Des d’aquest diàleg també pots desar el full com a PDF. Tria el mateix format de paper i escala 100 %; desactiva les capçaleres i els peus del navegador si estan actius.
 
 Els controls **+**, **−** i **Ajusta** amplien la previsualització fins al 400 % o tornen a mostrar el full sencer. Quan està ampliat, arrossega’l amb el ratolí o amb un dit per explorar-lo. També pots ampliar amb Ctrl + roda (Cmd + roda a macOS). Amb el focus al full, les tecles + i − amplien o redueixen, les fletxes el desplacen i 0 o Inici ajusten el full. El zoom només afecta la vista en pantalla.
 
-El full només conté les línies i, si l’actives, la referència de configuració. Sense notes, claus, silencis, armadures, barres de compàs, noms d’instruments ni publicitat.
+Si fas scroll sobre el full sense el modificador, apareix breument un avís que recorda Ctrl + roda, o ⌘ + roda a macOS. El scroll normal permet continuar desplaçant la pàgina en mòbil.
+
+Per defecte, el full només conté les línies. Pots activar **Adreça del web al peu** perquè aparegui `aaronfortuno.github.io/pentagrama` a l’esquerra, i **Referència al peu** perquè aparegui el codi de configuració a la dreta. Són opcions independents, desactivades inicialment; les referències llargues es reparteixen en línies sense ocupar l’espai de l’adreça. No s’hi afegeixen notes, claus, silencis, armadures, barres de compàs ni noms d’instruments.
 
 ## Plantilles sense compte
 
@@ -45,7 +48,7 @@ Les noves referències **P2** incorporen format, orientació, espai entre línie
 - `P2-A3-L-I20-T12-N9-G3-E22`: A3 horitzontal, interlineat de 2 mm, gruix de 0,12 mm, 9 pentagrames agrupats de 3 en 3 i separació relativa de 2,2×.
 - `P2-A4-P-I20-T12-S2-J180-B4.120.140_2.60.140`: dos conjunts SATB + piano; 12 mm entre les quatre veus, 14 mm fins al piano, 6 mm entre els dos pentagrames de piano i 18 mm entre conjunts.
 
-Les referències impreses codifiquen la geometria. Els enllaços compartits també conserven els noms dels blocs, dins del fragment de l’adreça (`#`), sense enviar-los al servidor.
+Les referències impreses codifiquen la geometria. Els enllaços compartits també conserven els noms dels blocs, dins del fragment de l’adreça (`#`), sense enviar-los al servidor. L’activació dels peus és una preferència local: recuperar una referència o obrir un enllaç no activa l’adreça del web.
 
 ## Idiomes
 

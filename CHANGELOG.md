@@ -1,5 +1,13 @@
 # Canvis
 
+## 1.3.0
+
+- Avís breu de Ctrl + roda (⌘ a macOS) quan es fa scroll sense modificador sobre el full.
+- Capçalera en una sola fila, amb títol i descripció ocults a 800 px o menys.
+- Botó d’imprimir fix a la part superior de la configuració, visible durant el desplaçament.
+- Peu del web: «La música és teva. El paper, també.», amb les vuit traduccions actualitzades.
+- Adreça del web opcional al peu esquerre del full, desactivada per defecte i independent de la referència de la dreta.
+
 ## 1.2.0
 
 - Capçalera compacta amb títol, descripció, idioma i un únic botó d’imprimir que obre el diàleg del navegador.

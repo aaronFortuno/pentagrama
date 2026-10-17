@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, pageDimensions, fitSettings, footerLines, renderSheet } from '../docs/layout.js';
+import { DEFAULTS, SERVICE_ADDRESS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, pageDimensions, fitSettings, footerLines, renderSheet } from '../docs/layout.js';
 import { createPdf } from '../docs/pdf.js';
 import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from '../docs/library.js';
 import { LANGUAGES, messages, detectLanguage, translate } from '../docs/i18n.js';
@@ -118,6 +118,36 @@ test('restoring hidden suggestions never deletes or modifies personal templates'
   const corrupt = normalizeLibrary({ hidden: ['unknown', 'piano', 'piano'], saved: [personal, personal, null, { id: 'bad', name: '' }] });
   assert.equal(corrupt.saved.length, 1); assert.deepEqual(corrupt.hidden, ['piano']);
   const full = { saved: Array.from({ length: 50 }, (_, i) => ({ ...personal, id: String(i) })) }; assert.throws(() => addTemplate(full, personal));
+});
+
+test('website footer is opt-in, shares space with long references and leaves the staves unchanged', () => {
+  assert.equal(normalizeSettings({}).source, false);
+  assert.equal(normalizeSettings({ source: 'true' }).source, false);
+  assert.equal(decodeReference('P1-N9-G3-E22-T12').source, false);
+  for (const paper of ['A4', 'A3', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
+    const configurations = [DEFAULTS, { ...DEFAULTS, mode: 'blocks', lineSpacing: 1, blocks: Array.from({ length: 24 }, () => ({ label: '', count: 1, inside: 40, after: 1 })) }];
+    for (const configuration of configurations) for (const source of [false, true]) for (const reference of [false, true]) {
+      const s = normalizeSettings({ ...configuration, paper, orientation, source, reference }), l = createLayout(s);
+      assert.ok(l.valid);
+      assert.deepEqual(l.staves, createLayout({ ...s, source: false, reference: false }).staves);
+      const footer = footerLines(s), address = footer.find(f => f.anchor === 'start'), refs = footer.filter(f => f.anchor === 'end');
+      assert.equal(Boolean(address), source);
+      assert.equal(refs.map(f => f.text).join(''), reference ? encodeReference(s) : '');
+      if (address) { assert.equal(address.text, SERVICE_ADDRESS); assert.equal(address.x, 18); }
+      for (const f of footer) {
+        const left = f.anchor === 'start' ? f.x : f.x - f.text.length * 1.2;
+        assert.ok(left >= 18 - 1e-7); assert.ok(left + f.text.length * 1.2 <= l.width - 18 + 1e-7);
+        assert.ok(f.y - 2 > l.bottom); assert.ok(f.y <= l.height - 9);
+        if (address && f.anchor === 'end') assert.ok(left >= address.x + address.text.length * 1.2 + 8 - 1e-7);
+      }
+      const svg = renderSheet(s), pdf = new TextDecoder().decode(createPdf(s));
+      assert.equal(svg.includes(SERVICE_ADDRESS), source); assert.equal(pdf.includes(SERVICE_ADDRESS), source);
+      if (source) assert.match(pdf, /1 0 0 1 51\.02362 [\d.]+ Tm \(aaronfortuno\.github\.io\/pentagrama\)/);
+      assert.equal(decodeShareHash(encodeShareHash(s)).source, false);
+    }
+  }
+  const saved = addTemplate({}, { id: 'with-source', name: 'Amb adreça', settings: { ...DEFAULTS, source: true } });
+  assert.equal(normalizeLibrary(saved).saved[0].settings.source, true);
 });
 
 test('all eight languages have complete matching messages and automatic region fallback works', () => {
