@@ -1,7 +1,7 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.3.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.3.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.3.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.3.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';

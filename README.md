@@ -70,6 +70,8 @@ El web està a `docs/` i no necessita compilació ni instal·lació de dependèn
 
 Les actualitzacions a `main` es publiquen automàticament. Les rutes són relatives i permeten utilitzar un subdirectori o un domini propi.
 
+Abans de publicar una versió, actualitza `version` a `package.json` i executa `node tools/version-assets.mjs`. Això afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. No compila ni afegeix dependències.
+
 ## Desenvolupament i comprovacions
 
 Amb Node.js 22 o posterior, sense necessitat d’executar `npm install`:

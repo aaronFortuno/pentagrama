@@ -13,6 +13,7 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "node tools/serve.mjs",
+    "version:assets": "node tools/version-assets.mjs",
     "test": "node --test tests/layout.test.mjs"
   }
 }
