@@ -1,11 +1,11 @@
-import { createMelodyPicker } from './melodies.js?v=1.14.0';
-import { createMelodyPlayer } from './melody-player.js?v=1.14.0';
-import { createWordmark } from './wordmark.js?v=1.14.0';
-import { openDialog, closeDialog } from './motion.js?v=1.14.0';
+import { createMelodyPicker } from './melodies.js?v=1.15.0';
+import { createMelodyPlayer } from './melody-player.js?v=1.15.0';
+import { createWordmark } from './wordmark.js?v=1.15.0';
+import { openDialog, closeDialog } from './motion.js?v=1.15.0';
 
 export const DISCOVERY_CLICKS = 5;
 
-export function createMelodyDiscovery({ button, note, player, home, trigger, dialog, t, notify }) {
+export function createMelodyDiscovery({ button, note, player, home, trigger, dialog, t, notify, track = () => {} }) {
   const document = button.ownerDocument, $ = id => document.getElementById(id);
   const wordmark = createWordmark(home, trigger);
   const pickMelody = createMelodyPicker();
@@ -13,7 +13,8 @@ export function createMelodyDiscovery({ button, note, player, home, trigger, dia
   const portraitReady = () => portrait.classList.add('loaded');
   const portraitFailed = () => { portraitFrame.hidden = true; };
   portrait.addEventListener('load', portraitReady); portrait.addEventListener('error', portraitFailed);
-  let clicks = 0, lastClick = 0, selected, state = 'idle';
+  let clicks = 0, lastClick = 0, selected, state = 'idle', playbackSource = 'discovery';
+  const report = (name, data) => { try { track(name, data); } catch { /* Statistics must never interrupt the music. */ } };
   function refresh({ immediate = true } = {}) {
     const playing = state === 'playing' || state === 'loading';
     button.dataset.melodyState = state;
@@ -36,28 +37,31 @@ export function createMelodyDiscovery({ button, note, player, home, trigger, dia
     portrait.alt = t(selected.portrait === 'petzold' ? 'portraitImagined' : 'portraitAlt', { name: selected.composer });
     $('portrait-caption').hidden = selected.portrait !== 'petzold';
   }
-  const playback = createMelodyPlayer({ note, player, document, onState(value) {
+  const playback = createMelodyPlayer({ note, player, document, onState(value, melody) {
     state = value;
     button.dataset.melodyState = value;
     const playing = value === 'playing' || value === 'loading';
     button.setAttribute('aria-label', t(playing ? 'stopMelody' : 'jumpNote')); button.title = button.getAttribute('aria-label');
     $('melody-replay').textContent = t(playing ? 'stopMelody' : 'replayMelody');
     if (value === 'unavailable') notify(t('melodyUnavailable'));
+    if (value === 'playing') report('melody_started', { melody: melody.id, source: playbackSource });
   } });
-  function play(melody) {
+  function play(melody, source = 'discovery') {
+    playbackSource = source;
     selected = melody; clicks = 0; refresh({ immediate: false });
     $('melody-announcement').textContent = t('melodyDiscovered', { name: t(`melody_${melody.id}_title`) });
     return playback.play(melody);
   }
   const click = () => {
+    report('logo_clicked');
     if (playback.active) { playback.stop(); return; }
     const now = Date.now(); clicks = now - lastClick > 12_000 ? 1 : clicks + 1; lastClick = now;
     if (clicks >= DISCOVERY_CLICKS) play(pickMelody());
     else note.jumpTo();
   };
-  const showInfo = () => { if (selected) openDialog(dialog); };
-  const replay = () => { if (playback.active) playback.stop(); else play(selected); };
-  const another = () => play(pickMelody());
+  const showInfo = () => { if (selected && !dialog.open) { openDialog(dialog); report('melody_info_opened', { melody: selected.id }); } };
+  const replay = () => { if (playback.active) playback.stop(); else play(selected, 'replay'); };
+  const another = () => play(pickMelody(), 'next');
   const reset = () => {
     playback.stop(); selected = undefined; clicks = 0; closeDialog(dialog); wordmark.change().then(() => home.focus({ preventScroll: true }));
     $('melody-announcement').textContent = '';

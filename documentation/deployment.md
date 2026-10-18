@@ -2,6 +2,8 @@
 
 El contingut publicable és a `docs/`, incloses les pàgines traduïdes ja generades. Es pot servir directament com a fitxers estàtics, sense executar cap eina al servidor.
 
+La generació també prepara el catàleg de plantilles i les dues guies per idioma, les miniatures de `docs/assets/templates/` i les seves entrades al sitemap. Es reutilitzen els mateixos ajustos que al sidebar de l’editor.
+
 ## Publicació del projecte
 
 La publicació actual utilitza GitHub Pages, amb la branca `main` i el directori `/docs`. Les actualitzacions d’aquesta branca es publiquen automàticament a https://pentagrama.page/.

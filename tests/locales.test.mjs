@@ -5,6 +5,7 @@ import { LANGUAGES, translate } from '../docs/i18n.js';
 import { languageFromURL, languageURL } from '../docs/language-routing.js';
 import { renderLocalizedPage, escapeHTML } from '../tools/build-locales.mjs';
 import { RELEASE } from '../tools/site-data.mjs';
+import { TEMPLATE_GUIDES, templatePath } from '../tools/build-template-pages.mjs';
 
 const root = new URL('../', import.meta.url), site = 'https://pentagrama.page/';
 const source = await readFile(new URL('src/index.html', root), 'utf8');
@@ -30,13 +31,13 @@ test('every published language has translated HTML, a self canonical and recipro
   }
 });
 
-test('automatic home remains self canonical and sitemap lists home plus every real language URL', async () => {
+test('automatic home remains self canonical and sitemap lists all language and template pages', async () => {
   const html = await readFile(new URL('docs/index.html', root), 'utf8');
   assert.equal(html, renderLocalizedPage(source, 'ca', site, { automatic: true }));
   assert.ok(html.includes(`<link rel="canonical" href="${site}">`)); assert.ok(html.includes('<base href="./">'));
   const sitemap = await readFile(new URL('docs/sitemap.xml', root), 'utf8');
   const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
-  assert.deepEqual(urls, [site, ...codes.map(code => `${site}${code}/`)]);
+  assert.deepEqual(urls, [site, ...codes.map(code => `${site}${code}/`), ...codes.flatMap(code => [undefined, ...TEMPLATE_GUIDES].map(guide => site + templatePath(code, guide)))]);
 });
 
 test('localized asset and language links resolve to files for a repository hosted under a subdirectory', async () => {

@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.15.0 · 2026-10-18
+
+- Títols de cerca explícits als deu idiomes, centrats en els pentagrames en blanc per imprimir.
+- Catàleg públic amb les set plantilles del lateral i pàgines específiques de coral SATB amb piano i d’orquestra A3, amb miniatures i enllaços per obrir la mateixa configuració al generador.
+- HTML traduït, canòniques pròpies, alternatives hreflang, enllaços interns i sitemap amb les 41 pàgines del web. Les geometries es generen a partir de les plantilles existents, sense mantenir còpies de les configuracions.
+- Analítica de clics al logo, inici real de fragments i obertura de les píndoles musicals, amb identificadors tancats i fonts de reproducció; es respecten les exclusions existents i no es recullen textos de l’usuari.
+- Text breu de privadesa actualitzat, guia d’interpretació dels esdeveniments i resum de la versió als deu idiomes, conservant l’historial complet.
+- Corregida la resolució de la carpeta pública del servidor local a Windows.
+
 ## 1.14.0 · 2026-10-18
 
 - Traducció completa a euskara i galego: configuració, plantilles, ajuda, accessibilitat, privadesa, suport V4V, melodies i novetats de les versions.

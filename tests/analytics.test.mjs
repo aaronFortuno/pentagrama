@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAnalytics, sanitizePayload } from '../docs/analytics.js';
+import { MELODIES } from '../docs/melodies.js';
 import { LANGUAGES } from '../docs/i18n.js';
 
 const website = '00000000-0000-4000-8000-000000000001';
@@ -13,6 +14,19 @@ test('print statistics accept every supported language and reject unknown langua
   assert.deepEqual(sanitizePayload('event', { website, name: 'print_requested', data: { language: 'PRIVATE' } }).data, {});
 });
 
+test('musical events accept only catalogue IDs and fixed playback sources, without user text', () => {
+  for (const melody of MELODIES) for (const name of ['melody_started', 'melody_info_opened']) {
+    const payload = sanitizePayload('event', { website, url: '/en/#PRIVATE', name, data: { melody: melody.id, source: 'discovery', label: 'PRIVATE', notes: 'PRIVATE' } });
+    assert.equal(payload.data.melody, melody.id);
+    assert.equal(JSON.stringify(payload).includes('PRIVATE'), false);
+    assert.equal(payload.data.source, name === 'melody_started' ? 'discovery' : undefined);
+  }
+  assert.deepEqual(sanitizePayload('event', { website, name: 'logo_clicked', data: { melody: 'PRIVATE', source: 'PRIVATE' } }).data, {});
+  assert.deepEqual(sanitizePayload('event', { website, name: 'melody_started', data: { melody: 'PRIVATE', source: 'PRIVATE' } }).data, {});
+  const env = environment(), analytics = createAnalytics(env); analytics.init(website); analytics.setExcluded(true);
+  for (const name of ['logo_clicked', 'melody_started', 'melody_info_opened']) assert.equal(analytics.track(name, { melody: 'joy' }), false);
+  assert.equal(env.calls.length, 0);
+});
 function environment(hostname = 'pentagrama.page') {
   const stored = new Map(), scripts = [], calls = [];
   return {

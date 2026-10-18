@@ -1,8 +1,9 @@
-import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=1.14.0';
+import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=1.15.0';
 
 const DOMAIN = 'pentagrama.page';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const EVENTS = new Set(['print_requested', 'template_applied', 'template_saved', 'share_requested']);
+const EVENTS = new Set(['print_requested', 'template_applied', 'template_saved', 'share_requested', 'logo_clicked', 'melody_started', 'melody_info_opened']);
+const MELODY_IDS = new Set(['joy', 'elise', 'minuet', 'mountain', 'star', 'canon', 'fifth', 'serenade', 'turkish', 'bourree', 'spring', 'ave']);
 const LANGUAGES = new Set(Object.keys(SUPPORTED_LANGUAGES));
 const CAMPAIGN_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'];
 
@@ -16,6 +17,8 @@ function eventData(name, source = {}) {
   }
   if (['template_applied', 'template_saved', 'share_requested'].includes(name)
     && ['current', 'suggested', 'personal'].includes(source.kind)) data.kind = source.kind;
+  if (['melody_started', 'melody_info_opened'].includes(name) && MELODY_IDS.has(source.melody)) data.melody = source.melody;
+  if (name === 'melody_started' && ['discovery', 'replay', 'next'].includes(source.source)) data.source = source.source;
   return data;
 }
 

@@ -1,6 +1,7 @@
 @charset "UTF-8";
 @font-face{font-family:"Pentagrama Footer";src:url("./vendor/noto-serif-thin.woff2") format("woff2");font-style:normal;font-weight:100;font-display:block}
 :root{--bg:#f6f5f1;--ink:#292d29;--muted:#737b6b;--line:#dedfd8;--accent:#bd4932;--panel:#eeeee8;--motion-duration:220ms;--motion-ease:cubic-bezier(.2,.7,.2,1);font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none;--page-width:210mm;--page-height:297mm}
+.template-catalog-link{margin-left:12px;color:inherit;font-size:inherit;text-underline-offset:3px}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{overflow:hidden}

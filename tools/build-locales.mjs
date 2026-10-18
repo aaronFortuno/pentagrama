@@ -3,10 +3,12 @@ import { pathToFileURL } from 'node:url';
 import { LANGUAGES, translate } from '../docs/i18n.js';
 import { RELEASE, SUPPORT, releaseDate } from './site-data.mjs';
 import { lightningQr } from './lightning.mjs';
+import { buildTemplatePages } from './build-template-pages.mjs';
+import { escapeHTML } from './html.mjs';
+export { escapeHTML } from './html.mjs';
 
 const root = new URL('../', import.meta.url);
 const supportQr = lightningQr(SUPPORT.payload).trim();
-export const escapeHTML = text => String(text).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
 export function renderLocalizedPage(source, locale, homepage, { automatic = false } = {}) {
   if (!Object.hasOwn(LANGUAGES, locale)) throw new Error('Unknown language');
@@ -23,6 +25,7 @@ export function renderLocalizedPage(source, locale, homepage, { automatic = fals
   const links = Object.entries(LANGUAGES).map(([code, label]) => `<a href="./${code}/" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${code === locale}" tabindex="-1"><span>${escapeHTML(label)}</span><span data-icon="check"></span></a>`).join('');
   let html = source.replace('<html lang="ca">', `<html lang="${locale}">`)
     .replace('<!-- localized-head -->', head).replace('<!-- language-links -->', links)
+    .replace('href="./ca/templates/"', `href="./${locale}/templates/"`)
     .replaceAll('<!-- app-version -->', RELEASE.version)
     .replace('<!-- release-history -->', [RELEASE, ...RELEASE.history].map((entry, index) => {
       const id = `release-${entry.version.replaceAll('.', '-')}`;
@@ -62,7 +65,7 @@ export async function buildLocalizedPages() {
     await writeFile(new URL('index.html', directory), renderLocalizedPage(source, code, homepage));
   }
   const site = new URL(homepage.endsWith('/') ? homepage : `${homepage}/`);
-  const urls = [site, ...Object.keys(LANGUAGES).map(code => new URL(`${code}/`, site))];
+  const urls = [site, ...Object.keys(LANGUAGES).map(code => new URL(`${code}/`, site)), ...await buildTemplatePages(homepage)];
   await writeFile(new URL('docs/sitemap.xml', root), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${escapeHTML(url.href)}</loc></url>`).join('\n')}\n</urlset>\n`);
 }
 

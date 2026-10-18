@@ -16,8 +16,15 @@ A més de les visites, s’envien aquestes quatre accions:
 | `template_applied` | Aplicació d’una plantilla | Categoria suggerida/personal |
 | `template_saved` | Desament persistent completat | Categoria personal |
 | `share_requested` | Petició de compartir | Categoria actual/suggerida/personal |
+| `logo_clicked` | Activació de la nota del logo amb ratolí, tacte o teclat, també quan atura un fragment | Cap propietat addicional |
+| `melody_started` | El reproductor ha preparat l’àudio i comença un fragment | Identificador fix del fragment i origen: descoberta, repetició o fragment següent |
+| `melody_info_opened` | Obertura del diàleg d’informació d’un fragment | Identificador fix del fragment |
 
 Una petició d’impressió no confirma una impressió física o un PDF desat: el navegador també permet cancel·lar el diàleg. Compartir mesura la petició de còpia, no un enviament a una altra persona.
+
+Les obertures de píndoles indiquen que s’ha obert el diàleg, no que s’hagi llegit ni durant quant de temps. Els inicis musicals només es compten quan el reproductor comença; un clic amb àudio no disponible no es compta com a inici. Les repeticions també són inicis i es distingeixen per l’origen. No es registren cada nota ni cada fotograma d’animació.
+
+Per seguir l’ou de pasqua al panell d’esdeveniments, compara `logo_clicked`, `melody_started` i `melody_info_opened`; filtra per `melody` per veure els fragments. Són recomptes d’accions, no persones úniques ni una taxa de conversió automàtica. Les proves de configuració també poden aparèixer al panell.
 
 ## Filtratge i exclusió
 
