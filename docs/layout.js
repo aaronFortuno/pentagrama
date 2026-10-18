@@ -1,10 +1,10 @@
-import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.15.3';
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.15.4';
 
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
 export const SERVICE_ADDRESS = 'pentagrama.page';
 export const FOOTER_GRAY = 166;
 export const FOOTER_SIZE = 2.2;
-export const DEFAULTS = Object.freeze({ count: 9, group: 3, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
+export const DEFAULTS = Object.freeze({ count: 9, group: 0, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
 const numeric = (v, fallback, min, max) => clamp(Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : fallback, min, max);
@@ -12,7 +12,7 @@ const numeric = (v, fallback, min, max) => clamp(Number.isFinite(Number(v)) && v
 export function normalizeSettings(value = {}) {
   if (!value || typeof value !== 'object') value = {};
   const count = Math.round(numeric(value.count, 9, 1, 64));
-  let group = Math.round(numeric(value.group, 3, 0, 63));
+  let group = Math.round(numeric(value.group, 0, 0, 63));
   if (group < 2 || group >= count) group = 0;
   const blocks = Array.isArray(value.blocks) ? value.blocks.slice(0, 24).filter(b => b && typeof b === 'object').map(b => ({
     label: typeof b.label === 'string' ? b.label.trim().slice(0, 60) : '',

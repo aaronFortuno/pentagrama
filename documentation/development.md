@@ -30,6 +30,7 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/index.html`, `docs/{idioma}/index.html` | Pàgines generades, amb text traduït i metadades abans d’executar JavaScript |
 | `docs/app.js` | Interfície i persistència local |
 | `docs/settings-history.js` | Historial temporal de configuracions i dreceres de teclat |
+| `docs/settings-baseline.js` | Punt de partida independent per restablir una plantilla sense perdre’n la configuració original |
 | `docs/layout.js` | Mesures, distribució, referències i SVG |
 | `docs/preview.js` | Zoom i desplaçament de la previsualització |
 | `docs/library.js` | Plantilles suggerides i personals |
@@ -53,6 +54,10 @@ Les mides del full es calculen en mil·límetres. En mode blocs, la separació e
 
 Les referències impreses codifiquen la geometria; els enllaços compartits també conserven els noms dels blocs dins del fragment de l’adreça (`#`). Aquests noms no s’envien al servidor. Mostrar l’adreça del web o la referència al peu és una preferència local, independent de recuperar una configuració.
 
+El primer accés inicia un A4 amb 9 pentagrames sense agrupar; les sessions posteriors recuperen els ajustos locals. «Restableix» torna al punt de partida de la plantilla activa, separat de les edicions i de l’historial de desfer/refer. Aplicar una plantilla suggerida o personal, desar-ne una de nova, recuperar un codi o obrir un enllaç compartit estableix aquest punt de partida. Les edicions ordinàries i desfer/refer no el modifiquen.
+
+Aplicar o desar una plantilla actualitza el fragment de l’URL amb `replaceState`, sense crear una entrada de navegació per cada selecció. El fragment conserva la plantilla original mentre se n’edita el full. El punt de partida també es desa a `pentagrama.settings-baseline.v1` per poder reprendre els ajustos locals i restablir-los correctament en una visita sense fragment. Els enllaços vàlids tenen prioritat sobre aquesta còpia; les preferències locals de peu es mantenen en importar-los, perquè no formen part del codi compartit. Es normalitzen còpies completes i independents, inclosos els blocs i els seus noms. La navegació entre adreces amb fragments diferents recarrega el punt de partida; canviar només d’idioma conserva les edicions en curs.
+
 Es manté la compatibilitat amb els formats anteriors:
 
 - **P1** recupera els fulls A4 de la primera versió.
@@ -73,7 +78,7 @@ Les traduccions noves han de cobrir tots els missatges, inclosos els noms i text
 
 Les fletxes de la fila «El teu full» recuperen fins a cent canvis durant la sessió de la pàgina. Les instantànies inclouen totes les opcions del full, els blocs i els seus noms. L’aplicació de plantilles, l’ajust al full, la recuperació de codis i el restabliment també es poden desfer. Un arrossegament complet o una edició continuada d’un camp compten com un sol pas. Un canvi nou després de desfer descarta el futur abandonat; una renderització sense canvis conserva refer.
 
-Les dreceres són Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z i Ctrl+Y. Els camps d’edició de text i els diàlegs conserven les dreceres natives. El zoom, l’idioma, els desplegables i la gestió de la biblioteca no formen part de l’historial de configuració. Només es persisteix la configuració actual; recarregar la pàgina comença un historial nou.
+Les dreceres són Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z i Ctrl+Y. Els camps d’edició de text i els diàlegs conserven les dreceres natives. El zoom, l’idioma, els desplegables i la gestió de la biblioteca no formen part de l’historial de configuració. Es persisteixen la configuració actual i el seu punt de partida; recarregar la pàgina comença un historial de desfer/refer nou.
 
 ## Suport i versió
 

@@ -1,23 +1,26 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.15.3';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.15.3';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.15.3';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.15.3';
-import { iconMarkup, renderIcons } from './icons.js?v=1.15.3';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.15.3';
-import { bindTouchRange } from './touch-range.js?v=1.15.3';
-import { analytics } from './analytics.js?v=1.15.3';
-import { createLogoNote } from './logo-note.js?v=1.15.3';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.15.3';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.15.3';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.15.3';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.15.3';
-import { RELEASE, RELEASE_DATES } from './release.js?v=1.15.3';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.15.4';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.15.4';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.15.4';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.15.4';
+import { iconMarkup, renderIcons } from './icons.js?v=1.15.4';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.15.4';
+import { bindTouchRange } from './touch-range.js?v=1.15.4';
+import { analytics } from './analytics.js?v=1.15.4';
+import { createLogoNote } from './logo-note.js?v=1.15.4';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.15.4';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.15.4';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.15.4';
+import { createResetBaseline } from './settings-baseline.js?v=1.15.4';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.15.4';
+import { RELEASE, RELEASE_DATES } from './release.js?v=1.15.4';
 
 const $ = id => document.getElementById(id);
-const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
+const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
 function read(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }
 function write(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
 let settings = normalizeSettings(read(SETTINGS_KEY, read('pentagrama.settings.v1', DEFAULTS)));
+const resetBaseline = createResetBaseline(read(BASELINE_KEY, DEFAULTS));
+let handledHash;
 let library = normalizeLibrary(read(LIBRARY_KEY, {}));
 let languageChoice = read(LANGUAGE_KEY, 'auto');
 if (!Object.hasOwn(LANGUAGES, languageChoice)) languageChoice = 'auto';
@@ -212,7 +215,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
-  write(SETTINGS_KEY, settings); fitPreview();
+  write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
 }
 
 function setTemplatesOpen(value) {
@@ -248,10 +251,29 @@ async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast(t('copied')); return true; }
   catch { $('copy-text').value = text; if (!$('copy-dialog').open) openDialog($('copy-dialog')); $('copy-text').focus(); $('copy-text').select(); return false; }
 }
-function restoreFromHash(showMessage = false) {
-  if (!location.hash) return;
-  try { const restored = decodeShareHash(location.hash.slice(1)); settings = { ...restored, reference: settings.reference, source: settings.source }; if (showMessage) { render({ blocks: true }); toast(t('restored')); } }
-  catch { if (showMessage) toast(t('invalidRef')); }
+function selectStartingLayout(value) {
+  finishHistoryGroup();
+  settings = resetBaseline.capture(value);
+  const url = new URL(location.href); url.hash = encodeShareHash(settings);
+  if (url.href !== location.href) history.replaceState(history.state, '', url);
+  handledHash = location.hash;
+}
+function restoreFromHash({ initial = false } = {}) {
+  handledHash = location.hash;
+  if (initial && !handledHash) return true;
+  finishHistoryGroup();
+  try {
+    settings = handledHash ? resetBaseline.fromHash(handledHash, settings) : resetBaseline.capture(DEFAULTS);
+    return true;
+  } catch { return false; }
+}
+function restoreLocation() {
+  const nextLanguage = languageFromURL(location.href, siteRoot) || preferredLanguage();
+  const changedHash = location.hash !== handledHash;
+  if (!changedHash && nextLanguage === language) return;
+  const restored = !changedHash || restoreFromHash();
+  language = nextLanguage; closeLanguageMenu(); translatePage(); render({ blocks: true, templates: true });
+  if (changedHash) toast(t(restored ? 'restored' : 'invalidRef'));
 }
 
 $('language-button').addEventListener('click', () => { if (languageOpen) closeLanguageMenu(true); else setLanguageOpen(true); });
@@ -327,10 +349,15 @@ $('block-list').addEventListener('click', event => {
 $('add-block').addEventListener('click', () => { if (settings.blocks.length < 24) settings.blocks.push({ label: '', count: 2, inside: 8, after: 14 }); render({ blocks: true }); });
 for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) bindNumber(id, key);
 $('fit-button').addEventListener('click', () => { settings = fitSettings(settings); render({ blocks: true }); });
-$('reset-button').addEventListener('click', () => { settings = normalizeSettings(DEFAULTS); $('restore-message').textContent = ''; $('reference-input').value = ''; render({ blocks: true }); toast(t('resetDone')); });
+$('reset-button').addEventListener('click', () => {
+  finishHistoryGroup(); settings = resetBaseline.restore();
+  $('restore-message').textContent = ''; $('restore-message').classList.remove('error');
+  $('reference-input').value = ''; $('reference-input').removeAttribute('aria-invalid');
+  render({ blocks: true }); toast(t('resetDone'));
+});
 $('restore-form').addEventListener('submit', event => {
   event.preventDefault();
-  try { const restored = decodeReference($('reference-input').value); settings = { ...restored, reference: settings.reference, source: settings.source }; render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
+  try { const restored = decodeReference($('reference-input').value); selectStartingLayout({ ...restored, reference: settings.reference, source: settings.source }); render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
   catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
 $('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
@@ -346,7 +373,7 @@ document.addEventListener('keydown', event => {
 $('save-template').addEventListener('click', () => { $('template-name').value = ''; $('save-message').textContent = ''; openDialog($('save-dialog')); $('template-name').focus(); });
 $('save-form').addEventListener('submit', async event => {
   event.preventDefault(); const name = $('template-name').value.trim(); if (!name) return;
-  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); if (persistLibrary('templateSaved')) analytics.track('template_saved', { kind: 'personal' }); await closeDialog($('save-dialog')); setTemplatesOpen(true); }
+  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); if (persistLibrary('templateSaved')) { selectStartingLayout(settings); analytics.track('template_saved', { kind: 'personal' }); } await closeDialog($('save-dialog')); setTemplatesOpen(true); }
   catch (error) { $('save-message').textContent = t(error.message); $('save-message').classList.add('error'); }
 });
 $('templates-panel').addEventListener('click', event => {
@@ -360,7 +387,7 @@ $('templates-panel').addEventListener('click', event => {
   const template = (suggested ? DEFAULT_TEMPLATES : library.saved).find(item => item.id === id); if (!template) return;
   const value = templateSettings(template, suggested);
   if (button.dataset.action === 'share') { shareLayout(value, suggested ? 'suggested' : 'personal'); return; }
-  settings = value;
+  selectStartingLayout(value);
   render({ blocks: true });
   analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal' });
 });
@@ -443,14 +470,11 @@ $('paper-stage').addEventListener('keydown', event => {
 $('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('scroll', positionTemplatesHandle, { passive: true });
-window.addEventListener('hashchange', () => restoreFromHash(true));
-window.addEventListener('popstate', () => {
-  language = languageFromURL(location.href, siteRoot) || preferredLanguage();
-  closeLanguageMenu(); translatePage(); render({ blocks: true, templates: true });
-});
+window.addEventListener('hashchange', restoreLocation);
+window.addEventListener('popstate', restoreLocation);
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
-restoreFromHash(); settingsHistory = createSettingsHistory(settings); renderIcons(); translatePage(); render({ blocks: true, templates: true });
+restoreFromHash({ initial: true }); settingsHistory = createSettingsHistory(settings); renderIcons(); translatePage(); render({ blocks: true, templates: true });
 const logoPlayer = createGlockenspiel(), logoNote = createLogoNote($('logo-note'), { interactive: false });
 connectLogoSound($('logo-note'), { player: logoPlayer });
 melodyDiscovery = createMelodyDiscovery({ button: $('logo-note'), note: logoNote, player: logoPlayer,

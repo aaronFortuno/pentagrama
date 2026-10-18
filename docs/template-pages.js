@@ -1,5 +1,5 @@
-import { analytics } from './analytics.js?v=1.15.3';
-import { bindAnimatedDetails } from './motion.js?v=1.15.3';
+import { analytics } from './analytics.js?v=1.15.4';
+import { bindAnimatedDetails } from './motion.js?v=1.15.4';
 
 const excluded = document.getElementById('analytics-excluded');
 excluded.checked = analytics.userExcluded();

@@ -1,5 +1,14 @@
 # Canvis
 
+## 1.15.4 · 2026-10-18
+
+- Corregit «Restableix»: recupera la configuració de partida de la plantilla oberta des de la guia, un enllaç compartit, la biblioteca personal o un codi de configuració, en lloc de tornar sempre al full global.
+- Punt de partida separat de les edicions i de l’historial de desfer i refer, amb còpies independents dels blocs, noms i preferències del peu. Restablir continua sent una acció reversible.
+- En aplicar o desar una plantilla, l’URL recull la seva configuració de partida. La plantilla de partida es conserva al navegador juntament amb els ajustos, també quan es reprèn una sessió sense fragment a l’URL.
+- Canvis de fragment i navegació enrere/endavant coherents amb la plantilla de l’adreça; canviar només l’idioma conserva les edicions. Els codis invàlids no substitueixen l’últim punt de partida vàlid.
+- Primer accés amb 9 pentagrames sense agrupar. Es conserven els ajustos previs dels usuaris i la plantilla de trio 3+3+3 continua disponible al lateral.
+- Proves de regressió per a totes les plantilles de la guia, plantilles personals, persistència del punt de partida, blocs, preferències del peu, codis invàlids i restabliment reversible; resum del footer als deu idiomes.
+
 ## 1.15.3 · 2026-10-18
 
 - Diàleg «Sobre el projecte · V4V» més ample i compacte: els paràgrafs de presentació envolten un QR més petit i l’adreça Lightning queda a sota del text, amb la mateixa còpia ràpida.
