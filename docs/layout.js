@@ -1,10 +1,11 @@
-import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.17.0';
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.17.1';
 
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });
 export const SERVICE_ADDRESS = 'pentagrama.page';
 export const FOOTER_GRAY = 166;
 export const FOOTER_SIZE = 2.2;
-export const DEFAULTS = Object.freeze({ count: 9, group: 0, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
+export const DEFAULT_MARGINS = Object.freeze({ marginTop: 21, marginRight: 18, marginBottom: 21, marginLeft: 18 });
+export const DEFAULTS = Object.freeze({ count: 9, group: 0, spacing: 2.2, thickness: 0.12, reference: false, source: false, paper: 'A4', orientation: 'portrait', lineSpacing: 2, topSpace: 0, ...DEFAULT_MARGINS, mode: 'simple', systems: 1, systemGap: 18, blocks: [] });
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
 const numeric = (v, fallback, min, max) => clamp(Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : fallback, min, max);
@@ -22,6 +23,7 @@ export function normalizeSettings(value = {}) {
     count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
     reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
     lineSpacing: round(numeric(value.lineSpacing, 2, 1, 4)), topSpace: Math.round(numeric(value.topSpace, 0, 0, 100)), mode: value.mode === 'blocks' ? 'blocks' : 'simple', systems: Math.round(numeric(value.systems, 1, 1, 8)), systemGap: round(numeric(value.systemGap, 18, 1, 60)),
+    ...Object.fromEntries(Object.entries(DEFAULT_MARGINS).map(([key, fallback]) => [key, Math.round(numeric(value[key], fallback, 0, 100))])),
     blocks: blocks.length ? blocks : value.mode === 'blocks' ? [{ label: '', count: 4, inside: 12, after: 14 }, { label: '', count: 2, inside: 6, after: 14 }] : [],
   };
 }
@@ -33,7 +35,9 @@ export function pageDimensions(value) {
 
 export function encodeReference(value) {
   const s = normalizeSettings(value);
-  const prefix = `P${s.topSpace ? 3 : 2}-${s.paper === 'LETTER' ? 'LT' : s.paper}-${s.orientation === 'landscape' ? 'L' : 'P'}-I${Math.round(s.lineSpacing * 10)}-T${Math.round(s.thickness * 100)}${s.topSpace ? `-H${s.topSpace}` : ''}`;
+  const customMargins = Object.entries(DEFAULT_MARGINS).some(([key, value]) => s[key] !== value);
+  const margins = customMargins ? `-M${[s.marginTop, s.marginRight, s.marginBottom, s.marginLeft].join('.')}` : '';
+  const prefix = `P${customMargins ? 4 : s.topSpace ? 3 : 2}-${s.paper === 'LETTER' ? 'LT' : s.paper}-${s.orientation === 'landscape' ? 'L' : 'P'}-I${Math.round(s.lineSpacing * 10)}-T${Math.round(s.thickness * 100)}${s.topSpace ? `-H${s.topSpace}` : ''}${margins}`;
   return s.mode === 'simple' ? `${prefix}-N${s.count}-G${s.group}-E${Math.round(s.spacing * 10)}` : `${prefix}-S${s.systems}-J${Math.round(s.systemGap * 10)}-B${s.blocks.map(b => `${b.count}.${Math.round(b.inside * 10)}.${Math.round(b.after * 10)}`).join('_')}`;
 }
 
@@ -46,11 +50,12 @@ export function decodeReference(text) {
     if (n < 1 || n > 24 || (g !== 0 && (g < 2 || g >= n)) || e < 12 || e > 40 || t < 5 || t > 50) throw new Error('invalidRef');
     return normalizeSettings({ ...DEFAULTS, count: n, group: g, spacing: e / 10, thickness: t / 100 });
   }
-  const match = /^P([23])-(A4|A3|LT)-(P|L)-I(\d{2})-T(\d{1,2})(?:-H(\d{1,3}))?-(.+)$/.exec(code);
+  const match = /^P([234])-(A4|A3|LT)-(P|L)-I(\d{2})-T(\d{1,2})(?:-H(\d{1,3}))?(?:-M(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))?-(.+)$/.exec(code);
   if (!match) throw new Error('invalidRef');
-  const [, version, paper, orientation, interline, thickness, topSpace, suffix] = match;
-  if ((version === '3') !== (topSpace !== undefined)) throw new Error('invalidRef');
+  const [, version, paper, orientation, interline, thickness, topSpace, marginTop, marginRight, marginBottom, marginLeft, suffix] = match;
+  if (version !== '4' && (version === '3') !== (topSpace !== undefined) || (version === '4') !== (marginTop !== undefined)) throw new Error('invalidRef');
   let raw = { ...DEFAULTS, paper: paper === 'LT' ? 'LETTER' : paper, orientation: orientation === 'L' ? 'landscape' : 'portrait', lineSpacing: Number(interline) / 10, thickness: Number(thickness) / 100, topSpace: Number(topSpace || 0) };
+  if (version === '4') Object.assign(raw, { marginTop: Number(marginTop), marginRight: Number(marginRight), marginBottom: Number(marginBottom), marginLeft: Number(marginLeft) });
   const simple = /^N(\d{1,2})-G(\d{1,2})-E(\d{2})$/.exec(suffix);
   const complex = /^S([1-8])-J(\d{2,3})-B([\d._]+)$/.exec(suffix);
   if (simple) raw = { ...raw, count: Number(simple[1]), group: Number(simple[2]), spacing: Number(simple[3]) / 10 };
@@ -83,7 +88,9 @@ export function decodeShareHash(hash) {
 
 export function createLayout(value) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
-  const top = 21 + s.topSpace, bottom = height - 21, available = bottom - top, staffHeight = s.lineSpacing * 4;
+  const footer = footerLines(s), footerTop = footer.length ? Math.min(...footer.map(line => line.y)) - FOOTER_SIZE - 3 : height;
+  const top = s.marginTop + s.topSpace, bottom = Math.min(height - s.marginBottom, footerTop), available = bottom - top, staffHeight = s.lineSpacing * 4;
+  const left = s.marginLeft, right = width - s.marginRight;
   const count = s.mode === 'blocks' ? s.systems * s.blocks.reduce((n, b) => n + b.count, 0) : s.count;
   let needed, gap = 0, positions = [];
   if (s.mode === 'simple') {
@@ -105,7 +112,7 @@ export function createLayout(value) {
       if (system < s.systems - 1) y += s.systemGap;
     }
   }
-  return { ...s, width, height, top, bottom, available, needed, count, gap, staves: positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing)), valid: needed <= available + 1e-6 && count <= 256, overflow: Math.max(0, needed - available) };
+  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves: positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing)), valid: needed <= available + 1e-6 && right > left && count <= 256, overflow: Math.max(0, needed - available) };
 }
 
 export function fitSettings(value) {
@@ -128,21 +135,27 @@ export function footerTextWidth(text) {
 
 export function footerLines(value) {
   const s = normalizeSettings(value), { width, height } = pageDimensions(s);
-  const source = s.source ? [{ text: SERVICE_ADDRESS, x: 18, y: height - 9, anchor: 'start' }] : [];
+  const left = Math.max(2, s.marginLeft), right = width - Math.max(2, s.marginRight);
+  const baseline = height - Math.min(9, Math.max(2, s.marginBottom / 2));
+  const source = s.source ? [{ text: SERVICE_ADDRESS, x: left, y: baseline, anchor: 'start' }] : [];
   if (!s.reference) return source;
-  const reserved = s.source ? footerTextWidth(SERVICE_ADDRESS) + 8 : 0, available = width - 36 - reserved;
+  const reserved = s.source ? footerTextWidth(SERVICE_ADDRESS) + 8 : 0;
+  const stacked = right - left - reserved < 12;
+  const available = Math.max(1, right - left - (stacked ? 0 : reserved));
   const chunks = []; let line = '';
   for (const character of encodeReference(s)) {
     if (line && footerTextWidth(line + character) > available) { chunks.push(line); line = ''; }
     line += character;
   }
   if (line) chunks.push(line);
-  return [...source, ...chunks.map((text, i) => ({ text, x: width - 18, y: height - 9 - (chunks.length - i - 1) * 2.9, anchor: 'end' }))];
+  const lines = chunks.map((text, i) => ({ text, x: right, y: baseline - (chunks.length - i - 1) * 2.9, anchor: 'end' }));
+  if (stacked && source.length) source[0].y = baseline - chunks.length * 2.9;
+  return [...source, ...lines];
 }
 
 export function renderSheet(value) {
   const l = createLayout(value);
-  const lines = l.staves.flatMap(staff => staff.map(y => `<line x1="18" x2="${l.width - 18}" y1="${y.toFixed(5)}" y2="${y.toFixed(5)}"/>`)).join('');
+  const lines = l.staves.flatMap(staff => staff.map(y => `<line x1="${l.left}" x2="${l.right}" y1="${y.toFixed(5)}" y2="${y.toFixed(5)}"/>`)).join('');
   const footerColor = `#${FOOTER_GRAY.toString(16).repeat(3)}`;
   const footer = footerLines(l).map(f => `<text x="${f.x}" y="${f.y}" text-anchor="${f.anchor}" font-family="'Pentagrama Footer',serif" font-size="${FOOTER_SIZE}" font-weight="100" style="font-kerning:none;font-variant-ligatures:none" fill="${footerColor}">${f.text}</text>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${l.width}mm" height="${l.height}mm" viewBox="0 0 ${l.width} ${l.height}" aria-hidden="true"><g fill="none" stroke="#000" stroke-width="${l.thickness}">${lines}</g>${footer}</svg>`;

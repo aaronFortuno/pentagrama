@@ -1,6 +1,6 @@
-import { createLayout, footerLines, footerTextWidth, FOOTER_GRAY, FOOTER_SIZE } from './layout.js?v=1.17.0';
-import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.17.0';
-import { FOOTER_FONT_DATA } from './vendor/footer-font-data.js?v=1.17.0';
+import { createLayout, footerLines, footerTextWidth, FOOTER_GRAY, FOOTER_SIZE } from './layout.js?v=1.17.1';
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.17.1';
+import { FOOTER_FONT_DATA } from './vendor/footer-font-data.js?v=1.17.1';
 
 let fontProgram;
 function embeddedFont() {
@@ -16,7 +16,7 @@ export function createPdf(settings) {
   const l = createLayout(settings); if (!l.valid) throw new Error('layoutInvalid');
   const points = mm => (mm * 72 / 25.4).toFixed(5);
   let commands = `0 G ${points(l.thickness)} w\n`;
-  for (const staff of l.staves) for (const y of staff) commands += `${points(18)} ${points(l.height - y)} m ${points(l.width - 18)} ${points(l.height - y)} l S\n`;
+  for (const staff of l.staves) for (const y of staff) commands += `${points(l.left)} ${points(l.height - y)} m ${points(l.right)} ${points(l.height - y)} l S\n`;
   const footer = footerLines(settings);
   for (const f of footer) {
     const x = f.anchor === 'start' ? f.x : f.x - footerTextWidth(f.text);

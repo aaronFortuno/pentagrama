@@ -1,5 +1,16 @@
 # Canvis
 
+## 1.17.1 · 2026-10-18
+
+- «Espai superior extra» passa a formar part de «Marges»: dos camps inicials per als marges horitzontals i verticals, i una vista de quatre camps per ajustar cada costat de manera independent. Els valors s’expressen en mm, amb passos d’1 mm.
+- Es conserven els marges inicials de 18 mm als laterals i 21 mm a dalt i a baix. L’espai superior extra se suma al marge superior per reservar lloc per al títol o l’autor.
+- Les configuracions asimètriques es mostren amb els quatre camps. Tornar a la vista per eixos conserva els valors diferents fins que s’edita el camp corresponent.
+- Marges incorporats a la previsualització, la impressió, el PDF vectorial, les plantilles desades, la persistència local, Restableix i l’historial de desfer/refer.
+- Referències P4 per als marges personalitzats, amb compatibilitat completa amb els codis P1, P2 i P3 i la geometria de les plantilles existents. Els peus opcionals s’alineen amb els marges i es reserva espai quan cal per evitar que se superposin als pentagrames.
+- A la guia de plantilles, capçalera i peu queden sempre visibles en escriptori i tauleta; només el contingut central té desplaçament, amb la barra d’estil terracota del projecte. En mòbil es conserva el desplaçament natural de la pàgina.
+- Capçalera i peu extrets a components de font propis i compartits entre l’editor i la guia; es mantenen els diàlegs comuns de V4V, privadesa i versions.
+- Etiquetes i resum als deu idiomes, i proves de geometria, formats, referències, persistència, desfer/refer i compatibilitat amb plantilles anteriors.
+
 ## 1.17.0 · 2026-10-18
 
 - Guia de plantilles i fitxes de coral amb piano i orquestra integrades amb la identitat del generador: mateix logotip, marges, tipografia, capçalera i peu.

@@ -64,6 +64,7 @@ Es manté la compatibilitat amb els formats anteriors:
 - **P1** recupera els fulls A4 de la primera versió.
 - **P2** incorpora format, orientació, interlineat i distribució. Per exemple, `P2-A3-L-I20-T12-N9-G3-E22` indica A3 horitzontal, interlineat de 2 mm, gruix de 0,12 mm i 9 pentagrames agrupats de tres en tres amb separació relativa de 2,2×.
 - **P3** afegeix l’espai superior extra amb el camp `H` en mil·límetres. `P3-A4-P-I20-T12-H30-N9-G3-E22` reserva 30 mm addicionals a dalt. Els codis P1 i P2 no reserven espai addicional.
+- **P4** incorpora marges personalitzats amb `Msuperior.dret.inferior.esquerre`, en mm enters, i pot mantenir `H` per a l’espai superior extra. Per exemple, `P4-A4-P-I20-T12-H30-M16.28.16.10-N9-G0-E22`. Quan els marges són els originals (21, 18, 21, 18 mm), es continua generant P2 o P3; els codis anteriors conserven la geometria.
 
 ## Traduccions
 

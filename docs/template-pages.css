@@ -1,10 +1,11 @@
 @charset "UTF-8";
 /* Header, footer, menus and dialogs inherit the editor's style.css. */
-body.template-page{height:auto;min-height:100%;overflow:auto}
-.guide-shell.app-shell{height:auto;min-height:100dvh;grid-template-rows:100px 1fr 34px}
+body.template-page{height:100%;overflow:hidden}
+.guide-shell.app-shell{position:fixed;inset:0;height:100dvh;min-height:0;grid-template-rows:100px minmax(0,1fr) 34px}
 .template-page .site-tagline{font:400 28px/1.15 Georgia,"Times New Roman",serif;letter-spacing:-.7px}
 .template-page .site-tagline em{font-weight:400;color:#858b75}
-.guide-shell>main{display:block;padding:22px 0 24px}
+.guide-shell>main{display:block;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:22px 8px 24px 3px;margin-left:-3px}
+.guide-shell>main:focus-visible{outline:1px solid #c78375;outline-offset:-1px}
 .template-page .site-footer{border-top:1px solid var(--line)}
 .guide-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;line-height:1.5;text-underline-offset:3px;text-decoration-color:#b9c0af}
 .guide-link:hover{color:var(--accent)}
@@ -44,7 +45,8 @@ body.template-page{height:auto;min-height:100%;overflow:auto}
 .guide-sheet{--guide-sheet-height:max(340px,calc(100dvh - 180px));position:sticky;top:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:var(--guide-sheet-height);margin:0;border:1px solid #e0e4d8;border-radius:7px;padding:24px;background:#e8ecdf}
 .guide-sheet img{display:block;min-height:0;max-width:100%;width:min(100%,calc((var(--guide-sheet-height) - 86px)*420/594));height:auto;background:white;box-shadow:0 4px 20px #26371d1a}
 .guide-sheet figcaption{flex-shrink:0;font-size:10px;color:var(--muted);text-align:center}
-@media(min-width:761px) and (max-height:760px){.guide-shell.app-shell{grid-template-rows:78px 1fr 29px}.template-page .site-tagline{font-size:23px}.guide-shell>main{padding-top:18px}.guide-sheet{--guide-sheet-height:max(340px,calc(100dvh - 150px))}}
+@media(min-width:761px){html:has(body.template-page){overflow:clip}.guide-shell .site-header,.guide-shell .site-footer{position:relative;z-index:2;background:var(--bg)}}
+@media(min-width:761px) and (max-height:760px){.guide-shell.app-shell{grid-template-rows:78px minmax(0,1fr) 29px}.template-page .site-tagline{font-size:23px}.guide-shell>main{padding-top:18px}.guide-sheet{--guide-sheet-height:max(340px,calc(100dvh - 150px))}}
 @media(min-width:761px) and (max-width:1100px){.guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.guide-detail{grid-template-columns:minmax(260px,300px) minmax(0,1fr);gap:20px}.guide-sheet{padding:18px}}
-@media(max-width:760px){.guide-shell.app-shell{grid-template-rows:auto 1fr auto}.guide-shell>main{padding:20px 0}.guide-heading{align-items:flex-start;margin-bottom:18px}.guide-heading h1,.guide-intro h1{font-size:25px}.guide-heading>.guide-link{display:none}.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.guide-card-image{height:180px;padding:14px 18px 0}.guide-card h2{font-size:19px}.guide-how{display:block}.guide-how p{margin-top:7px}.guide-detail{grid-template-columns:1fr;gap:22px}.guide-intro{padding:0 4px}.guide-sheet{--guide-sheet-height:max(340px,min(75dvh,650px));position:static}.template-page .template-catalog-link{display:block;margin:4px 0 0}.template-page .site-footer{margin-top:4px}}
+@media(max-width:760px){body.template-page{height:auto;min-height:100%;overflow:auto}.guide-shell.app-shell{position:static;inset:auto;height:auto;min-height:100dvh;grid-template-rows:auto 1fr auto}.guide-shell>main{overflow:visible;scrollbar-gutter:auto;padding:20px 0;margin:0}.guide-heading{align-items:flex-start;margin-bottom:18px}.guide-heading h1,.guide-intro h1{font-size:25px}.guide-heading>.guide-link{display:none}.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.guide-card-image{height:180px;padding:14px 18px 0}.guide-card h2{font-size:19px}.guide-how{display:block}.guide-how p{margin-top:7px}.guide-detail{grid-template-columns:1fr;gap:22px}.guide-intro{padding:0 4px}.guide-sheet{--guide-sheet-height:max(340px,min(75dvh,650px));position:static}.template-page .template-catalog-link{display:block;margin:4px 0 0}.template-page .site-footer{margin-top:4px}}
 @media(max-width:480px){.guide-grid{grid-template-columns:1fr}.guide-card{display:grid;grid-template-columns:40% minmax(0,1fr)}.guide-card-image{height:174px;padding:12px 12px 0}.guide-card-copy{align-self:center;padding:13px}.guide-card h2{font-size:19px}.guide-card .guide-link{font-size:10px}.guide-lead{font-size:12px}.guide-sheet{padding:18px}}

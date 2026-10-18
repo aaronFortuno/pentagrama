@@ -1,4 +1,4 @@
-import { iconMarkup } from './icons.js?v=1.17.0';
+import { iconMarkup } from './icons.js?v=1.17.1';
 
 // Relative steps preserve imported half/fractional millimetres instead of snapping them away.
 export function incrementValue(value, direction, { step = 1, min = -Infinity, max = Infinity } = {}) {
@@ -14,7 +14,8 @@ export function stepNumberInput(input, direction) {
   // Commit a pending typed edit before recording the incremental action.
   input.dispatchEvent(new Event('change', { bubbles: true }));
   const step = Number(input.dataset.increment || input.step) || 1;
-  const next = incrementValue(input.value, direction, { step, min: input.min === '' ? -Infinity : Number(input.min), max: input.max === '' ? Infinity : Number(input.max) });
+  const current = input.value === '' && input.dataset.stepBase !== undefined ? input.dataset.stepBase : input.value;
+  const next = incrementValue(current, direction, { step, min: input.min === '' ? -Infinity : Number(input.min), max: input.max === '' ? Infinity : Number(input.max) });
   if (String(next) === input.value) return;
   input.value = String(next); input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true }));
 }

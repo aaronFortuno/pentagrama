@@ -5,12 +5,14 @@ import { RELEASE, SUPPORT, releaseDate } from './site-data.mjs';
 import { lightningQr } from './lightning.mjs';
 import { buildTemplatePages } from './build-template-pages.mjs';
 import { escapeHTML } from './html.mjs';
+import { composeSiteShell } from './site-shell.mjs';
 export { escapeHTML } from './html.mjs';
 
 const root = new URL('../', import.meta.url);
 const supportQr = lightningQr(SUPPORT.payload).trim();
 
 export function renderLocalizedPage(source, locale, homepage, { automatic = false } = {}) {
+  source = composeSiteShell(source);
   if (!Object.hasOwn(LANGUAGES, locale)) throw new Error('Unknown language');
   const t = key => {
     const text = translate(locale, key, { version: RELEASE.version });

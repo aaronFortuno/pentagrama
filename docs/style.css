@@ -191,6 +191,15 @@ details[data-motion=closing] .restore-chevron{transform:rotate(0deg)}
 .distribution-scroll #simple-controls>.distribution-fields{margin-top:4px}
 .top-space-controls .control-label{align-items:center}
 .top-space-controls #top-space-hint{flex:1;margin:0}
+.margin-fields{overflow:hidden;padding:3px;margin:-3px}
+.margin-fields fieldset{min-width:0;margin:0;border:0;padding:0}
+.margin-fields fieldset[hidden]{display:none}
+.margin-fields .two-fields{row-gap:10px}
+.margin-mode{margin-top:7px;text-align:left}
+.margins-controls .top-space-controls{border-top:1px solid var(--line);padding-top:12px;margin-top:11px}
+.margins-controls .top-space-controls .control-label{margin-bottom:6px}
+.margins-controls .top-space-controls label{max-width:125px;line-height:1.4}
+.margins-controls .top-space-controls .field-hint{margin:7px 0 2px}
 .settings-disclosure .reference-row{margin-top:10px}
 #restore-form{padding-top:10px;margin-top:10px;border-top:1px solid var(--line)}
 #restore-message:empty{display:none}

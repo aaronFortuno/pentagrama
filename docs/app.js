@@ -1,21 +1,22 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.17.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.17.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.17.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.17.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.17.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.17.0';
-import { bindTouchRange } from './touch-range.js?v=1.17.0';
-import { analytics } from './analytics.js?v=1.17.0';
-import { createLogoNote } from './logo-note.js?v=1.17.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.17.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.17.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.17.0';
-import { createResetBaseline } from './settings-baseline.js?v=1.17.0';
-import { enhanceNumberInputs } from './number-input.js?v=1.17.0';
-import { bindSelectControl } from './select-control.js?v=1.17.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.17.0';
-import { bindSiteDialogs } from './site-chrome.js?v=1.17.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=1.17.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.17.1';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.17.1';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.17.1';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.17.1';
+import { iconMarkup, renderIcons } from './icons.js?v=1.17.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.17.1';
+import { bindTouchRange } from './touch-range.js?v=1.17.1';
+import { analytics } from './analytics.js?v=1.17.1';
+import { createLogoNote } from './logo-note.js?v=1.17.1';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.17.1';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.17.1';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.17.1';
+import { createResetBaseline } from './settings-baseline.js?v=1.17.1';
+import { enhanceNumberInputs } from './number-input.js?v=1.17.1';
+import { bindSelectControl } from './select-control.js?v=1.17.1';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.17.1';
+import { bindSiteDialogs } from './site-chrome.js?v=1.17.1';
+import { bindMarginsControl } from './margins-control.js?v=1.17.1';
+import { RELEASE, RELEASE_DATES } from './release.js?v=1.17.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -219,7 +220,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
-  enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
+  marginsControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
   write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
 }
 
@@ -322,6 +323,7 @@ document.addEventListener('keydown', event => {
   if (direction && !document.querySelector('dialog[open]')) { event.preventDefault(); travelHistory(direction); }
 });
 const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => closeLanguageMenu() });
+const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));

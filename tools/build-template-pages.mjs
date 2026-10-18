@@ -4,6 +4,7 @@ import { DEFAULT_TEMPLATES, suggestedTemplateSettings } from '../docs/library.js
 import { createLayout, renderSheet, encodeShareHash } from '../docs/layout.js';
 import { RELEASE } from './site-data.mjs';
 import { escapeHTML as escape } from './html.mjs';
+import { guideChrome } from './site-shell.mjs';
 
 const root = new URL('../', import.meta.url);
 export const TEMPLATE_GUIDES = Object.freeze([
@@ -17,24 +18,6 @@ export function templateEditorURL(locale, template, homepage) {
   return url;
 }
 
-// Use the generator's localized chrome as the single source for identity,
-// support, privacy and release history. Only navigation differs on guide pages.
-function sharedChrome(html, locale, links, t) {
-  if (!html) throw new Error(`Missing generator shell for ${locale}`);
-  let header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
-  header = header.replace(/<button id="logo-note"[^>]*>([\s\S]*?)<\/button>/,
-    `<a class="brand-note" href="./${locale}/" aria-label="Pentagrama">$1</a>`)
-    .replace('href="./" aria-label="Pentagrama"', `href="./${locale}/" aria-label="Pentagrama"`)
-    .replace(/<button id="melody-info"[\s\S]*?<\/button>/, '')
-    .replace('<h1 id="page-title">', '<div class="site-tagline">').replace('</h1>', '</div>')
-    .replace(/(<div id="language-menu"[^>]*>)[\s\S]*?(<\/div>)/, `$1${links}$2`);
-  const footer = html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)[0]
-    .replace(/<a id="template-catalog-link"[^>]*>[\s\S]*?<\/a>/,
-      `<a class="template-catalog-link" href="./${locale}/">${t('guideBack')}</a>`);
-  const dialogs = ['about', 'version', 'copy'].map(id => html.match(new RegExp(`<dialog id="${id}-dialog"[\\s\\S]*?<\\/dialog>`))[0]).join('\n');
-  return { header, footer, dialogs, favicon: html.match(/<link rel="icon"[^>]*>/)[0] };
-}
-
 export function renderTemplatePage(locale, homepage, guide, generatorHTML) {
   const t = (key, values) => escape(translate(locale, key, values));
   const site = new URL(homepage), path = templatePath(locale, guide), url = new URL(path, site);
@@ -42,7 +25,7 @@ export function renderTemplatePage(locale, homepage, guide, generatorHTML) {
   const description = t(guide ? `${guide.prefix}Description` : 'catalogIntro');
   const route = code => templatePath(code, guide);
   const links = Object.entries(LANGUAGES).map(([code, name]) => `<a href="./${route(code)}" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${locale === code}" tabindex="-1"><span>${escape(name)}</span><span data-icon="check"></span></a>`).join('');
-  const chrome = sharedChrome(generatorHTML, locale, links, t);
+  const chrome = guideChrome(generatorHTML, locale, links, t);
   const alternates = Object.keys(LANGUAGES).map(code => `<link rel="alternate" hreflang="${code}" href="${escape(new URL(route(code), site).href)}">`).join('\n');
   const facts = template => {
     const settings = suggestedTemplateSettings(template, key => translate(locale, key)), layout = createLayout(settings);
@@ -64,7 +47,7 @@ export function renderTemplatePage(locale, homepage, guide, generatorHTML) {
   return `<!doctype html>
 <!-- Generated from DEFAULT_TEMPLATES and docs/i18n.js by tools/build-template-pages.mjs. -->
 <html lang="${locale}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f6f5f1"><meta name="umami-website-id" content="20ee7f51-6ba8-4486-86a5-f347851105b2"><base href="${'../'.repeat(guide ? 3 : 2)}"><title>${title} · Pentagrama</title><meta name="description" content="${description}"><link rel="canonical" href="${escape(url.href)}">${alternates}<link rel="alternate" hreflang="x-default" href="${escape(new URL(route('en'), site).href)}">${chrome.favicon}<link rel="stylesheet" href="./style.css?v=${RELEASE.version}"><link rel="stylesheet" href="./template-pages.css?v=${RELEASE.version}"><script type="module" src="./template-pages.js?v=${RELEASE.version}"></script></head>
-<body class="template-page"><div class="app-shell guide-shell">${chrome.header}<main id="template-guide">${content}</main>${chrome.footer}</div>${chrome.dialogs}<div id="toast" role="status" class="toast"></div></body></html>\n`;
+<body class="template-page"><div class="app-shell guide-shell">${chrome.header}<main id="template-guide" class="scroll-panel" tabindex="0">${content}</main>${chrome.footer}</div>${chrome.dialogs}<div id="toast" role="status" class="toast"></div></body></html>\n`;
 }
 
 export async function buildTemplatePages(homepage, localizedPages) {
