@@ -1,9 +1,14 @@
 {
   "date": "2026-10-18",
   "changes": [
-    "releaseTemplatesAndMusic"
+    "release1151Summary"
   ],
   "history": [
+    {
+      "version": "1.15.0",
+      "date": "2026-10-18",
+      "changes": ["releaseTemplatesAndMusic"]
+    },
     {
       "version": "1.14.0",
       "date": "2026-10-18",

@@ -1,5 +1,10 @@
 # Canvis
 
+## 1.15.1 · 2026-10-18
+
+- Enllaç discret al changelog complet de GitHub, a la dreta del títol de l’historial de versions, amb obertura en una pestanya nova.
+- Text traduït als deu idiomes i capçalera adaptable a pantalles estretes, mantenint el botó de tancament accessible.
+
 ## 1.15.0 · 2026-10-18
 
 - Títols de cerca explícits als deu idiomes, centrats en els pentagrames en blanc per imprimir.

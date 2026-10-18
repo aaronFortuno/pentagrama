@@ -1,4 +1,4 @@
-import { logoNote, planNoteJump } from './logo-note.js?v=1.15.0';
+import { logoNote, planNoteJump } from './logo-note.js?v=1.15.1';
 
 // Short, monophonic adaptations. Durations use quarter-note beats, not timers.
 // Sources, editorial choices and credits: documentation/melodies.md.
