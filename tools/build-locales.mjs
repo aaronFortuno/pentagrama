@@ -59,13 +59,15 @@ export async function buildLocalizedPages() {
   const localizedDates = Object.fromEntries(Object.keys(LANGUAGES).map(locale => [locale, Object.fromEntries(dates.map(date => [date, releaseDate(locale, date)]))]));
   await writeFile(new URL('docs/release.js', root), `// Generated from package.json and src/release.json.\nexport const RELEASE = Object.freeze(${JSON.stringify(RELEASE)});\nexport const RELEASE_DATES = Object.freeze(${JSON.stringify(localizedDates)});\n`);
   await writeFile(new URL('docs/index.html', root), renderLocalizedPage(source, 'ca', homepage, { automatic: true }));
+  const localizedPages = {};
   for (const code of Object.keys(LANGUAGES)) {
     const directory = new URL(`docs/${code}/`, root);
     await mkdir(directory, { recursive: true });
-    await writeFile(new URL('index.html', directory), renderLocalizedPage(source, code, homepage));
+    localizedPages[code] = renderLocalizedPage(source, code, homepage);
+    await writeFile(new URL('index.html', directory), localizedPages[code]);
   }
   const site = new URL(homepage.endsWith('/') ? homepage : `${homepage}/`);
-  const urls = [site, ...Object.keys(LANGUAGES).map(code => new URL(`${code}/`, site)), ...await buildTemplatePages(homepage)];
+  const urls = [site, ...Object.keys(LANGUAGES).map(code => new URL(`${code}/`, site)), ...await buildTemplatePages(homepage, localizedPages)];
   await writeFile(new URL('docs/sitemap.xml', root), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${escapeHTML(url.href)}</loc></url>`).join('\n')}\n</urlset>\n`);
 }
 

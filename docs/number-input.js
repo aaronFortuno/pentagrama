@@ -1,4 +1,4 @@
-import { iconMarkup } from './icons.js?v=1.16.0';
+import { iconMarkup } from './icons.js?v=1.17.0';
 
 // Relative steps preserve imported half/fractional millimetres instead of snapping them away.
 export function incrementValue(value, direction, { step = 1, min = -Infinity, max = Infinity } = {}) {

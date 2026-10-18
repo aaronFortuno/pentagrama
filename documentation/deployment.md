@@ -4,6 +4,8 @@ El contingut publicable és a `docs/`, incloses les pàgines traduïdes ja gener
 
 La generació també prepara el catàleg de plantilles i les dues guies per idioma, les miniatures de `docs/assets/templates/` i les seves entrades al sitemap. Es reutilitzen els mateixos ajustos que al sidebar de l’editor.
 
+La guia reutilitza la capçalera, el peu i els diàlegs localitzats de `src/index.html`, i carrega els estils comuns de `docs/style.css`. `docs/template-pages.css` només defineix la disposició pròpia del catàleg i les fitxes. El comportament de V4V, privadesa i versions es comparteix a `docs/site-chrome.js`: els canvis en aquests elements s’han de comprovar tant al generador com a la guia.
+
 ## Publicació del projecte
 
 La publicació actual utilitza GitHub Pages, amb la branca `main` i el directori `/docs`. Les actualitzacions d’aquesta branca es publiquen automàticament a https://pentagrama.page/.

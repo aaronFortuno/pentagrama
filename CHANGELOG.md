@@ -1,5 +1,15 @@
 # Canvis
 
+## 1.17.0 · 2026-10-18
+
+- Guia de plantilles i fitxes de coral amb piano i orquestra integrades amb la identitat del generador: mateix logotip, marges, tipografia, capçalera i peu.
+- Capçalera, diàlegs de V4V, privadesa i historial de versions generats a partir de la mateixa font localitzada que la pàgina principal. Comportament dels diàlegs compartit perquè les futures versions es reflecteixin a tot el web.
+- Selector d’idioma compacte amb el mateix menú, transicions de 220 ms i navegació per teclat. El canvi d’idioma conserva la fitxa de plantilla i desa la preferència del navegador.
+- Introducció més breu, graella adaptable i targetes més compactes, amb enllaços accessibles i icones Lucide. Eliminades les files d’idiomes i les explicacions redundants que desplaçaven les plantilles cap avall.
+- Fitxes amb dades a l’esquerra i una mostra del full ajustada a l’alçada de la finestra a la dreta. En mòbil, contingut en una columna i targetes horitzontals en pantalles estretes.
+- Es conserven els títols i continguts HTML indexables, URL pròpies, enllaços d’idiomes, sitemap i configuració exacta de cada plantilla en obrir el generador.
+- Resum de versió als deu idiomes i comprovacions de la font compartida, diàlegs, navegació localitzada i unicitat dels identificadors a totes les pàgines de guia.
+
 ## 1.16.0 · 2026-10-18
 
 - Separat el selector «Senzilla / Per blocs» de la zona que es desplaça: queda sempre visible, mentre els blocs i els seus paràmetres tenen desplaçament intern en escriptori. Es conserva el desplaçament natural de la pàgina en mòbil.

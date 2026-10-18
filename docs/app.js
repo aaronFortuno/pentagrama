@@ -1,20 +1,21 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.16.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.16.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.16.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.16.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.16.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.16.0';
-import { bindTouchRange } from './touch-range.js?v=1.16.0';
-import { analytics } from './analytics.js?v=1.16.0';
-import { createLogoNote } from './logo-note.js?v=1.16.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.16.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.16.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.16.0';
-import { createResetBaseline } from './settings-baseline.js?v=1.16.0';
-import { enhanceNumberInputs } from './number-input.js?v=1.16.0';
-import { bindSelectControl } from './select-control.js?v=1.16.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.16.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=1.16.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.17.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.17.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.17.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.17.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.17.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.17.0';
+import { bindTouchRange } from './touch-range.js?v=1.17.0';
+import { analytics } from './analytics.js?v=1.17.0';
+import { createLogoNote } from './logo-note.js?v=1.17.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.17.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.17.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.17.0';
+import { createResetBaseline } from './settings-baseline.js?v=1.17.0';
+import { enhanceNumberInputs } from './number-input.js?v=1.17.0';
+import { bindSelectControl } from './select-control.js?v=1.17.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.17.0';
+import { bindSiteDialogs } from './site-chrome.js?v=1.17.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=1.17.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -398,36 +399,7 @@ $('templates-panel').addEventListener('click', event => {
   analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal' });
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
-$('about-button').addEventListener('click', () => {
-  openDialog($('about-dialog')); document.querySelector('.about-content').scrollTop = 0;
-});
-$('version-button').addEventListener('click', () => {
-  openDialog($('version-dialog')); document.querySelector('.release-timeline').scrollTop = 0;
-});
-$('analytics-excluded').checked = analytics.userExcluded();
-$('analytics-browser-preference').hidden = !analytics.browserPrivacyEnabled();
-$('analytics-excluded').addEventListener('change', event => {
-  const persisted = analytics.setExcluded(event.target.checked);
-  event.target.checked = analytics.userExcluded();
-  if (!event.target.checked) analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);
-  if (!persisted) toast(t('analyticsPreferenceTemporary'));
-});
-let lightningCopyTimer;
-$('copy-lightning').addEventListener('click', async () => {
-  if (!await copy($('lightning-address').textContent)) return;
-  const button = $('copy-lightning'); button.innerHTML = iconMarkup('check'); button.classList.add('copied');
-  $('lightning-copy-status').textContent = t('copied'); clearTimeout(lightningCopyTimer);
-  lightningCopyTimer = setTimeout(() => { button.innerHTML = iconMarkup('copy'); button.classList.remove('copied'); $('lightning-copy-status').textContent = ''; }, 1800);
-});
-document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeDialog($(button.dataset.close))));
-document.querySelectorAll('dialog').forEach(dialog => {
-  dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(dialog); });
-  dialog.addEventListener('click', event => {
-    if (event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(dialog);
-  });
-});
+bindSiteDialogs({ t, copy, toast });
 const settingsAccordion = $('settings-accordion'), settingsDetails = new Map();
 for (const details of settingsAccordion.children) {
   settingsDetails.set(details, bindAnimatedDetails(details, { onOpen() {
@@ -444,7 +416,6 @@ function sizeSettingsAccordion() {
 const settingsResize = new ResizeObserver(sizeSettingsAccordion);
 settingsResize.observe(settingsAccordion);
 for (const details of settingsDetails.keys()) settingsResize.observe(details.querySelector('summary'));
-document.querySelectorAll('.privacy-details').forEach(details => bindAnimatedDetails(details));
 $('zoom-in').addEventListener('click', () => zoomPreview(previewZoom * 1.25));
 $('zoom-out').addEventListener('click', () => zoomPreview(previewZoom / 1.25));
 $('zoom-reset').addEventListener('click', () => zoomPreview(MIN_ZOOM));

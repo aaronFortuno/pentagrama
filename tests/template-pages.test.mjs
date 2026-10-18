@@ -5,6 +5,7 @@ import { LANGUAGES, translate } from '../docs/i18n.js';
 import { DEFAULT_TEMPLATES, suggestedTemplateSettings } from '../docs/library.js';
 import { decodeShareHash, createLayout, renderSheet } from '../docs/layout.js';
 import { TEMPLATE_GUIDES, templatePath, templateEditorURL } from '../tools/build-template-pages.mjs';
+import { RELEASE } from '../tools/site-data.mjs';
 
 const root = new URL('../docs/', import.meta.url), site = 'https://pentagrama.page/';
 
@@ -38,6 +39,31 @@ test('all seven catalogue previews and editor links reuse the sidebar presets ex
       const catalogue = await readFile(new URL(`${locale}/templates/index.html`, root), 'utf8');
       assert.ok(catalogue.includes(`assets/templates/${template.id}.svg`));
       if (!TEMPLATE_GUIDES.some(guide => guide.id === template.id)) assert.ok(catalogue.includes(`href="./${locale}/${url.hash}"`));
+    }
+  }
+});
+
+test('every guide shares localized branding and footer dialogs with the editor without duplicate landmarks or IDs', async () => {
+  for (const locale of Object.keys(LANGUAGES)) {
+    const editor = await readFile(new URL(`${locale}/index.html`, root), 'utf8');
+    for (const guide of [undefined, ...TEMPLATE_GUIDES]) {
+      const html = await readFile(new URL(`${templatePath(locale, guide)}index.html`, root), 'utf8');
+      assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
+      const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+      assert.equal(ids.length, new Set(ids).size);
+      assert.ok(html.includes('<header class="site-header">'));
+      assert.ok(html.includes('<footer class="site-footer">'));
+      assert.ok(html.includes(`href="./${locale}/" aria-label="Pentagrama"`));
+      assert.equal(html.match(/<svg class="brand-mark"[\s\S]*?<\/svg>/)[0], editor.match(/<svg class="brand-mark"[\s\S]*?<\/svg>/)[0]);
+      assert.ok(html.includes(`id="version-button"`)); assert.ok(html.includes(`>${RELEASE.version}</button>`));
+      for (const id of ['about', 'version', 'copy']) {
+        const pattern = new RegExp(`<dialog id="${id}-dialog"[\\s\\S]*?<\\/dialog>`);
+        assert.equal(html.match(pattern)[0], editor.match(pattern)[0]);
+      }
+      for (const code of Object.keys(LANGUAGES)) {
+        assert.ok(html.includes(`href="./${templatePath(code, guide)}" data-language="${code}"`));
+      }
+      assert.ok(!html.includes('guide-languages')); assert.ok(!html.includes('guide-privacy'));
     }
   }
 });
