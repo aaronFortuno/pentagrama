@@ -1,7 +1,7 @@
-import { createMelodyPicker } from './melodies.js?v=1.17.0';
-import { createMelodyPlayer } from './melody-player.js?v=1.17.0';
-import { createWordmark } from './wordmark.js?v=1.17.0';
-import { openDialog, closeDialog } from './motion.js?v=1.17.0';
+import { createMelodyPicker } from './melodies.js?v=1.17.1';
+import { createMelodyPlayer } from './melody-player.js?v=1.17.1';
+import { createWordmark } from './wordmark.js?v=1.17.1';
+import { openDialog, closeDialog } from './motion.js?v=1.17.1';
 
 export const DISCOVERY_CLICKS = 5;
 

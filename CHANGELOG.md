@@ -1,5 +1,11 @@
 # Canvis
 
+## 1.17.1 · 2026-10-18
+
+- Favicon publicat com a PNG de 96 × 96 píxels en una adreça estable i rastrejable, en lloc de l’SVG incrustat en una URL de dades. Es conserva el mateix pentagrama blanc sobre fons terracota.
+- Declaració compartida per la portada, els deu idiomes i les guies de plantilles. Font vectorial conservada a `src/favicon.svg`.
+- Resum de versió traduït als deu idiomes i historial anterior conservat. La icona als resultats de cerca depèn del processament posterior de Google.
+
 ## 1.17.0 · 2026-10-18
 
 - Guia de plantilles i fitxes de coral amb piano i orquestra integrades amb la identitat del generador: mateix logotip, marges, tipografia, capçalera i peu.

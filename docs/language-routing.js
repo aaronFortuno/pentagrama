@@ -1,4 +1,4 @@
-import { LANGUAGES } from './i18n.js?v=1.17.0';
+import { LANGUAGES } from './i18n.js?v=1.17.1';
 
 // The module root also supports forks served below /repository/ on GitHub Pages.
 export function languageFromURL(value, root) {
