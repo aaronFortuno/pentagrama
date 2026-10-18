@@ -15,11 +15,11 @@ Paper pautat a mida per escriure música a mà. Configura el full, comprova’l 
 
 Per defecte, el full només conté les línies dels pentagrames. Pots afegir-hi voluntàriament una referència de configuració o l’adreça del web al peu.
 
-És gratuït i no requereix compte. Les plantilles pròpies es desen en aquest navegador, sense sincronització entre dispositius. La interfície està disponible en català, castellà, anglès, alemany, francès, italià, portuguès i neerlandès.
+És gratuït i no requereix compte. Les plantilles pròpies es desen en aquest navegador, sense sincronització entre dispositius. La interfície està disponible en català, castellà, anglès, alemany, francès, italià, portuguès, neerlandès, euskara i galego.
 
 ## Desenvolupament local
 
-Web estàtic d’HTML, CSS i JavaScript, sense instal·lació de dependències. Les pàgines dels vuit idiomes es generen des d’una sola estructura i es conserven a `docs/`, llestes per publicar. Amb **Node.js 22 o posterior**, des de l’arrel del repositori:
+Web estàtic d’HTML, CSS i JavaScript, sense instal·lació de dependències. Les pàgines dels idiomes disponibles es generen des d’una sola estructura i es conserven a `docs/`, llestes per publicar. Amb **Node.js 22 o posterior**, des de l’arrel del repositori:
 
 ```sh
 npm run dev

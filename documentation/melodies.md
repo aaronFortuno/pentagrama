@@ -23,7 +23,7 @@ La data i estrena de la Novena es contrasten amb [Beethoven-Haus Bonn](https://w
 
 `docs/melodies.js` conté identificador estable, compositor, obra, tempo, font, crèdit si cal i notes amb durades expressades en negres. `E5:0.5` és una corxera; `-:1` és un silenci d’una negra. El registre admès és mi4–fa5, amb sostinguts i bemolls explícits. `planMelody()` valida les dades i prepara salts continus que aterren als instants de la partitura. Els salts distribueixen les columnes esquerra, centre i dreta, sense perdre l’altura musical.
 
-Cada fragment necessita quatre entrades als vuit idiomes de `docs/i18n.js`: `melody_ID_label`, `melody_ID_title`, `melody_ID_story` i `melody_ID_reason`. El títol breu ha de cabre al lloc de «pentagrama». Manteniu els fragments curts, documenteu qualsevol transport o simplificació i enllaceu una font i la seva llicència.
+Cada fragment necessita quatre entrades als idiomes disponibles de `docs/i18n.js`: `melody_ID_label`, `melody_ID_title`, `melody_ID_story` i `melody_ID_reason`. El títol breu ha de cabre al lloc de «pentagrama». Manteniu els fragments curts, documenteu qualsevol transport o simplificació i enllaceu una font i la seva llicència.
 
 ## Reproducció i descoberta
 

@@ -1,4 +1,4 @@
-import { melodyNote, planMelody } from './melodies.js?v=1.13.0';
+import { melodyNote, planMelody } from './melodies.js?v=1.14.0';
 
 // Audio schedules slightly ahead; drawing follows the same output clock.
 // A stalled frame never causes a burst of missed notes or an accumulating drift.

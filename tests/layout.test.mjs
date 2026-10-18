@@ -211,7 +211,7 @@ test('thin serif footers embed their font and use identical advances in SVG and 
   assert.ok(!plain.includes('/FontFile2')); assert.ok(!plain.includes('/BaseFont'));
 });
 
-test('all eight languages have complete matching messages and automatic region fallback works', () => {
+test('all supported languages have complete matching messages and automatic region fallback works', () => {
   const placeholders = text => [...new Set(text.match(/\{\w+\}/g) || [])].sort();
   for (const locale of Object.keys(LANGUAGES)) {
     assert.deepEqual(Object.keys(messages[locale]), Object.keys(messages.en));
@@ -219,6 +219,11 @@ test('all eight languages have complete matching messages and automatic region f
   }
   assert.equal(detectLanguage('auto', ['de-AT', 'en-US']), 'de'); assert.equal(detectLanguage('ca', ['de-DE']), 'ca'); assert.equal(detectLanguage('auto', ['xx', 'pt-BR']), 'pt'); assert.equal(detectLanguage('auto', ['xx']), 'en');
   assert.equal(translate('ca', 'staffCount', { n: 23 }), '23 pentagrames');
+  assert.equal(detectLanguage('auto', ['eu-FR', 'fr-FR']), 'eu');
+  assert.equal(detectLanguage('auto', ['gl-ES', 'es-ES']), 'gl');
+  assert.equal(detectLanguage('eu', ['en-US']), 'eu');
+  assert.equal(translate('eu', 'staffCount', { n: 9 }), '9 pentagrama');
+  assert.equal(translate('gl', 'staffCount', { n: 9 }), '9 pentagramas');
 });
 
 test('shared layouts retain Unicode block names and reject invalid label payloads', () => {

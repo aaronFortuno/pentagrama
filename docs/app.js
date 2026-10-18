@@ -1,17 +1,17 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.13.0';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.13.0';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.13.0';
-import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.13.0';
-import { iconMarkup, renderIcons } from './icons.js?v=1.13.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.13.0';
-import { bindTouchRange } from './touch-range.js?v=1.13.0';
-import { analytics } from './analytics.js?v=1.13.0';
-import { createLogoNote } from './logo-note.js?v=1.13.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.13.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.13.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.13.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.13.0';
-import { RELEASE } from './release.js?v=1.13.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.14.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.14.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.14.0';
+import { DEFAULT_TEMPLATES, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.14.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.14.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.14.0';
+import { bindTouchRange } from './touch-range.js?v=1.14.0';
+import { analytics } from './analytics.js?v=1.14.0';
+import { createLogoNote } from './logo-note.js?v=1.14.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.14.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.14.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.14.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.14.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=1.14.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -52,7 +52,9 @@ function translatePage() {
   });
   document.querySelectorAll('[data-title]').forEach(element => { element.title = t(element.dataset.title); });
   document.querySelectorAll('[data-placeholder]').forEach(element => { element.placeholder = t(element.dataset.placeholder); });
-  $('release-date').textContent = new Intl.DateTimeFormat(language, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${RELEASE.date}T12:00:00Z`));
+  document.querySelectorAll('#version-dialog time[datetime]').forEach(time => {
+    time.textContent = RELEASE_DATES[language]?.[time.getAttribute('datetime')] ?? time.textContent;
+  });
   $('language-menu').replaceChildren();
   for (const [code, label] of Object.entries(LANGUAGES)) {
     const button = node('a'); button.href = languageURL(code, location.href, siteRoot).href; button.dataset.language = code; button.lang = code; button.hreflang = code; button.tabIndex = -1;
@@ -225,8 +227,14 @@ function setLanguageOpen(value, focus = 'selected') {
   languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
   if (value) {
     const buttons = [...$('language-menu').querySelectorAll('[data-language]')];
-    (focus === 'first' ? buttons[0] : focus === 'last' ? buttons.at(-1) : buttons.find(button => button.dataset.language === language)).focus({ preventScroll: true });
+    focusLanguage(focus === 'first' ? buttons[0] : focus === 'last' ? buttons.at(-1) : buttons.find(button => button.dataset.language === language));
   }
+}
+function focusLanguage(button) {
+  button.focus({ preventScroll: true });
+  const menu = $('language-menu');
+  if (button.offsetTop < menu.scrollTop) menu.scrollTop = button.offsetTop;
+  else if (button.offsetTop + button.offsetHeight > menu.scrollTop + menu.clientHeight) menu.scrollTop = button.offsetTop + button.offsetHeight - menu.clientHeight;
 }
 function closeLanguageMenu(returnFocus = false) { if (returnFocus) $('language-button').focus({ preventScroll: true }); setLanguageOpen(false); }
 function update(key, value, options) { settings[key] = value; render(options); }
@@ -264,14 +272,14 @@ $('language-menu').addEventListener('click', event => {
 $('language-menu').addEventListener('keydown', event => {
   const buttons = [...$('language-menu').querySelectorAll('[data-language]')], index = buttons.indexOf(document.activeElement);
   const next = { ArrowDown: (index + 1) % buttons.length, ArrowUp: (index + buttons.length - 1) % buttons.length, Home: 0, End: buttons.length - 1 }[event.key];
-  if (next !== undefined) { event.preventDefault(); buttons[next].focus({ preventScroll: true }); }
+  if (next !== undefined) { event.preventDefault(); focusLanguage(buttons[next]); }
   else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeLanguageMenu(true); }
   else if (event.key === ' ') { event.preventDefault(); document.activeElement?.click(); }
   else if (event.key === 'Tab') closeLanguageMenu(true);
   else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
     const initial = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()[0];
     const ordered = [...buttons.slice(index + 1), ...buttons.slice(0, index + 1)], button = ordered.find(item => initial(item.textContent) === initial(event.key));
-    if (button) { event.preventDefault(); button.focus({ preventScroll: true }); }
+    if (button) { event.preventDefault(); focusLanguage(button); }
   }
 });
 document.addEventListener('pointerdown', event => { if (languageOpen && !event.target.closest('.language-control')) closeLanguageMenu(); });
@@ -360,7 +368,9 @@ $('templates-panel').addEventListener('click', event => {
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
 $('about-button').addEventListener('click', () => openDialog($('about-dialog')));
-$('version-button').addEventListener('click', () => openDialog($('version-dialog')));
+$('version-button').addEventListener('click', () => {
+  openDialog($('version-dialog')); document.querySelector('.release-timeline').scrollTop = 0;
+});
 $('analytics-excluded').checked = analytics.userExcluded();
 $('analytics-browser-preference').hidden = !analytics.browserPrivacyEnabled();
 $('analytics-excluded').addEventListener('change', event => {

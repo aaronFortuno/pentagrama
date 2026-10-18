@@ -1,7 +1,9 @@
+import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=1.14.0';
+
 const DOMAIN = 'pentagrama.page';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const EVENTS = new Set(['print_requested', 'template_applied', 'template_saved', 'share_requested']);
-const LANGUAGES = new Set(['ca', 'en', 'es', 'de', 'fr', 'it', 'pt', 'nl']);
+const LANGUAGES = new Set(Object.keys(SUPPORTED_LANGUAGES));
 const CAMPAIGN_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'];
 
 function eventData(name, source = {}) {

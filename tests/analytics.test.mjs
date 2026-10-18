@@ -1,8 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAnalytics, sanitizePayload } from '../docs/analytics.js';
+import { LANGUAGES } from '../docs/i18n.js';
 
 const website = '00000000-0000-4000-8000-000000000001';
+
+test('print statistics accept every supported language and reject unknown language values', () => {
+  for (const language of Object.keys(LANGUAGES)) {
+    const safe = sanitizePayload('event', { website, name: 'print_requested', data: { language } });
+    assert.equal(safe.data.language, language);
+  }
+  assert.deepEqual(sanitizePayload('event', { website, name: 'print_requested', data: { language: 'PRIVATE' } }).data, {});
+});
+
 function environment(hostname = 'pentagrama.page') {
   const stored = new Map(), scripts = [], calls = [];
   return {

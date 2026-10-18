@@ -8,14 +8,16 @@ La publicació actual utilitza GitHub Pages, amb la branca `main` i el directori
 
 Per preparar una versió del web:
 
-**Cada nova versió ha d’actualitzar també el resum de novetats accessible des del footer.** Escriu un o pocs punts breus, concisos i orientats a l’usuari, amb la data de publicació i les traduccions als vuit idiomes. Aquest resum complementa l’historial detallat de `CHANGELOG.md`; no el substitueix ni n’ha de copiar els detalls tècnics.
+**Cada nova versió ha d’actualitzar també el resum de novetats accessible des del footer.** Escriu un o pocs punts breus, concisos i orientats a l’usuari, amb la data de publicació i les traduccions als idiomes disponibles. Aquest resum complementa l’historial detallat de `CHANGELOG.md`; no el substitueix ni n’ha de copiar els detalls tècnics.
+
+Conserva totes les versions anteriors a `history` de `src/release.json`, de més nova a més antiga, cadascuna amb número, data i resum propi d’aproximadament una a tres línies. En preparar una nova versió, incorpora l’anterior a l’historial abans de substituir-ne la data i el resum actuals. No agrupis entrades sota «versions anteriors». Mantén el detall complet de les modificacions a `CHANGELOG.md`.
 
 1. Actualitza `version` a `package.json`, la data i les claus del resum a `src/release.json`, les traduccions corresponents a `docs/i18n.js` i les notes de `CHANGELOG.md`.
 2. Executa `node tools/version-assets.mjs`.
 3. Executa `npm test` i comprova al navegador els canvis d’interfície o d’impressió que hagis fet.
 4. Publica els canvis a `main` i comprova el resultat de GitHub Pages, incloent-hi que el diàleg de novetats del footer mostri la versió, la data i el resum correctes.
 
-L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els vuit directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
+L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 
 ## Domini pentagrama.page
 
@@ -47,7 +49,7 @@ Referència de GitHub: [gestió d’un domini propi](https://docs.github.com/en/
 
 Les rutes dels recursos són relatives. Per publicar una còpia pròpia, adapta o elimina `docs/CNAME`, actualitza `homepage` a `package.json` i executa `node tools/version-assets.mjs`: les canòniques, els `hreflang` i el sitemap es generen amb aquesta adreça. Revisa també `docs/robots.txt` i l’adreça opcional impresa que defineix `docs/layout.js`.
 
-Les adreces d’idioma són directoris estàtics amb el seu `index.html`; GitHub Pages serveix `/en/`, `/ca/`, etc. sense regles de reescriptura. Les traduccions, els títols, les descripcions i els enllaços entre idiomes ja són presents a l’HTML. El sitemap enumera l’arrel i els vuit idiomes. La publicació facilita el rastreig, però la indexació i els terminis depenen dels cercadors.
+Les adreces d’idioma són directoris estàtics amb el seu `index.html`; GitHub Pages serveix `/en/`, `/ca/`, etc. sense regles de reescriptura. Les traduccions, els títols, les descripcions i els enllaços entre idiomes ja són presents a l’HTML. El sitemap enumera l’arrel i els idiomes disponibles. La publicació facilita el rastreig, però la indexació i els terminis depenen dels cercadors.
 
 L’analítica només s’activa al domini fixat a `docs/analytics.js`. Per mesurar una altra publicació cal configurar el domini i un identificador d’Umami propi, al meta `umami-website-id` de `docs/index.html`. Sense identificador vàlid no es carrega l’analítica. Vegeu [Analítica](analytics.md).
 

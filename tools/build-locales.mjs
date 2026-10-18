@@ -24,8 +24,10 @@ export function renderLocalizedPage(source, locale, homepage, { automatic = fals
   let html = source.replace('<html lang="ca">', `<html lang="${locale}">`)
     .replace('<!-- localized-head -->', head).replace('<!-- language-links -->', links)
     .replaceAll('<!-- app-version -->', RELEASE.version)
-    .replace('<!-- release-date -->', `<time id="release-date" datetime="${RELEASE.date}">${escapeHTML(releaseDate(locale))}</time>`)
-    .replace('<!-- release-changes -->', RELEASE.changes.map(key => `<li data-i18n="${key}">${t(key)}</li>`).join(''))
+    .replace('<!-- release-history -->', [RELEASE, ...RELEASE.history].map((entry, index) => {
+      const id = `release-${entry.version.replaceAll('.', '-')}`;
+      return `<section class="release-entry" data-version="${entry.version}" aria-labelledby="${id}"><div class="release-meta"><h3 id="${id}">${entry.version}</h3><time${index === 0 ? ' id="release-date"' : ''} datetime="${entry.date}">${escapeHTML(releaseDate(locale, entry.date))}</time></div>${entry.changes.map(key => `<p class="release-summary" data-i18n="${key}">${t(key)}</p>`).join('')}</section>`;
+    }).join(''))
     .replaceAll('{{lightning-address}}', escapeHTML(SUPPORT.address)).replaceAll('{{lightning-link}}', escapeHTML(SUPPORT.href))
     .replace('<!-- lightning-qr -->', supportQr)
     .replace(/<title>[^<]*<\/title>/, `<title>${t('title')}</title>`)
@@ -50,7 +52,9 @@ export async function buildLocalizedPages() {
   const { homepage } = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
   await mkdir(new URL('docs/assets/', root), { recursive: true });
   await writeFile(new URL('docs/assets/lightning-qr.svg', root), lightningQr(SUPPORT.payload));
-  await writeFile(new URL('docs/release.js', root), `// Generated from package.json and src/release.json.\nexport const RELEASE = Object.freeze(${JSON.stringify(RELEASE)});\n`);
+  const dates = [...new Set([RELEASE, ...RELEASE.history].map(entry => entry.date))];
+  const localizedDates = Object.fromEntries(Object.keys(LANGUAGES).map(locale => [locale, Object.fromEntries(dates.map(date => [date, releaseDate(locale, date)]))]));
+  await writeFile(new URL('docs/release.js', root), `// Generated from package.json and src/release.json.\nexport const RELEASE = Object.freeze(${JSON.stringify(RELEASE)});\nexport const RELEASE_DATES = Object.freeze(${JSON.stringify(localizedDates)});\n`);
   await writeFile(new URL('docs/index.html', root), renderLocalizedPage(source, 'ca', homepage, { automatic: true }));
   for (const code of Object.keys(LANGUAGES)) {
     const directory = new URL(`docs/${code}/`, root);

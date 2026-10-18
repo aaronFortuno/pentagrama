@@ -1,6 +1,6 @@
-import { createLayout, footerLines, footerTextWidth, FOOTER_GRAY, FOOTER_SIZE } from './layout.js?v=1.13.0';
-import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.13.0';
-import { FOOTER_FONT_DATA } from './vendor/footer-font-data.js?v=1.13.0';
+import { createLayout, footerLines, footerTextWidth, FOOTER_GRAY, FOOTER_SIZE } from './layout.js?v=1.14.0';
+import { FOOTER_FONT } from './vendor/footer-font-metrics.js?v=1.14.0';
+import { FOOTER_FONT_DATA } from './vendor/footer-font-data.js?v=1.14.0';
 
 let fontProgram;
 function embeddedFont() {

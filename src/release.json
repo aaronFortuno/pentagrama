@@ -1,4 +1,27 @@
 {
-  "date": "2026-10-17",
-  "changes": ["releaseLightningQr", "releaseVersionNotes"]
+  "date": "2026-10-18",
+  "changes": ["release114Summary"],
+  "history": [
+    { "version": "1.13.0", "date": "2026-10-17", "changes": ["release113Summary"] },
+    { "version": "1.12.0", "date": "2026-10-17", "changes": ["release112Summary"] },
+    { "version": "1.11.0", "date": "2026-10-17", "changes": ["release111Summary"] },
+    { "version": "1.10.0", "date": "2026-10-17", "changes": ["release110Summary"] },
+    { "version": "1.9.0", "date": "2026-10-17", "changes": ["release190Summary"] },
+    { "version": "1.8.2", "date": "2026-10-17", "changes": ["release182Summary"] },
+    { "version": "1.8.1", "date": "2026-10-17", "changes": ["release181Summary"] },
+    { "version": "1.8.0", "date": "2026-10-17", "changes": ["release180Summary"] },
+    { "version": "1.7.1", "date": "2026-10-17", "changes": ["release171Summary"] },
+    { "version": "1.7.0", "date": "2026-10-17", "changes": ["release170Summary"] },
+    { "version": "1.6.0", "date": "2026-10-17", "changes": ["release160Summary"] },
+    { "version": "1.5.3", "date": "2026-10-17", "changes": ["release153Summary"] },
+    { "version": "1.5.2", "date": "2026-10-17", "changes": ["release152Summary"] },
+    { "version": "1.5.1", "date": "2026-10-17", "changes": ["release151Summary"] },
+    { "version": "1.5.0", "date": "2026-10-17", "changes": ["release150Summary"] },
+    { "version": "1.4.1", "date": "2026-10-17", "changes": ["release141Summary"] },
+    { "version": "1.4.0", "date": "2026-10-17", "changes": ["release140Summary"] },
+    { "version": "1.3.0", "date": "2026-10-17", "changes": ["release130Summary"] },
+    { "version": "1.2.0", "date": "2026-10-17", "changes": ["release120Summary"] },
+    { "version": "1.1.0", "date": "2026-10-17", "changes": ["release110InitialSummary"] },
+    { "version": "1.0.0", "date": "2026-10-16", "changes": ["release100Summary"] }
+  ]
 }

@@ -30,7 +30,7 @@ test('every published language has translated HTML, a self canonical and recipro
   }
 });
 
-test('automatic home remains self canonical and sitemap lists home plus all eight real language URLs', async () => {
+test('automatic home remains self canonical and sitemap lists home plus every real language URL', async () => {
   const html = await readFile(new URL('docs/index.html', root), 'utf8');
   assert.equal(html, renderLocalizedPage(source, 'ca', site, { automatic: true }));
   assert.ok(html.includes(`<link rel="canonical" href="${site}">`)); assert.ok(html.includes('<base href="./">'));
