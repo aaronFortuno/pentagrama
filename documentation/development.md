@@ -4,6 +4,8 @@ Pentagrama és un web estàtic d’HTML, CSS i JavaScript amb mòduls ES. No nec
 
 El catàleg públic i les guies de coral amb piano i orquestra A3 es generen amb `tools/build-template-pages.mjs` durant el mateix procés. Les geometries i miniatures provenen de `DEFAULT_TEMPLATES` a `docs/library.js`, igual que el sidebar; no s’han de mantenir còpies dels ajustos a les pàgines. Els textos són a `docs/i18n.js`. Cada idioma disposa de `/templates/`, `/templates/choir-piano/` i `/templates/orchestra-a3/` sota la seva ruta. Les pàgines resultants i `docs/assets/templates/` són generats.
 
+El favicon es publica a `docs/favicon.png` (PNG, 96 × 96 píxels), amb la font vectorial a `src/favicon.svg`. La declaració de `src/index.html` es comparteix amb totes les pàgines generades. Mantén estable la ruta del PNG perquè els cercadors el puguin rastrejar i reutilitzar.
+
 ## Treballar en local
 
 Amb Node.js 22 o posterior, des de l’arrel del repositori:

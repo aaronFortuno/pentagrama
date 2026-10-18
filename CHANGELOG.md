@@ -1,6 +1,6 @@
 # Canvis
 
-## 1.17.1 · 2026-10-18
+## 1.17.2 · 2026-10-18
 
 - «Espai superior extra» passa a formar part de «Marges»: dos camps inicials per als marges horitzontals i verticals, i una vista de quatre camps per ajustar cada costat de manera independent. Els valors s’expressen en mm, amb passos d’1 mm.
 - Es conserven els marges inicials de 18 mm als laterals i 21 mm a dalt i a baix. L’espai superior extra se suma al marge superior per reservar lloc per al títol o l’autor.
@@ -10,6 +10,12 @@
 - A la guia de plantilles, capçalera i peu queden sempre visibles en escriptori i tauleta; només el contingut central té desplaçament, amb la barra d’estil terracota del projecte. En mòbil es conserva el desplaçament natural de la pàgina.
 - Capçalera i peu extrets a components de font propis i compartits entre l’editor i la guia; es mantenen els diàlegs comuns de V4V, privadesa i versions.
 - Etiquetes i resum als deu idiomes, i proves de geometria, formats, referències, persistència, desfer/refer i compatibilitat amb plantilles anteriors.
+
+## 1.17.1 · 2026-10-18
+
+- Favicon publicat com a PNG de 96 × 96 píxels en una adreça estable i rastrejable, en lloc de l’SVG incrustat en una URL de dades. Es conserva el mateix pentagrama blanc sobre fons terracota.
+- Declaració compartida per la portada, els deu idiomes i les guies de plantilles. Font vectorial conservada a `src/favicon.svg`.
+- Resum de versió traduït als deu idiomes i historial anterior conservat. La icona als resultats de cerca depèn del processament posterior de Google.
 
 ## 1.17.0 · 2026-10-18
 

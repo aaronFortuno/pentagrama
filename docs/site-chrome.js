@@ -1,6 +1,6 @@
-import { analytics } from './analytics.js?v=1.17.1';
-import { iconMarkup } from './icons.js?v=1.17.1';
-import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=1.17.1';
+import { analytics } from './analytics.js?v=1.17.2';
+import { iconMarkup } from './icons.js?v=1.17.2';
+import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=1.17.2';
 
 // Shared footer behavior for the editor and the static template guide.
 export function bindSiteDialogs({ t, copy, toast }) {
