@@ -17,7 +17,7 @@ Conserva totes les versions anteriors a `history` de `src/release.json`, de més
 1. Actualitza `version` a `package.json`, la data i les claus del resum a `src/release.json`, les traduccions corresponents a `docs/i18n.js` i les notes de `CHANGELOG.md`.
 2. Executa `node tools/version-assets.mjs`.
 3. Executa `npm test` i comprova al navegador els canvis d’interfície o d’impressió que hagis fet.
-4. Publica els canvis a `main` i comprova el resultat de GitHub Pages, incloent-hi que el diàleg de novetats del footer mostri la versió, la data i el resum correctes.
+4. Publica els canvis a `main`. Si ja s’han comprovat en local, no repeteixis la comprovació al web remot: la farà l’usuari manualment i comunicarà qualsevol problema. La versió, la data i el resum del footer s’han de verificar durant la revisió local.
 
 L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 

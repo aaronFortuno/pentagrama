@@ -1,5 +1,12 @@
 # Canvis
 
+## 1.15.2 · 2026-10-18
+
+- Nota breu sobre l’autor al diàleg «Sobre el projecte · V4V», amb la seva dedicació docent i la creació d’aplicacions educatives i altres projectes de codi obert.
+- Enllaç al portfoli personal amb la iconografia existent, obertura en una pestanya nova i textos traduïts als deu idiomes.
+- Resum del footer actualitzat, conservant l’entrada individual de la 1.15.1 i tot l’historial anterior.
+- Procediment de validació documentat: després de comprovar els canvis en local, la revisió del web públic queda a càrrec de l’usuari.
+
 ## 1.15.1 · 2026-10-18
 
 - Enllaç discret al changelog complet de GitHub, a la dreta del títol de l’historial de versions, amb obertura en una pestanya nova.

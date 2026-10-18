@@ -1,5 +1,9 @@
 # Instruccions del projecte
 
+## Comprovació dels canvis
+
+En els projectes remots, si s’han comprovat els canvis en local, no repeteixis la comprovació al web remot. La revisió remota la farà l’usuari manualment i comunicarà qualsevol problema. Aquesta instrucció no impedeix publicar els canvis autoritzats.
+
 ## Novetats de cada versió
 
 Cada nova versió publicada del web ha de reflectir els canvis al diàleg de novetats que s’obre des del número de versió al centre del footer. És un requisit del projecte: no n’hi ha prou amb actualitzar `CHANGELOG.md`.

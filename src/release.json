@@ -1,9 +1,14 @@
 {
   "date": "2026-10-18",
   "changes": [
-    "release1151Summary"
+    "release1152Summary"
   ],
   "history": [
+    {
+      "version": "1.15.1",
+      "date": "2026-10-18",
+      "changes": ["release1151Summary"]
+    },
     {
       "version": "1.15.0",
       "date": "2026-10-18",
