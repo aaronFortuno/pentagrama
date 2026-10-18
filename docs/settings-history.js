@@ -1,4 +1,4 @@
-import { normalizeSettings } from './layout.js?v=1.15.4';
+import { normalizeSettings } from './layout.js?v=1.16.0';
 
 // Keep full, independent snapshots: block names and footer choices matter too.
 export function createSettingsHistory(initial, { limit = 100 } = {}) {

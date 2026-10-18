@@ -1,18 +1,20 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.15.4';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.15.4';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.15.4';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.15.4';
-import { iconMarkup, renderIcons } from './icons.js?v=1.15.4';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.15.4';
-import { bindTouchRange } from './touch-range.js?v=1.15.4';
-import { analytics } from './analytics.js?v=1.15.4';
-import { createLogoNote } from './logo-note.js?v=1.15.4';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.15.4';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.15.4';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.15.4';
-import { createResetBaseline } from './settings-baseline.js?v=1.15.4';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.15.4';
-import { RELEASE, RELEASE_DATES } from './release.js?v=1.15.4';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.16.0';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.16.0';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.16.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.16.0';
+import { iconMarkup, renderIcons } from './icons.js?v=1.16.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.16.0';
+import { bindTouchRange } from './touch-range.js?v=1.16.0';
+import { analytics } from './analytics.js?v=1.16.0';
+import { createLogoNote } from './logo-note.js?v=1.16.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.16.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.16.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.16.0';
+import { createResetBaseline } from './settings-baseline.js?v=1.16.0';
+import { enhanceNumberInputs } from './number-input.js?v=1.16.0';
+import { bindSelectControl } from './select-control.js?v=1.16.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.16.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=1.16.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -68,6 +70,7 @@ function translatePage() {
   $('language-button').title = `${t('language')} · ${LANGUAGES[language]}`;
   $('template-catalog-link').href = new URL(`${language}/templates/`, siteRoot).href;
   melodyDiscovery?.refresh();
+  enhanceNumberInputs(document.querySelector('.settings'), t);
 }
 function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
 const measurements = [['thickness', 'thickness-value', 'thickness', 'mm'], ['line-spacing', 'line-spacing-value', 'lineSpacing', 'mm'], ['group-spacing', 'spacing-value', 'spacing', '×'], ['top-space', 'top-space-value', 'topSpace', 'mm']];
@@ -132,12 +135,15 @@ function renderBlocks() {
     up.disabled = index === 0; down.disabled = index === settings.blocks.length - 1; remove.disabled = settings.blocks.length === 1;
     heading.append(name, up, down, remove); card.append(heading);
     const fields = node('div', 'block-fields');
-    for (const [key, labelKey, max, step] of [['count', 'blockCount', 32, 1], ['inside', 'inside', 40, 0.1], ['after', 'after', 60, 0.1]]) {
-      const label = node('label'), input = node('input'); label.append(node('span', '', t(labelKey)));
-      input.type = 'number'; input.min = 1; input.max = max; input.step = step; input.value = block[key]; input.dataset.field = key; input.dataset.index = index;
+    for (const [key, labelKey, shortKey, max] of [['count', 'blockCount', 'blockCount', 32], ['inside', 'inside', 'insideShort', 40], ['after', 'after', 'afterShort', 60]]) {
+      const field = node('div', 'block-field'), label = node('label', '', t(shortKey)), input = node('input');
+      input.id = `block-${index}-${key}`; label.htmlFor = input.id; label.title = t(labelKey);
+      input.type = 'number'; input.min = 1; input.max = max; input.step = key === 'count' ? '1' : 'any'; input.dataset.increment = '1'; input.inputMode = key === 'count' ? 'numeric' : 'decimal';
+      if (key !== 'count') input.dataset.unit = 'mm';
+      input.value = block[key]; input.dataset.field = key; input.dataset.index = index;
       input.setAttribute('aria-label', `${t('block', { n: index + 1 })}: ${t(labelKey)}`);
       if (key === 'after' && index === settings.blocks.length - 1) input.disabled = true;
-      label.append(input); fields.append(label);
+      field.append(label, input); fields.append(field);
     }
     card.append(fields); $('block-list').append(card);
   });
@@ -146,13 +152,10 @@ function renderBlocks() {
 
 function updateBlockFields() {
   $('block-list').querySelectorAll('.block-card').forEach((card, index) => {
-    let visible = 0;
     card.querySelectorAll('.block-fields input').forEach(input => {
-      const hidden = input.dataset.field === 'inside' && settings.blocks[index].count === 1 || input.dataset.field === 'after' && index === settings.blocks.length - 1;
-      input.closest('label').hidden = hidden; input.disabled = hidden;
-      if (!hidden) visible++;
+      const disabled = input.dataset.field === 'inside' && settings.blocks[index].count === 1 || input.dataset.field === 'after' && index === settings.blocks.length - 1;
+      input.disabled = disabled; input.closest('.block-field').classList.toggle('inactive', disabled);
     });
-    card.querySelector('.block-fields').style.setProperty('--field-count', visible);
   });
 }
 
@@ -215,6 +218,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
+  enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
   write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
 }
 
@@ -225,6 +229,7 @@ function setTemplatesOpen(value) {
 }
 function setLanguageOpen(value, focus = 'selected') {
   if (value === languageOpen) return;
+  if (value) paperControl.close();
   languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
   if (value) {
     const buttons = [...$('language-menu').querySelectorAll('[data-language]')];
@@ -315,6 +320,7 @@ document.addEventListener('keydown', event => {
   const direction = historyShortcut(event);
   if (direction && !document.querySelector('dialog[open]')) { event.preventDefault(); travelHistory(direction); }
 });
+const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => closeLanguageMenu() });
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));
@@ -337,7 +343,7 @@ $('block-list').addEventListener('input', event => {
   if (field !== 'label' && event.target.value === '') return;
   settings.blocks[index][field] = field === 'label' ? event.target.value : Number(event.target.value); render();
 });
-$('block-list').addEventListener('focusout', event => { const { field, index } = event.target.dataset; if (field && settings.blocks[index]) event.target.value = settings.blocks[index][field]; });
+for (const type of ['change', 'focusout']) $('block-list').addEventListener(type, event => { const { field, index } = event.target.dataset; if (field && settings.blocks[index]) event.target.value = settings.blocks[index][field]; });
 $('block-list').addEventListener('click', event => {
   const button = event.target.closest('button[data-action]'); if (!button) return;
   const index = Number(button.dataset.index), action = button.dataset.action;
@@ -432,6 +438,7 @@ for (const details of settingsAccordion.children) {
 // Only its contents scroll when a long block layout exceeds the viewport.
 function sizeSettingsAccordion() {
   const headings = [...settingsDetails.keys()].reduce((height, details) => height + details.querySelector('summary').getBoundingClientRect().height + 1, 0);
+  settingsAccordion.style.setProperty('--settings-headings-height', `${headings}px`);
   settingsAccordion.style.setProperty('--settings-content-height', `${Math.max(0, settingsAccordion.clientHeight - headings)}px`);
 }
 const settingsResize = new ResizeObserver(sizeSettingsAccordion);

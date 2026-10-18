@@ -1,5 +1,18 @@
 # Canvis
 
+## 1.16.0 · 2026-10-18
+
+- Separat el selector «Senzilla / Per blocs» de la zona que es desplaça: queda sempre visible, mentre els blocs i els seus paràmetres tenen desplaçament intern en escriptori. Es conserva el desplaçament natural de la pàgina en mòbil.
+- Etiquetes abreujades als camps de blocs i repeticions, amb les descripcions completes disponibles per a lectors de pantalla i al títol dels camps. Les unitats «mm» apareixen dins dels controls.
+- Controls numèrics unificats amb fletxes Lucide petites, tons terracota, indicació de focus del grup i desactivació als límits. Es conserven les dreceres de teclat i l’historial de desfer/refer.
+- Increments relatius d’1 mm a l’espai entre pentagrames, després dels blocs i entre conjunts. Les plantilles i els codis amb valors fraccionaris conserven la seva precisió; també es poden introduir decimals manualment. El gruix, l’interlineat i el multiplicador d’agrupació mantenen els seus passos fins.
+- Graella de tres camps estable a tots els blocs: «Després» es mostra desactivat a l’últim bloc i l’espai interior es desactiva quan només hi ha un pentagrama.
+- Marges laterals ampliats al sidebar i a les zones amb desplaçament per evitar tallar les vores de focus, els camps de configuració i els extrems dels lliscadors.
+- En finestres d’escriptori molt baixes es reserva una alçada mínima útil per a la distribució i es permet desplaçar el lateral, evitant que el selector se superposi amb altres seccions.
+- Selector de paper propi, amb l’estil dels menús del web, transicions compartides de 220 ms i navegació amb fletxes, Inici/Fi, cerca per inicial, selecció i Escape. El menú queda fora del contenidor amb desplaçament per no retallar-ne les vores.
+- Botons d’orientació amb la mateixa unió recta, alçada interior i estat actiu que el selector de distribució, inclosos els estats de focus i de passar-hi el punter.
+- Resum i etiquetes als deu idiomes, proves dels passos numèrics i conservació de les plantilles i referències anteriors.
+
 ## 1.15.4 · 2026-10-18
 
 - Corregit «Restableix»: recupera la configuració de partida de la plantilla oberta des de la guia, un enllaç compartit, la biblioteca personal o un codi de configuració, en lloc de tornar sempre al full global.

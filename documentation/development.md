@@ -31,6 +31,7 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/app.js` | Interfície i persistència local |
 | `docs/settings-history.js` | Historial temporal de configuracions i dreceres de teclat |
 | `docs/settings-baseline.js` | Punt de partida independent per restablir una plantilla sense perdre’n la configuració original |
+| `docs/number-input.js`, `docs/select-control.js` | Controls numèrics amb unitats i selector de paper accessible, amb el temps d’animació compartit |
 | `docs/layout.js` | Mesures, distribució, referències i SVG |
 | `docs/preview.js` | Zoom i desplaçament de la previsualització |
 | `docs/library.js` | Plantilles suggerides i personals |
@@ -91,6 +92,14 @@ La versió del peu obre l’historial amb una entrada concisa per versió: núme
 El format del paper i la impressió es mantenen visibles. `#settings-accordion` conté cinc desplegables natius; només la distribució s’obre inicialment. `bindAnimatedDetails()` retorna `setOpen()` i accepta `onOpen` per replegar els altres desplegables amb la mateixa transició, sense interferir amb els detalls de privadesa del diàleg V4V. El contingut replegat queda inert i els canvis ràpids reprenen l’animació des de la posició actual.
 
 Un `ResizeObserver` reserva l’alçada de totes les capçaleres i limita el contingut obert a l’espai restant. En pantalles baixes o configuracions amb molts blocs, només es desplaça aquest contingut. Al mòbil s’elimina aquest límit i la pàgina conserva el desplaçament natural. L’estat dels desplegables no forma part de la configuració del full, de les referències ni de les plantilles desades.
+
+La distribució té una estructura pròpia dins del desplegable: `.distribution-mode` queda fora de `.distribution-scroll`, que conté els paràmetres i els blocs. El límit d’alçada inclou el selector fix; els marges interiors reserven espai per a les vores de focus i la barra de desplaçament. Tots els blocs conserven tres camps, amb els espais no aplicables desactivats.
+
+En escriptori es reserva un mínim de 100 px per al contingut obert a més de les capçaleres. Quan l’alçada de la finestra no ho permet, el lateral exterior pot desplaçar-se per evitar superposicions. En mòbil es manté l’alçada natural del contingut.
+
+`enhanceNumberInputs()` conserva els inputs numèrics natius i hi afegeix fletxes Lucide coherents, fora de l’etiqueta del camp. Les fletxes petites no afegeixen passos al tabulador; el camp accepta les tecles amunt/avall i manté la seva descripció completa. Els espais de blocs utilitzen `step="any"` i `data-increment="1"`: així una plantilla amb 7,3 mm continua sent vàlida i passa a 8,3 mm en augmentar-la, sense arrodoniments implícits. La normalització del layout continua admetent dècimes. Els controls fins mantenen els seus passos originals i cada clic incremental és una acció reversible.
+
+`bindSelectControl()` sincronitza el botó de format amb el select intern, inclosos canvis procedents de plantilles, desfer/refer i restablir. El menú es col·loca al `body`, es posiciona al costat del botó i utilitza `showPopover()` amb els mateixos 220 ms i la preferència de moviment reduït. Admet fletxes, Inici/Fi, selecció amb Enter/Espai, Escape, tabulador i cerca per inicial. Obrir paper o idioma tanca l’altre menú; desplaçar la pàgina o canviar-ne la mida tanca el menú de paper.
 
 ## Nota del logotip
 

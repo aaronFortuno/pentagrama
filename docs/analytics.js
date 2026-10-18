@@ -1,4 +1,4 @@
-import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=1.15.4';
+import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=1.16.0';
 
 const DOMAIN = 'pentagrama.page';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
