@@ -8,10 +8,12 @@ La publicació actual utilitza GitHub Pages, amb la branca `main` i el directori
 
 Per preparar una versió del web:
 
+**Cada nova versió ha d’actualitzar també el resum de novetats accessible des del footer.** Escriu un o pocs punts breus, concisos i orientats a l’usuari, amb la data de publicació i les traduccions als vuit idiomes. Aquest resum complementa l’historial detallat de `CHANGELOG.md`; no el substitueix ni n’ha de copiar els detalls tècnics.
+
 1. Actualitza `version` a `package.json`, la data i les claus del resum a `src/release.json`, les traduccions corresponents a `docs/i18n.js` i les notes de `CHANGELOG.md`.
 2. Executa `node tools/version-assets.mjs`.
 3. Executa `npm test` i comprova al navegador els canvis d’interfície o d’impressió que hagis fet.
-4. Publica els canvis a `main` i comprova el resultat de GitHub Pages.
+4. Publica els canvis a `main` i comprova el resultat de GitHub Pages, incloent-hi que el diàleg de novetats del footer mostri la versió, la data i el resum correctes.
 
 L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els vuit directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 
