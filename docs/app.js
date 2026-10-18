@@ -1,17 +1,17 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.15.2';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.15.2';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.15.2';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.15.2';
-import { iconMarkup, renderIcons } from './icons.js?v=1.15.2';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.15.2';
-import { bindTouchRange } from './touch-range.js?v=1.15.2';
-import { analytics } from './analytics.js?v=1.15.2';
-import { createLogoNote } from './logo-note.js?v=1.15.2';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.15.2';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.15.2';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.15.2';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.15.2';
-import { RELEASE, RELEASE_DATES } from './release.js?v=1.15.2';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.15.3';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.15.3';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.15.3';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.15.3';
+import { iconMarkup, renderIcons } from './icons.js?v=1.15.3';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.15.3';
+import { bindTouchRange } from './touch-range.js?v=1.15.3';
+import { analytics } from './analytics.js?v=1.15.3';
+import { createLogoNote } from './logo-note.js?v=1.15.3';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.15.3';
+import { createMelodyDiscovery } from './melody-discovery.js?v=1.15.3';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.15.3';
+import { languageFromURL, languageURL } from './language-routing.js?v=1.15.3';
+import { RELEASE, RELEASE_DATES } from './release.js?v=1.15.3';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -365,7 +365,9 @@ $('templates-panel').addEventListener('click', event => {
   analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal' });
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
-$('about-button').addEventListener('click', () => openDialog($('about-dialog')));
+$('about-button').addEventListener('click', () => {
+  openDialog($('about-dialog')); document.querySelector('.about-content').scrollTop = 0;
+});
 $('version-button').addEventListener('click', () => {
   openDialog($('version-dialog')); document.querySelector('.release-timeline').scrollTop = 0;
 });

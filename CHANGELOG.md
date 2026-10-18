@@ -1,5 +1,15 @@
 # Canvis
 
+## 1.15.3 · 2026-10-18
+
+- Diàleg «Sobre el projecte · V4V» més ample i compacte: els paràgrafs de presentació envolten un QR més petit i l’adreça Lightning queda a sota del text, amb la mateixa còpia ràpida.
+- Informació distribuïda en dues columnes en pantalles amples: autor i privadesa a l’esquerra, codi obert i llibreries a la dreta. En pantalles estretes es reorganitza en una columna.
+- Capçalera i botó de tancament fixos, amb desplaçament intern accessible amb teclat quan el contingut supera l’alçada disponible.
+- En reobrir el diàleg es torna a la presentació inicial i al QR.
+- Desplaçament de la pàgina de fons bloquejat mentre hi ha un diàleg obert, evitant una segona barra de desplaçament al mòbil.
+- Barres de desplaçament fines en tons terracota als diàlegs i panells, amb tiradors arrodonits i sense botons de fletxa en navegadors compatibles amb la personalització WebKit.
+- Resum de la versió traduït als deu idiomes i historial anterior conservat.
+
 ## 1.15.2 · 2026-10-18
 
 - Nota breu sobre l’autor al diàleg «Sobre el projecte · V4V», amb la seva dedicació docent i la creació d’aplicacions educatives i altres projectes de codi obert.
