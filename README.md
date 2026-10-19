@@ -4,6 +4,8 @@ Paper pautat a mida per escriure música a mà. Configura el full, comprova’l 
 
 **[Obre Pentagrama →](https://pentagrama.page/)**
 
+> Aquesta branca (`codex/v2-modular-engine`) prepara **2.0.0-alpha.1**. La versió estable continua a `main`. La [previsualització experimental](https://aaronfortuno.github.io/pentagrama-preview/) es publica en un repositori auxiliar, sense modificar pentagrama.page. Vegeu el [motor v2](documentation/engine-v2.md).
+
 ## Què hi pots fer
 
 - Preparar fulls **A3, A4 i Letter**, en vertical o horitzontal.
@@ -36,6 +38,7 @@ El web publicable és a `docs/`; l’estructura comuna, a `src/index.html`; les 
 ## Documentació i contribucions
 
 - [Desenvolupament](documentation/development.md): estructura del codi, configuracions, traduccions i recursos de tercers.
+- [Motor v2](documentation/engine-v2.md): model del document, renderització compartida, compatibilitat i següents passos.
 - [Desplegament](documentation/deployment.md): versions, GitHub Pages i domini propi.
 - [Analítica i privadesa](documentation/analytics.md): què es mesura i com excloure les visites pròpies.
 - [Historial de canvis](CHANGELOG.md).

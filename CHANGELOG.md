@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.0.0-alpha.1 · 2026-10-19
+
+- Primera versió experimental de la branca `codex/v2-modular-engine`, desenvolupada en una còpia de treball separada de `main` i sense canvis a pentagrama.page.
+- Motor dividit en configuració, referències P1–P4, distribució física, peus, estructura del document, escena vectorial, SVG, impressió i PDF. Els punts d’entrada anteriors es conserven com a adaptadors compatibles.
+- Model de document amb pàgines, conjunts, blocs i pentagrames identificables. La geometria i les primitives es calculen una vegada i alimenten la previsualització, la impressió i el PDF.
+- La interfície utilitza el motor nou amb les mateixes opcions i aparença. Es conserven les plantilles suggerides i personals, els ajustos locals, els codis compartits, Restableix i l’historial de desfer/refer.
+- Infraestructura interna preparada per a documents de diverses pàgines i exportació vectorial amb fonts compartides. Aquesta versió encara no afegeix controls de doble cara, claus ni línies de compàs.
+- Proves de paritat amb una còpia fixada del motor 1.17.2: configuració, geometria, referències, SVG i PDF. Proves addicionals d’identitats, documents de diverses pàgines, models invàlids i versions preliminars.
+- Generació i invalidació de memòria cau dels mòduls recursiva, suport de versions preliminars i resum del footer als deu idiomes.
+- Paquet experimental independent per al repositori auxiliar `pentagrama-preview`, sense domini propi, indexació ni analítica de producció; documentació del motor, els contractes d’identitat i el procediment de publicació.
+
 ## 1.17.2 · 2026-10-18
 
 - «Espai superior extra» passa a formar part de «Marges»: dos camps inicials per als marges horitzontals i verticals, i una vista de quatre camps per ajustar cada costat de manera independent. Els valors s’expressen en mm, amb passos d’1 mm.

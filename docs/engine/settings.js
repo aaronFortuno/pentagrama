@@ -1,0 +1,28 @@
+import { PAPER_SIZES, DEFAULT_MARGINS } from './constants.js?v=2.0.0-alpha.1';
+
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+const round = v => Math.round(v * 10) / 10;
+const numeric = (v, fallback, min, max) => clamp(Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : fallback, min, max);
+
+export function normalizeSettings(value = {}) {
+  if (!value || typeof value !== 'object') value = {};
+  const count = Math.round(numeric(value.count, 9, 1, 64));
+  let group = Math.round(numeric(value.group, 0, 0, 63));
+  if (group < 2 || group >= count) group = 0;
+  const blocks = Array.isArray(value.blocks) ? value.blocks.slice(0, 24).filter(b => b && typeof b === 'object').map(b => ({
+    label: typeof b.label === 'string' ? b.label.trim().slice(0, 60) : '',
+    count: Math.round(numeric(b.count, 2, 1, 32)), inside: round(numeric(b.inside, 8, 1, 40)), after: round(numeric(b.after, 14, 1, 60)),
+  })) : [];
+  return {
+    count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
+    reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
+    lineSpacing: round(numeric(value.lineSpacing, 2, 1, 4)), topSpace: Math.round(numeric(value.topSpace, 0, 0, 100)), mode: value.mode === 'blocks' ? 'blocks' : 'simple', systems: Math.round(numeric(value.systems, 1, 1, 8)), systemGap: round(numeric(value.systemGap, 18, 1, 60)),
+    ...Object.fromEntries(Object.entries(DEFAULT_MARGINS).map(([key, fallback]) => [key, Math.round(numeric(value[key], fallback, 0, 100))])),
+    blocks: blocks.length ? blocks : value.mode === 'blocks' ? [{ label: '', count: 4, inside: 12, after: 14 }, { label: '', count: 2, inside: 6, after: 14 }] : [],
+  };
+}
+
+export function pageDimensions(value) {
+  const s = normalizeSettings(value); const [short, long] = PAPER_SIZES[s.paper];
+  return s.orientation === 'landscape' ? { width: long, height: short } : { width: short, height: long };
+}

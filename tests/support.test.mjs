@@ -5,6 +5,7 @@ import { encodeLnurl, lightningDetails, lightningQr } from '../tools/lightning.m
 import { RELEASE, SUPPORT, releaseDate } from '../tools/site-data.mjs';
 import { LANGUAGES, translate } from '../docs/i18n.js';
 import { RELEASE as publishedRelease, RELEASE_DATES } from '../docs/release.js';
+import { compareVersions } from '../tools/release-version.mjs';
 
 test('LNURL encoding matches the published LUD-01 reference vector exactly', () => {
   const url = 'https://service.com/api?q=3fc3645b439ce8e7f2553a69e5267081d96dcd340693afabe04be7b0ccd178df';
@@ -42,12 +43,11 @@ test('release version, date and summaries stay synchronized in every language be
 test('footer history covers each documented version separately, in order, with dated translated summaries', async () => {
   const entries = [RELEASE, ...RELEASE.history];
   const changelog = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
-  const versions = [...changelog.matchAll(/^## (\d+\.\d+\.\d+)/gm)].map(match => match[1]);
+  const versions = [...changelog.matchAll(/^## (\d+\.\d+\.\d+(?:-[\w.-]+)?)/gm)].map(match => match[1]);
   assert.deepEqual(entries.map(entry => entry.version), versions);
   assert.equal(new Set(versions).size, versions.length);
-  const number = version => version.split('.').reduce((value, part) => value * 1000 + Number(part), 0);
   for (let index = 1; index < entries.length; index++) {
-    assert.ok(number(entries[index - 1].version) > number(entries[index].version));
+    assert.ok(compareVersions(entries[index - 1].version, entries[index].version) > 0);
     assert.ok(entries[index - 1].date >= entries[index].date);
   }
   for (const locale of Object.keys(LANGUAGES)) {

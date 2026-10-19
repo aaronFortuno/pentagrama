@@ -1,22 +1,25 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=1.17.2';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=1.17.2';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=1.17.2';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=1.17.2';
-import { iconMarkup, renderIcons } from './icons.js?v=1.17.2';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=1.17.2';
-import { bindTouchRange } from './touch-range.js?v=1.17.2';
-import { analytics } from './analytics.js?v=1.17.2';
-import { createLogoNote } from './logo-note.js?v=1.17.2';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=1.17.2';
-import { createMelodyDiscovery } from './melody-discovery.js?v=1.17.2';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=1.17.2';
-import { createResetBaseline } from './settings-baseline.js?v=1.17.2';
-import { enhanceNumberInputs } from './number-input.js?v=1.17.2';
-import { bindSelectControl } from './select-control.js?v=1.17.2';
-import { languageFromURL, languageURL } from './language-routing.js?v=1.17.2';
-import { bindSiteDialogs } from './site-chrome.js?v=1.17.2';
-import { bindMarginsControl } from './margins-control.js?v=1.17.2';
-import { RELEASE, RELEASE_DATES } from './release.js?v=1.17.2';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.1';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.1';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.1';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.1';
+import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.1';
+import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.1';
+import { analytics } from './analytics.js?v=2.0.0-alpha.1';
+import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.1';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.1';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.1';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.1';
+import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.1';
+import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.1';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.1';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.1';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.1';
+import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.1';
+import { createDocument } from './engine/document.js?v=2.0.0-alpha.1';
+import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.1';
+import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.1';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -188,7 +191,8 @@ function renderLibrary(animate = true) { const change = () => {
 }; if (animate && templatesOpen) animateReflow($('templates-library'), change); else change(); }
 
 function render({ blocks = false, templates = false, record = true } = {}) {
-  settings = normalizeSettings(settings); layout = createLayout(settings);
+  const score = createDocument(settings), page = score.pages[0];
+  settings = page.settings; layout = page.layout;
   if (record) settingsHistory?.record(settings, { group: historyGroup });
   $('undo-button').disabled = !settingsHistory?.canUndo; $('redo-button').disabled = !settingsHistory?.canRedo;
   setValue('paper-size', settings.paper); setValue('staff-count', settings.count);
@@ -208,7 +212,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('group-size').value = settings.group; $('group-size').disabled = settings.count < 3;
   $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1; $('system-gap-field').hidden = settings.systems === 1;
   $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
-  const sheet = renderSheet(settings); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = layout.valid ? sheet : '';
+  const sheet = renderSvgPage(page); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = score.valid ? renderPrintDocument(score) : '';
   $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}`);
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
   $('layout-summary').textContent = `${staffCount(layout.count)} · ${grouping} · ${number(settings.thickness)} mm`;

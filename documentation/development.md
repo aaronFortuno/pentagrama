@@ -34,7 +34,8 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/settings-history.js` | Historial temporal de configuracions i dreceres de teclat |
 | `docs/settings-baseline.js` | Punt de partida independent per restablir una plantilla sense perdre’n la configuració original |
 | `docs/number-input.js`, `docs/select-control.js` | Controls numèrics amb unitats i selector de paper accessible, amb el temps d’animació compartit |
-| `docs/layout.js` | Mesures, distribució, referències i SVG |
+| `docs/layout.js`, `docs/pdf.js` | Adaptadors compatibles amb els punts d’entrada de la versió 1 |
+| `docs/engine/` | Motor modular: configuració, document, geometria, escena vectorial, SVG, impressió i PDF |
 | `docs/preview.js` | Zoom i desplaçament de la previsualització |
 | `docs/library.js` | Plantilles suggerides i personals |
 | `docs/i18n.js` | Traduccions, detecció i selecció d’idioma |
@@ -45,13 +46,15 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/melodies.js`, `docs/melody-player.js` | Catàleg de fragments i reproducció sincronitzada amb el rellotge d’àudio |
 | `docs/melody-discovery.js`, `docs/wordmark.js` | Descoberta, canvi del títol i diàleg musical |
 | `docs/icons.js`, `docs/vendor/` | Icones, fonts i llicències de tercers |
-| `docs/pdf.js` | Generador vectorial intern; la interfície utilitza el diàleg d’impressió |
+| `docs/engine/pdf.js` | Generador vectorial intern de documents; la interfície utilitza el diàleg d’impressió |
 | `docs/analytics.js` | Càrrega i filtratge de l’analítica de producció |
 | `src/release.json`, `docs/release.js` | Data i resum editorial; metadades generades amb la versió de `package.json` |
 | `src/support.json`, `tools/lightning.mjs` | Destinació única de suport, codificació LNURL i QR vectorial |
 | `tests/`, `tools/` | Proves i eines de desenvolupament |
 
 ## Geometria i configuracions compartides
+
+La branca 2.x es descriu a [engine-v2.md](engine-v2.md). `docs/app.js` obté un document amb `createDocument()` i en reutilitza la geometria per a la previsualització i la impressió. La interfície encara edita un sol full amb les opcions existents.
 
 Les mides del full es calculen en mil·límetres. En mode blocs, la separació entre pentagrames es mesura de l’última línia d’un pentagrama a la primera del següent. En mode senzill, la separació entre grups és un multiplicador respecte de l’espai normal entre pentagrames. El zoom només modifica la vista en pantalla.
 
