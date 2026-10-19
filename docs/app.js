@@ -1,28 +1,28 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.6';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.6';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.6';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.6';
-import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.6';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.6';
-import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.6';
-import { analytics } from './analytics.js?v=2.0.0-alpha.6';
-import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.6';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.6';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.6';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.6';
-import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.6';
-import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.6';
-import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.6';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.6';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.6';
-import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.6';
-import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.6';
-import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.6';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.0.0-alpha.6';
-import { createDocument } from './engine/document.js?v=2.0.0-alpha.6';
-import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.6';
-import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.6';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.6';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.7';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.7';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.7';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.7';
+import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.7';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.7';
+import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.7';
+import { analytics } from './analytics.js?v=2.0.0-alpha.7';
+import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.7';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.7';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.7';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.7';
+import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.7';
+import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.7';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.7';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.7';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.7';
+import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.7';
+import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.7';
+import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.7';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.0.0-alpha.7';
+import { createDocument } from './engine/document.js?v=2.0.0-alpha.7';
+import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.7';
+import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.7';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.7';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -97,14 +97,17 @@ function fitPreview() {
   const stage = $('paper-stage'), style = getComputedStyle(stage);
   const availableWidth = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
   const availableHeight = stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-  const view = previewView(layout, { width: availableWidth, height: availableHeight }, previewZoom, previewPan);
+  const fitWidth = window.matchMedia('(max-width:760px)').matches;
+  const view = previewView(layout, { width: availableWidth, height: availableHeight }, previewZoom, previewPan, { fitWidth });
   previewPan = { x: view.x, y: view.y };
   const paper = $('preview-paper');
   paper.style.width = `${view.width}px`; paper.style.height = `${view.height}px`;
   paper.style.left = `${parseFloat(style.paddingLeft) + Math.max(0, availableWidth) / 2}px`;
-  paper.style.top = `${parseFloat(style.paddingTop) + Math.max(0, availableHeight) / 2}px`;
+  paper.style.top = `${parseFloat(style.paddingTop) + (fitWidth ? view.height : Math.max(0, availableHeight)) / 2}px`;
   paper.style.transform = `translate(-50%, -50%) translate(${view.x}px, ${view.y}px)`;
-  stage.dataset.zoomed = String(previewZoom > MIN_ZOOM);
+  stage.dataset.zoomed = String(view.canPan);
+  const resetKey = fitWidth ? 'previewFitWidth' : 'previewReset';
+  $('zoom-reset').dataset.aria = resetKey; $('zoom-reset').setAttribute('aria-label', t(resetKey));
   $('zoom-value').textContent = `${number(Math.round(previewZoom * 100))}%`;
   document.querySelector('.zoom-controls').dataset.orientation = settings.orientation;
   $('zoom-out').disabled = previewZoom <= MIN_ZOOM; $('zoom-in').disabled = previewZoom >= MAX_ZOOM;
@@ -440,7 +443,7 @@ $('paper-stage').addEventListener('wheel', event => {
   event.preventDefault(); zoomPreview(previewZoom * (delta < 0 ? 1.1 : 1 / 1.1));
 }, { passive: false });
 $('paper-stage').addEventListener('pointerdown', event => {
-  if (previewZoom <= MIN_ZOOM || !event.isPrimary || event.button !== 0) return;
+  if ($('paper-stage').dataset.zoomed !== 'true' || !event.isPrimary || event.button !== 0) return;
   hideZoomHint();
   const stage = $('paper-stage');
   drag = { id: event.pointerId, x: event.clientX, y: event.clientY, pan: { ...previewPan } };
@@ -456,7 +459,7 @@ $('paper-stage').addEventListener('keydown', event => {
   if (event.key === 'Home' || event.key === '0') { event.preventDefault(); zoomPreview(MIN_ZOOM); return; }
   if (event.key === '+' || event.key === '=') { event.preventDefault(); zoomPreview(previewZoom * 1.25); return; }
   if (event.key === '-') { event.preventDefault(); zoomPreview(previewZoom / 1.25); return; }
-  if (previewZoom <= MIN_ZOOM) return;
+  if ($('paper-stage').dataset.zoomed !== 'true') return;
   const move = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[event.key];
   if (move) { event.preventDefault(); previewPan.x += move[0]; previewPan.y += move[1]; fitPreview(); }
 });

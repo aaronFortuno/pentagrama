@@ -1,7 +1,7 @@
-import { SERVICE_ADDRESS } from './constants.js?v=2.0.0-alpha.6';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.0-alpha.6';
-import { encodeReference } from './references.js?v=2.0.0-alpha.6';
-import { footerTextWidth } from './typography.js?v=2.0.0-alpha.6';
+import { SERVICE_ADDRESS } from './constants.js?v=2.0.0-alpha.7';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.0-alpha.7';
+import { encodeReference } from './references.js?v=2.0.0-alpha.7';
+import { footerTextWidth } from './typography.js?v=2.0.0-alpha.7';
 
 export function footerLines(value) {
   const s = normalizeSettings(value), { width, height } = pageDimensions(s);

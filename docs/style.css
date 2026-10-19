@@ -56,6 +56,7 @@ main{min-height:0;min-width:0;display:grid;grid-template-rows:minmax(0,1fr);padd
 .settings{display:flex;flex-direction:column;padding:0 9px 12px 5px;scrollbar-gutter:stable;scroll-padding-top:110px}
 .settings-content{display:flex;flex-direction:column;flex:1;min-height:0;overflow:visible}
 .mobile-settings-toggle{display:none}
+.settings-header{flex-shrink:0;position:sticky;top:0;z-index:3;background:var(--bg)}
 .settings-top{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--bg);padding:0 0 12px}
 .settings-top>.button{flex:1;min-width:0;padding-left:10px;padding-right:10px}
 .history-controls{display:flex;gap:1px;margin-left:auto}
@@ -451,21 +452,32 @@ body.editor-page{height:100dvh;overflow:hidden}
 .editor-page .brand{min-width:0}
 .editor-page .wordmark{font-size:22px}
 .editor-page main{display:grid;min-height:0;padding-top:6px}
-.editor-page .workspace{display:block;height:100%;overflow:hidden}
-.editor-page .preview-area{height:100%;padding-bottom:var(--settings-visible-height,45px)}
-.editor-page .paper-stage{padding:8px 34px 48px 8px}
+.editor-page .workspace{display:block;height:100%;overflow:clip}
+.editor-page .preview-area{height:100%}
+.editor-page .paper-stage{padding:8px 8px 56px}
 .editor-page .preview-caption{bottom:calc(var(--settings-visible-height,45px) + 12px);left:8px;right:auto;max-width:calc(100% - 148px);font-size:8px;transition:bottom var(--motion-duration) var(--motion-ease)}
 .editor-page .zoom-controls{bottom:calc(var(--settings-visible-height,45px) + 8px);right:8px;left:auto;transform:none;transition:bottom var(--motion-duration) var(--motion-ease)}
 .editor-page .settings{position:absolute;left:0;right:0;bottom:0;z-index:20;height:min(62%,520px);max-height:calc(100% - 100px);padding:0;overflow:hidden;scrollbar-gutter:auto;border:1px solid #d8d6ce;border-radius:10px 10px 0 0;background:var(--bg);box-shadow:0 -6px 24px #49352714;transform:translateY(calc(100% - var(--settings-handle-height,45px)));transition:transform var(--motion-duration) var(--motion-ease)}
 .editor-page .workspace[data-settings-open=true] .settings{transform:translateY(0)}
-.mobile-settings-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;width:100%;height:44px;border:0;border-bottom:1px solid var(--line);padding:0 14px;background:var(--bg);font-size:12px;font-weight:600;color:var(--ink);text-align:left}
+.editor-page .settings.sheet-dragging{transform:translateY(var(--sheet-offset));transition:none}
+.editor-page .workspace:has(.sheet-dragging) :is(.preview-caption,.zoom-controls){transition:none}
+.editor-page .settings-header{position:relative;display:flex;align-items:center;gap:4px;min-height:48px;padding:0 38px 0 8px;border-bottom:1px solid var(--line);touch-action:none;user-select:none;cursor:ns-resize}
+.mobile-settings-toggle{display:flex;align-items:center;flex:1;min-width:0;height:48px;border:0;padding:0 4px;background:transparent;font-size:12px;font-weight:600;color:var(--ink);text-align:left;touch-action:none}
+#mobile-settings-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mobile-settings-toggle>[data-icon]{position:absolute;right:12px;top:16px;display:flex}
 .mobile-settings-toggle .lucide{width:16px;height:16px;transform:rotate(180deg);transition:transform var(--motion-duration) var(--motion-ease)}
 .mobile-settings-toggle[aria-expanded=true] .lucide{transform:rotate(0)}
-.editor-page .settings-content{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 10px 14px;scroll-padding:60px 0 8px}
-.editor-page .settings-top{position:sticky;top:0;padding:8px 0}
+.editor-page .settings-content{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 10px 14px;scroll-padding:8px 0}
+.editor-page .settings-top{position:static;flex:0 0 auto;gap:3px;padding:0;width:0;overflow:hidden;opacity:0;visibility:hidden;transition:width var(--motion-duration) var(--motion-ease),opacity var(--motion-duration) var(--motion-ease),visibility var(--motion-duration)}
+.editor-page .workspace[data-settings-open=true] .settings-top{width:143px;opacity:1;visibility:visible}
+.editor-page .settings-top>.button{flex:0 0 38px;width:38px;height:38px;padding:0;justify-content:center}
+.editor-page #print-button>span[data-i18n]{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.editor-page .history-controls{gap:0}
+.editor-page .history-controls .icon-button{width:34px;height:40px;padding:7px}
 .editor-page .templates-layer{position:absolute;inset:0}
-.editor-page .site-footer{padding-bottom:max(8px,env(safe-area-inset-bottom));font-size:9px}
-.editor-page .site-footer p{font-size:10px}
+.editor-page .site-footer{gap:8px;padding-bottom:max(8px,env(safe-area-inset-bottom));font-size:9px}
+.editor-page .site-footer :is(p,.text-button){font-size:clamp(8px,2.25vw,9px);white-space:nowrap}
+.editor-page .site-footer .template-catalog-link{display:none}
 }
 @media(max-width:380px){.app-shell{padding:0 12px}
 .wordmark{font-size:21px}

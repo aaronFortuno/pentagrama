@@ -1,5 +1,14 @@
 # Canvis
 
+## 2.0.0-alpha.7 · 2026-10-19
+
+- En mòbil, el full s’ajusta a tota l’amplada disponible i queda alineat a la part superior. Obrir o replegar la configuració ja no redueix la previsualització: el panell se superposa al paper. Ajusta recupera l’amplada i l’inici del full, també en horitzontal.
+- Desplaçament del paper quan excedeix l’alçada disponible, inclòs el nivell inicial del 100%; es mantenen els límits, el zoom i la navegació amb teclat. Cap canvi a la geometria d’impressió ni a l’ajust complet del full en escriptori.
+- La capçalera del panell permet obrir i tancar la configuració arrossegant amb ratolí o tacte, amb seguiment directe, llindar d’intenció, encaix animat de 220 ms i restauració si es cancel·la el gest. Els botons d’acció i els camps conserven els gestos propis; s’evita el segon canvi accidental pel clic final.
+- Imprimir, desfer, refer i restablir comparteixen una sola fila amb El teu full i el control de replegar en mòbil. Imprimir mostra la icona amb nom accessible; les accions ocultes queden inerts. S’allibera l’antiga segona fila per a la configuració i es conserva la botonera d’escriptori.
+- Footer mòbil de l’editor més compacte: s’oculta l’enllaç a la guia i s’equilibra la mida de la frase amb V4V, mantenint l’historial de versions. La guia conserva la seva navegació.
+- Resum de novetats als deu idiomes i comprovacions locals de geometria, gestos, cancel·lació, zoom, controls i disposició responsive. Publicació només a la branca 2.x i al repositori auxiliar de proves.
+
 ## 2.0.0-alpha.6 · 2026-10-19
 
 - Les categories obertes conserven la mida i el pes del títol, amb color terracota. S’eliminen el fons ressaltat i la vora lateral gruixuda; les alçades i els controls d’escriptori continuen iguals.

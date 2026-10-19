@@ -1,9 +1,16 @@
 {
   "date": "2026-10-19",
   "changes": [
-    "release20Mobile"
+    "release20MobileRefinement"
   ],
   "history": [
+    {
+      "version": "2.0.0-alpha.6",
+      "date": "2026-10-19",
+      "changes": [
+        "release20Mobile"
+      ]
+    },
     {
       "version": "2.0.0-alpha.5",
       "date": "2026-10-19",

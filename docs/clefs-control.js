@@ -1,4 +1,4 @@
-import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.6';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.7';
 
 export function bindClefsControl({ read, change, t, onOpen, root = document }) {
   const get = id => root.getElementById(id), controls = new Map();

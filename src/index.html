@@ -9,8 +9,8 @@
   <!-- localized-head -->
   <title>Pentagrama · El teu paper pautat</title>
   <link rel="icon" type="image/png" sizes="96x96" href="./favicon.png">
-  <link rel="stylesheet" href="./style.css?v=2.0.0-alpha.6">
-  <script type="module" src="./app.js?v=2.0.0-alpha.6"></script>
+  <link rel="stylesheet" href="./style.css?v=2.0.0-alpha.7">
+  <script type="module" src="./app.js?v=2.0.0-alpha.7"></script>
   <style id="print-page-style">@page{size:210mm 297mm;margin:0}</style>
 </head>
 <body class="editor-page">
@@ -20,9 +20,10 @@
       <div class="workspace" id="workspace" data-templates-open="false">
         <aside class="settings scroll-panel" aria-labelledby="settings-title">
           <h2 id="settings-title" class="sr-only" data-i18n="settings">El teu full</h2>
-          <button id="toggle-settings" type="button" class="mobile-settings-toggle" aria-expanded="false" aria-controls="settings-content" data-aria="showSettings"><span id="mobile-settings-label" data-i18n="showSettings">Configura el full</span><span data-icon="chevron-down"></span></button>
+          <div class="settings-header" id="settings-header"><button id="toggle-settings" type="button" class="mobile-settings-toggle" aria-expanded="false" aria-controls="settings-content" data-aria="showSettings"><span id="mobile-settings-label" data-i18n="showSettings">Configura el full</span><span data-icon="chevron-down"></span></button>
+          <div class="settings-top"><button id="print-button" class="button" type="button" data-aria="print"><span data-icon="printer"></span><span data-i18n="print">Imprimeix</span></button><div class="history-controls"><button id="undo-button" class="icon-button" type="button" data-aria="undo" aria-keyshortcuts="Control+Z Meta+Z" disabled><span data-icon="undo-2"></span></button><button id="redo-button" class="icon-button" type="button" data-aria="redo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" disabled><span data-icon="redo-2"></span></button><button id="reset-button" class="icon-button" type="button" data-aria="reset"><span data-icon="rotate-ccw"></span></button></div></div>
+          </div>
           <div id="settings-content" class="settings-content scroll-panel" tabindex="-1" role="region" aria-labelledby="settings-title">
-          <div class="settings-top"><button id="print-button" class="button" type="button"><span data-icon="printer"></span><span data-i18n="print">Imprimeix</span></button><div class="history-controls"><button id="undo-button" class="icon-button" type="button" data-aria="undo" aria-keyshortcuts="Control+Z Meta+Z" disabled><span data-icon="undo-2"></span></button><button id="redo-button" class="icon-button" type="button" data-aria="redo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" disabled><span data-icon="redo-2"></span></button><button id="reset-button" class="icon-button" type="button" data-aria="reset"><span data-icon="rotate-ccw"></span></button></div></div>
           <div id="settings-accordion" class="settings-accordion">
             <details id="page-settings" class="settings-disclosure page-controls"><summary><span data-i18n="settingsPage"></span><span id="page-settings-value" class="section-value"></span><span class="restore-chevron" data-icon="chevron-down"></span></summary><section class="paper-controls">
             <span class="field-label" id="paper-label" data-i18n="paper">Format del paper</span>
