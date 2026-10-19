@@ -1,5 +1,14 @@
 # Canvis
 
+## 2.0.0-alpha.6 · 2026-10-19
+
+- Les categories obertes conserven la mida i el pes del títol, amb color terracota. S’eliminen el fons ressaltat i la vora lateral gruixuda; les alçades i els controls d’escriptori continuen iguals.
+- Editor mòbil ajustat a l’alçada disponible, amb capçalera compacta i previsualització permanent. La configuració s’obre des d’una barra inferior en un panell flotant, amb una única zona de scroll intern i les accions d’imprimir, desfer, refer i restablir sempre accessibles a la part superior del panell.
+- El full s’ajusta a l’espai lliure per damunt del panell i recupera l’espai en replegar-lo. Zoom i resum del full acompanyen el límit del panell. Tocar el paper o prémer Escape replega la configuració; aquesta primera pulsació no inicia un arrossegament del full.
+- Controls ocults inerts per al teclat i els lectors de pantalla, indicador de desplegament i retorn de focus. Els menús de plantilles i configuració no es trepitgen; es respecten els diàlegs i els selectors abans de gestionar Escape.
+- Mòdul independent de disposició mòbil, amb ajust a la mida disponible i al viewport visual quan apareix el teclat. Transicions comunes de 220 ms, canvi entre mòbil i escriptori sense deixar controls desactivats i guia de plantilles amb la navegació natural anterior.
+- Controls nous i resum del footer als deu idiomes. Comprovacions locals de disposició mòbil, espai de previsualització i compatibilitat amb els fulls existents. Publicació limitada a la branca i al web de proves.
+
 ## 2.0.0-alpha.5 · 2026-10-19
 
 - Indicacions emergents compartides pel generador i la guia, amb fons càlid, tipografia, vora i ombra pròpies i transicions de 220 ms. Se substitueixen els atributs title del navegador, inclosos els textos dinàmics de les melodies, els blocs i els marges; es conserven els noms accessibles.

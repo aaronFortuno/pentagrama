@@ -1,27 +1,28 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.5';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.5';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.5';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.5';
-import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.5';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.5';
-import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.5';
-import { analytics } from './analytics.js?v=2.0.0-alpha.5';
-import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.5';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.5';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.5';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.5';
-import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.5';
-import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.5';
-import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.5';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.5';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.5';
-import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.5';
-import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.5';
-import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.5';
-import { createDocument } from './engine/document.js?v=2.0.0-alpha.5';
-import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.5';
-import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.5';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.5';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.6';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.6';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.6';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.6';
+import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.6';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.6';
+import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.6';
+import { analytics } from './analytics.js?v=2.0.0-alpha.6';
+import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.6';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.6';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.6';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.6';
+import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.6';
+import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.6';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.6';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.6';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.6';
+import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.6';
+import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.6';
+import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.6';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.0.0-alpha.6';
+import { createDocument } from './engine/document.js?v=2.0.0-alpha.6';
+import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.6';
+import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.6';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.6';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -39,7 +40,7 @@ document.querySelector('base').href = siteRoot.href;
 const preferredLanguage = () => detectLanguage(languageChoice, navigator.languages || [navigator.language]);
 let language = languageFromURL(location.href, siteRoot) || preferredLanguage();
 let templatesOpen = false, languageOpen = false, toastTimer, layout;
-let melodyDiscovery;
+let melodyDiscovery, mobileWorkspace;
 let settingsHistory, historyGroup;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
 const noticeTimers = new Map();
@@ -78,6 +79,7 @@ function translatePage() {
   $('language-button').dataset.tooltip = `${t('language')} · ${LANGUAGES[language]}`;
   $('template-catalog-link').href = new URL(`${language}/templates/`, siteRoot).href;
   melodyDiscovery?.refresh();
+  mobileWorkspace?.refresh();
   enhanceNumberInputs(document.querySelector('.settings'), t);
 }
 function setValue(id, value) { if ($(id).value !== String(value)) $(id).value = value; }
@@ -88,11 +90,6 @@ function bindNumber(id, key) {
   $(id).addEventListener('blur', event => { event.target.value = settings[key]; });
 }
 function updateRange(element) { element.style.setProperty('--progress', `${(Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min)) * 100}%`); }
-function positionTemplatesHandle() {
-  const layer = document.querySelector('.templates-layer');
-  if (innerWidth <= 760) layer.style.setProperty('--mobile-handle-top', `${document.querySelector('.preview-area').getBoundingClientRect().top + 8}px`);
-  else layer.style.removeProperty('--mobile-handle-top');
-}
 function fitPreview() {
   if (!layout) return;
   const size = `${layout.width}x${layout.height}`;
@@ -111,7 +108,6 @@ function fitPreview() {
   $('zoom-value').textContent = `${number(Math.round(previewZoom * 100))}%`;
   document.querySelector('.zoom-controls').dataset.orientation = settings.orientation;
   $('zoom-out').disabled = previewZoom <= MIN_ZOOM; $('zoom-in').disabled = previewZoom >= MAX_ZOOM;
-  positionTemplatesHandle();
 }
 function zoomPreview(value) {
   hideZoomHint();
@@ -236,7 +232,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
 }
 
 function setTemplatesOpen(value) {
-  if (value) setLanguageOpen(false);
+  if (value) { setLanguageOpen(false); mobileWorkspace?.close(); }
   templatesOpen = value; render({ templates: value });
   if (value) $('close-templates').focus({ preventScroll: true });
 }
@@ -466,10 +462,13 @@ $('paper-stage').addEventListener('keydown', event => {
 });
 $('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
 window.addEventListener('beforeprint', () => render());
-window.addEventListener('scroll', positionTemplatesHandle, { passive: true });
 window.addEventListener('hashchange', restoreLocation);
 window.addEventListener('popstate', restoreLocation);
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
+mobileWorkspace = bindMobileWorkspace({ t, onOpen() {
+  if (templatesOpen) setTemplatesOpen(false);
+  closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close();
+}, onClose() { paperControl.close(); barlinesControl.close(); clefsControl.close(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
 restoreFromHash({ initial: true }); settingsHistory = createSettingsHistory(settings); renderIcons(); translatePage(); render({ blocks: true, templates: true });
 const logoPlayer = createGlockenspiel(), logoNote = createLogoNote($('logo-note'), { interactive: false });

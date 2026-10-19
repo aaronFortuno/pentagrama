@@ -1,4 +1,4 @@
-import { CLEF_GLYPHS } from '../vendor/clef-glyphs.js?v=2.0.0-alpha.5';
+import { CLEF_GLYPHS } from '../vendor/clef-glyphs.js?v=2.0.0-alpha.6';
 
 export const CLEF_TYPES = Object.freeze(['none', 'treble', 'bass', 'alto', 'tenor']);
 const definitions = { treble: ['gClef', 3], bass: ['fClef', 1], alto: ['cClef', 2], tenor: ['cClef', 1] };

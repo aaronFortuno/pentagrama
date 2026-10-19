@@ -1,7 +1,7 @@
-import { normalizeSettings } from './settings.js?v=2.0.0-alpha.5';
-import { layoutPage } from './page-layout.js?v=2.0.0-alpha.5';
-import { barlinesFit, minimumMeasureWidth } from './barlines.js?v=2.0.0-alpha.5';
-import { clefSequence, minimumStaffGap } from './clefs.js?v=2.0.0-alpha.5';
+import { normalizeSettings } from './settings.js?v=2.0.0-alpha.6';
+import { layoutPage } from './page-layout.js?v=2.0.0-alpha.6';
+import { barlinesFit, minimumMeasureWidth } from './barlines.js?v=2.0.0-alpha.6';
+import { clefSequence, minimumStaffGap } from './clefs.js?v=2.0.0-alpha.6';
 
 function minimumBlockGaps(s) {
   const types = clefSequence(s), counts = s.blocks.map(block => block.count);

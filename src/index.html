@@ -9,17 +9,19 @@
   <!-- localized-head -->
   <title>Pentagrama · El teu paper pautat</title>
   <link rel="icon" type="image/png" sizes="96x96" href="./favicon.png">
-  <link rel="stylesheet" href="./style.css?v=2.0.0-alpha.5">
-  <script type="module" src="./app.js?v=2.0.0-alpha.5"></script>
+  <link rel="stylesheet" href="./style.css?v=2.0.0-alpha.6">
+  <script type="module" src="./app.js?v=2.0.0-alpha.6"></script>
   <style id="print-page-style">@page{size:210mm 297mm;margin:0}</style>
 </head>
-<body>
+<body class="editor-page">
   <div class="app-shell">
     <!-- site-header -->
     <main>
       <div class="workspace" id="workspace" data-templates-open="false">
         <aside class="settings scroll-panel" aria-labelledby="settings-title">
           <h2 id="settings-title" class="sr-only" data-i18n="settings">El teu full</h2>
+          <button id="toggle-settings" type="button" class="mobile-settings-toggle" aria-expanded="false" aria-controls="settings-content" data-aria="showSettings"><span id="mobile-settings-label" data-i18n="showSettings">Configura el full</span><span data-icon="chevron-down"></span></button>
+          <div id="settings-content" class="settings-content scroll-panel" tabindex="-1" role="region" aria-labelledby="settings-title">
           <div class="settings-top"><button id="print-button" class="button" type="button"><span data-icon="printer"></span><span data-i18n="print">Imprimeix</span></button><div class="history-controls"><button id="undo-button" class="icon-button" type="button" data-aria="undo" aria-keyshortcuts="Control+Z Meta+Z" disabled><span data-icon="undo-2"></span></button><button id="redo-button" class="icon-button" type="button" data-aria="redo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" disabled><span data-icon="redo-2"></span></button><button id="reset-button" class="icon-button" type="button" data-aria="reset"><span data-icon="rotate-ccw"></span></button></div></div>
           <div id="settings-accordion" class="settings-accordion">
             <details id="page-settings" class="settings-disclosure page-controls"><summary><span data-i18n="settingsPage"></span><span id="page-settings-value" class="section-value"></span><span class="restore-chevron" data-icon="chevron-down"></span></summary><section class="paper-controls">
@@ -52,6 +54,7 @@
           </details>
             <details id="code-details" class="settings-disclosure"><summary><span data-i18n="configurationCode">Codi de configuració</span><span class="restore-chevron" data-icon="chevron-down"></span></summary><p id="code-hint" class="field-hint" data-i18n="codeHint">Copia aquest codi per recuperar el mateix full més endavant.</p><div class="reference-row"><input id="current-reference" readonly data-aria="configurationCode" aria-describedby="code-hint"><button id="copy-reference" type="button" class="icon-button" data-aria="copyCode"><span data-icon="copy"></span></button></div><form id="restore-form" novalidate><label for="reference-input" class="field-label" data-i18n="restore">Recupera una configuració</label><p id="restore-hint" class="field-hint" data-i18n="restoreHint">Enganxa el codi que has desat o que apareix al peu d’un full.</p><div class="restore-row"><input id="reference-input" type="text" autocomplete="off" spellcheck="false" maxlength="1600" aria-describedby="restore-hint restore-message"><button type="submit" class="small-button" data-i18n="apply">Aplica</button></div><p id="restore-message" class="field-hint" role="status"></p></form></details>
           </div>
+        </div>
         </aside>
         <section class="preview-area" data-aria="preview">
           <div id="layout-warning" class="layout-warning" role="status" hidden><span data-i18n="fitWarning"></span><button type="button" id="fit-button" class="text-button" data-i18n="fit">Ajusta al full</button></div>
