@@ -1,8 +1,8 @@
-import { analytics } from './analytics.js?v=2.0.0-alpha.2';
-import { LANGUAGES, translate } from './i18n.js?v=2.0.0-alpha.2';
-import { renderIcons } from './icons.js?v=2.0.0-alpha.2';
-import { openDialog, showPopover } from './motion.js?v=2.0.0-alpha.2';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.2';
+import { analytics } from './analytics.js?v=2.0.0-alpha.3';
+import { LANGUAGES, translate } from './i18n.js?v=2.0.0-alpha.3';
+import { renderIcons } from './icons.js?v=2.0.0-alpha.3';
+import { openDialog, showPopover } from './motion.js?v=2.0.0-alpha.3';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.3';
 
 const $ = id => document.getElementById(id), locale = document.documentElement.lang;
 const t = key => translate(locale, key);

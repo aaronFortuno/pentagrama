@@ -1,6 +1,6 @@
-import { normalizeDocument } from './model.js?v=2.0.0-alpha.2';
-import { layoutPage } from './page-layout.js?v=2.0.0-alpha.2';
-import { createScene } from './scene.js?v=2.0.0-alpha.2';
+import { normalizeDocument } from './model.js?v=2.0.0-alpha.3';
+import { layoutPage } from './page-layout.js?v=2.0.0-alpha.3';
+import { createScene } from './scene.js?v=2.0.0-alpha.3';
 
 function bounds(staves, layout) {
   return staves.length ? { left: layout.left, right: layout.right, top: staves[0].lines[0], bottom: staves.at(-1).lines.at(-1) } : null;

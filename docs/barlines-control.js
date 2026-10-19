@@ -1,4 +1,5 @@
-import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.2';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.3';
+import { barlineThickness } from './engine/barlines.js?v=2.0.0-alpha.3';
 
 // UI adapter only: normalization, placement and export stay in the engine.
 export function bindBarlinesControl({ read, change, onOpen, root = document }) {
@@ -14,6 +15,10 @@ export function bindBarlinesControl({ read, change, onOpen, root = document }) {
     select.addEventListener('change', () => change({ [key]: select.value }));
   }
   toggle.addEventListener('change', () => change({ enabled: toggle.checked }));
+  get('barline-auto').addEventListener('click', () => {
+    const settings = read(), linked = settings.barlines.thicknessMode === 'staff';
+    change({ thicknessMode: linked ? 'custom' : 'staff', ...(linked ? { thickness: barlineThickness(settings) } : {}) });
+  });
   for (const key of ['measures', 'thickness']) {
     const input = get(`barline-${key}`);
     input.addEventListener('input', () => { if (input.value !== '' && input.validity.valid) change({ [key]: Number(input.value) }); });
@@ -25,13 +30,15 @@ export function bindBarlinesControl({ read, change, onOpen, root = document }) {
   const close = () => { for (const control of selects.values()) control.close(); };
   function refresh() {
     const settings = read(), bars = settings.barlines;
+    const linked = bars.thicknessMode === 'staff';
+    get('barline-auto').setAttribute('aria-pressed', String(linked)); get('barline-thickness').disabled = linked;
     toggle.checked = bars.enabled; options.dataset.enabled = String(bars.enabled);
     options.inert = !bars.enabled; options.setAttribute('aria-hidden', String(!bars.enabled)); fields.disabled = !bars.enabled;
     const canConnect = settings.mode === 'blocks' ? settings.blocks.some(block => block.count > 1) : settings.group > 1;
     get('barline-connect').disabled = !canConnect;
     for (const key of ['measures', 'thickness', 'style', 'connect']) {
       const input = get(`barline-${key}`);
-      if (root.activeElement !== input) input.value = bars[key];
+      if (root.activeElement !== input) input.value = key === 'thickness' ? barlineThickness(settings) : bars[key];
       if (selects.has(key)) { get(`barline-${key}-button`).disabled = !bars.enabled || input.disabled; selects.get(key).refresh(); }
     }
     if (!bars.enabled || !canConnect) close();

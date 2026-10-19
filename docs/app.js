@@ -1,26 +1,27 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.2';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.2';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.2';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.2';
-import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.2';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.2';
-import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.2';
-import { analytics } from './analytics.js?v=2.0.0-alpha.2';
-import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.2';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.2';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.2';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.2';
-import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.2';
-import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.2';
-import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.2';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.2';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.2';
-import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.2';
-import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.2';
-import { createDocument } from './engine/document.js?v=2.0.0-alpha.2';
-import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.2';
-import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.2';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.2';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.3';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.3';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.3';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.3';
+import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.3';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.3';
+import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.3';
+import { analytics } from './analytics.js?v=2.0.0-alpha.3';
+import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.3';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.3';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.3';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.3';
+import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.3';
+import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.3';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.3';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.3';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.3';
+import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.3';
+import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.3';
+import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.3';
+import { createDocument } from './engine/document.js?v=2.0.0-alpha.3';
+import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.3';
+import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.3';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.3';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
@@ -214,7 +215,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1; $('system-gap-field').hidden = settings.systems === 1;
   $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
   const sheet = renderSvgPage(page); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = score.valid ? renderPrintDocument(score) : '';
-  $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}${settings.barlines.enabled ? ` · ${t('measuresPerStaff')}: ${number(settings.barlines.measures)}` : ''}`);
+  $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}${settings.barlines.enabled ? ` · ${t('measuresPerStaff')}: ${number(settings.barlines.measures)}` : ''}${settings.clefs.enabled ? ` · ${t('clefs')}: ${settings.clefs.mode === 'uniform' ? t(`clef_${settings.clefs.type}`) : t('clefPattern')}` : ''}`);
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
   $('layout-summary').textContent = `${staffCount(layout.count)} · ${grouping} · ${number(settings.thickness)} mm`;
   $('layout-summary').title = $('layout-summary').textContent;
@@ -225,7 +226,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
-  marginsControl.refresh(); barlinesControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
+  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
   write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
 }
 
@@ -236,7 +237,7 @@ function setTemplatesOpen(value) {
 }
 function setLanguageOpen(value, focus = 'selected') {
   if (value === languageOpen) return;
-  if (value) { paperControl.close(); barlinesControl.close(); }
+  if (value) { paperControl.close(); barlinesControl.close(); clefsControl.close(); }
   languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
   if (value) {
     const buttons = [...$('language-menu').querySelectorAll('[data-language]')];
@@ -327,8 +328,9 @@ document.addEventListener('keydown', event => {
   const direction = historyShortcut(event);
   if (direction && !document.querySelector('dialog[open]')) { event.preventDefault(); travelHistory(direction); }
 });
-const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => { closeLanguageMenu(); barlinesControl.close(); } });
-const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); } });
+const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => { closeLanguageMenu(); barlinesControl.close(); clefsControl.close(); } });
+const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); } });
+const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); } });
 const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));

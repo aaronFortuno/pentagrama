@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/steinbergmedia/bravura",
+  "revision": "37b194378b710cc40e406ab6c4b07608bb9548ae",
+  "font": "https://raw.githubusercontent.com/steinbergmedia/bravura/37b194378b710cc40e406ab6c4b07608bb9548ae/redist/otf/Bravura.otf",
+  "license": "https://raw.githubusercontent.com/steinbergmedia/bravura/37b194378b710cc40e406ab6c4b07608bb9548ae/LICENSE.txt",
+  "metadata": "https://raw.githubusercontent.com/steinbergmedia/bravura/37b194378b710cc40e406ab6c4b07608bb9548ae/redist/Bravura.json",
+  "fontSha256": "cdf0f893ee1fdb64b7f6713d71ee0dcfc349c0ac01429a8e451b01a9e79f5f3b",
+  "metadataSubset": [
+    "gClef",
+    "fClef",
+    "cClef"
+  ]
+}

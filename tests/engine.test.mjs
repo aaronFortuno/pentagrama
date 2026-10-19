@@ -12,7 +12,7 @@ import { RELEASE } from '../tools/site-data.mjs';
 import { buildPreview } from '../tools/build-preview.mjs';
 
 test('the modular engine exactly matches frozen 1.17.2 settings, geometry, references, SVG and PDF', () => {
-  const legacyFields = ({ barlines, ...settings }) => settings;
+  const legacyFields = ({ barlines, clefs, ...settings }) => settings;
   const variants = [];
   for (const template of DEFAULT_TEMPLATES) for (const paper of ['A3', 'A4', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
     for (const options of [{}, { topSpace: 30, reference: true, source: true }, { marginLeft: 11, marginRight: 29, marginTop: 17, marginBottom: 8 }]) variants.push({ ...template.settings, paper, orientation, ...options });

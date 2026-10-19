@@ -1,9 +1,16 @@
 {
   "date": "2026-10-19",
   "changes": [
-    "release20Barlines"
+    "release20Clefs"
   ],
   "history": [
+    {
+      "version": "2.0.0-alpha.2",
+      "date": "2026-10-19",
+      "changes": [
+        "release20Barlines"
+      ]
+    },
     {
       "version": "2.0.0-alpha.1",
       "date": "2026-10-19",

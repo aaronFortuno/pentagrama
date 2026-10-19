@@ -1,20 +1,22 @@
-import { iconMarkup } from './icons.js?v=2.0.0-alpha.2';
-import { showPopover } from './motion.js?v=2.0.0-alpha.2';
+import { iconMarkup } from './icons.js?v=2.0.0-alpha.3';
+import { showPopover } from './motion.js?v=2.0.0-alpha.3';
 
-export function bindSelectControl(select, button, menu, { onOpen } = {}) {
-  let open = false;
+export function bindSelectControl(select, button, menu, { onOpen, minWidth = 130 } = {}) {
+  let open = false, signature;
   // The menu lives outside the scrolling sidebar so its edges and focus rings cannot be clipped.
   document.body.append(menu);
   const focus = index => {
     const options = [...menu.children], option = options[(index + options.length) % options.length];
     option?.focus({ preventScroll: true });
+    if (option && option.offsetTop < menu.scrollTop) menu.scrollTop = option.offsetTop;
+    else if (option && option.offsetTop + option.offsetHeight > menu.scrollTop + menu.clientHeight) menu.scrollTop = option.offsetTop + option.offsetHeight - menu.clientHeight;
   };
   function setOpen(value, returnFocus = false, index = select.selectedIndex) {
     if (value === open) return;
     open = value; button.setAttribute('aria-expanded', String(open));
     if (open) {
       onOpen?.();
-      const rect = button.getBoundingClientRect(), width = Math.max(130, rect.width), height = menu.children.length * 38 + 14;
+      const rect = button.getBoundingClientRect(), width = Math.max(minWidth, rect.width), height = Math.min(menu.children.length * 38 + 14, innerHeight - 24);
       menu.style.width = `${Math.min(width, innerWidth - 24)}px`;
       menu.style.left = `${Math.max(12, Math.min(rect.left, innerWidth - width - 12))}px`;
       menu.style.top = `${rect.bottom + 8 + height > innerHeight ? Math.max(12, rect.top - height - 8) : rect.bottom + 8}px`;
@@ -24,17 +26,22 @@ export function bindSelectControl(select, button, menu, { onOpen } = {}) {
     if (open) focus(index);
   }
   function refresh() {
+    const values = JSON.stringify([...select.options].map(option => option.value));
+    if (values !== signature) { setOpen(false); buildOptions(); signature = values; }
     button.querySelector('[data-select-value]').textContent = select.options[select.selectedIndex]?.textContent || '';
     [...menu.children].forEach((option, index) => {
       option.firstChild.textContent = select.options[index]?.textContent || '';
       option.setAttribute('aria-selected', String(index === select.selectedIndex));
     });
   }
-  for (const option of select.options) {
+  function buildOptions() {
+    menu.replaceChildren();
+    for (const option of select.options) {
     const item = document.createElement('button'); item.type = 'button'; item.tabIndex = -1; item.setAttribute('role', 'option');
     item.append(document.createTextNode(option.textContent)); const check = document.createElement('span'); check.innerHTML = iconMarkup('check'); item.append(check);
     item.addEventListener('click', () => { select.value = option.value; select.dispatchEvent(new Event('change', { bubbles: true })); refresh(); setOpen(false, true); });
-    menu.append(item);
+      menu.append(item);
+    }
   }
   button.addEventListener('click', () => setOpen(!open, open));
   button.addEventListener('keydown', event => {

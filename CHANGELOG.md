@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.0.0-alpha.3 · 2026-10-19
+
+- El gruix dels compassos segueix per defecte el de les línies del pentagrama. «Auto» permet desvincular-lo i ajustar-lo en mm; tornar a activar-lo recupera el seguiment. Les configuracions antigues amb gruix absolut mantenen el resultat original.
+- Claus opcionals de sol, fa i do en posició d’alto o tenor, amb opció «Cap». La vista «Mateixa clau» les aplica a tot el full; «Per posició» permet triar excepcions per a cada posició d’un grup, cada pentagrama d’un full sense grups o cada posició dins d’un bloc.
+- Els patrons es repeteixen a cada grup o conjunt, inclosos els grups finals incomplets. Les claus particulars dels blocs viatgen amb el bloc quan se’n canvia l’ordre; no depenen del seu nom. Les posicions sense excepció hereten la clau comuna.
+- Glifs vectorials extrets de Bravura sota SIL OFL 1.1, amb font, procedència fixada, checksum, mètriques oficials, eina de generació i llicència. Previsualització, impressió i PDF comparteixen els mateixos contorns, sense carregar cap font musical externa en obrir o imprimir el full.
+- Espai reservat abans del primer compàs segons la clau més ampla. Les barres continuen alineades entre tots els pentagrames, inclosos els que no mostren clau. Les claus respecten els marges i l’espai superior extra; es detecten col·lisions verticals i l’ajust explícit respecta la separació mínima necessària.
+- Codis P6 per a les claus i el gruix vinculat dels compassos, amb compatibilitat amb P1–P5. Plantilles, enllaços, persistència, Restableix i desfer/refer conserven les claus i les excepcions. Camps de codi ampliats per admetre patrons extensos.
+- Desplegable compacte de claus, selectors de posició amb noms de bloc i menús dinàmics accessibles. Només un menú de configuració queda obert; la selecció visible segueix el focus en llistes llargues. Bravura afegida als crèdits de «Sobre el projecte».
+- Opcions i resum del footer traduïts als deu idiomes. Proves de migració de gruixos, patrons, blocs reordenats, geometria, contorns SVG/PDF, marges, col·lisions, codis, historial i herència entre pàgines. Publicació només a la branca i al web experimentals.
+
 ## 2.0.0-alpha.2 · 2026-10-19
 
 - Línies de compàs opcionals, desactivades per defecte i homogènies per a tots els pentagrames. Entre 1 i 16 compassos iguals per fila, amb una línia de tancament a la dreta i sense afegir cap línia d’obertura a l’esquerra.

@@ -4,13 +4,14 @@ Paper pautat a mida per escriure música a mà. Configura el full, comprova’l 
 
 **[Obre Pentagrama →](https://pentagrama.page/)**
 
-> Aquesta branca (`codex/v2-modular-engine`) prepara **2.0.0-alpha.2**. La versió estable continua a `main`. La [previsualització experimental](https://aaronfortuno.github.io/pentagrama-preview/) es publica en un repositori auxiliar, sense modificar pentagrama.page. Vegeu el [motor v2](documentation/engine-v2.md).
+> Aquesta branca (`codex/v2-modular-engine`) prepara **2.0.0-alpha.3**. La versió estable continua a `main`. La [previsualització experimental](https://aaronfortuno.github.io/pentagrama-preview/) es publica en un repositori auxiliar, sense modificar pentagrama.page. Vegeu el [motor v2](documentation/engine-v2.md).
 
 ## Què hi pots fer
 
 - Preparar fulls **A3, A4 i Letter**, en vertical o horitzontal.
 - Ajustar el nombre de pentagrames, el gruix de les línies, l’interlineat i l’espai superior.
 - Agrupar pentagrames o crear blocs amb separacions diferents, per exemple per a veus i piano o famílies instrumentals.
+- Afegir claus de sol, fa i do, comunes o per posició dins dels grups i blocs.
 - Afegir opcionalment compassos simples, dobles o discontinus, amb quantitat, gruix i unions entre pentagrames del mateix grup o bloc.
 - Partir de plantilles suggerides, desar-ne de pròpies i compartir configuracions amb un enllaç.
 - Desfer i refer els canvis de configuració amb les fletxes o les dreceres de teclat.
@@ -48,6 +49,6 @@ Les propostes, els avisos d’errors i les contribucions són benvinguts a les [
 
 ## Llicència i suport
 
-Codi obert sota [GNU GPL v3](LICENSE). Les icones [Lucide](docs/vendor/lucide-LICENSE.txt) i la font [Noto Serif](docs/vendor/noto-serif-OFL.txt) conserven les seves llicències.
+Codi obert sota [GNU GPL v3](LICENSE). Les icones [Lucide](docs/vendor/lucide-LICENSE.txt) i les fonts [Noto Serif](docs/vendor/noto-serif-OFL.txt) i [Bravura](docs/vendor/bravura-OFL.txt) conserven les seves llicències.
 
 El projecte segueix la filosofia **Value for Value**. Pots donar-hi suport recomanant-lo, contribuint-hi o fent una aportació voluntària des de «Sobre el projecte · V4V» al web.

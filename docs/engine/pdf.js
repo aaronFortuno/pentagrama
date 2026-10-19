@@ -1,6 +1,7 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.0.0-alpha.2';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.0.0-alpha.2';
-import { footerTextWidth } from './typography.js?v=2.0.0-alpha.2';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.0.0-alpha.3';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.0.0-alpha.3';
+import { footerTextWidth } from './typography.js?v=2.0.0-alpha.3';
+import { validatePath } from './path-data.js?v=2.0.0-alpha.3';
 
 let fontProgram;
 function embeddedFont() {
@@ -24,6 +25,15 @@ function pageCommands(page) {
       const nextDash = (element.dash || []).map(points).join(' ');
       if (nextDash !== dash) { dash = nextDash; commands += `[${dash}] 0 d\n`; }
       commands += `${points(element.x1)} ${points(page.frame.height - element.y1)} m ${points(element.x2)} ${points(page.frame.height - element.y2)} l S\n`;
+    } else if (element.kind === 'path') {
+      commands += '0 g\n';
+      for (const [operation, ...values] of validatePath(element.commands)) {
+        if (operation === 'Z') { commands += 'h\n'; continue; }
+        if (!['M', 'L', 'C'].includes(operation)) throw new Error('unsupportedPathCommand');
+        const coordinates = values.map((value, index) => points(index % 2 ? page.frame.height - value : value));
+        commands += coordinates.join(' ') + ` ${operation === 'M' ? 'm' : operation === 'L' ? 'l' : 'c'}\n`;
+      }
+      commands += 'f\n';
     } else if (element.kind === 'text') {
       const x = element.anchor === 'start' ? element.x : element.x - footerTextWidth(element.text);
       commands += `${(element.gray / 255).toFixed(5)} g BT /F1 ${points(element.fontSize)} Tf 1 0 0 1 ${points(x)} ${points(page.frame.height - element.y)} Tm (${escapedText(element.text)}) Tj ET\n`;

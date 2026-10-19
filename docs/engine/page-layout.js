@@ -1,12 +1,14 @@
-import { FOOTER_SIZE } from './constants.js?v=2.0.0-alpha.2';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.0-alpha.2';
-import { footerLines } from './footers.js?v=2.0.0-alpha.2';
-import { barlinesFit } from './barlines.js?v=2.0.0-alpha.2';
+import { FOOTER_SIZE } from './constants.js?v=2.0.0-alpha.3';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.0-alpha.3';
+import { footerLines } from './footers.js?v=2.0.0-alpha.3';
+import { barlinesFit } from './barlines.js?v=2.0.0-alpha.3';
+import { clefMetrics, clefsFit } from './clefs.js?v=2.0.0-alpha.3';
 
 export function layoutPage(value) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
+  const clefs = clefMetrics(s);
   const footer = footerLines(s), footerTop = footer.length ? Math.min(...footer.map(line => line.y)) - FOOTER_SIZE - 3 : height;
-  const top = s.marginTop + s.topSpace, bottom = Math.min(height - s.marginBottom, footerTop), available = bottom - top, staffHeight = s.lineSpacing * 4;
+  const top = s.marginTop + s.topSpace + clefs.above, bottom = Math.min(height - s.marginBottom, footerTop) - clefs.below, available = bottom - top, staffHeight = s.lineSpacing * 4;
   const left = s.marginLeft, right = width - s.marginRight;
   const count = s.mode === 'blocks' ? s.systems * s.blocks.reduce((n, b) => n + b.count, 0) : s.count;
   let needed, gap = 0, positions = [];
@@ -29,5 +31,6 @@ export function layoutPage(value) {
       if (system < s.systems - 1) y += s.systemGap;
     }
   }
-  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves: positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing)), valid: needed <= available + 1e-6 && right > left && count <= 256 && barlinesFit(s, right - left), overflow: Math.max(0, needed - available) };
+  const staves = positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing));
+  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves, ...(clefs.header ? { musicLeft: left + clefs.header } : {}), valid: needed <= available + 1e-6 && right - left > clefs.header && count <= 256 && barlinesFit(s, right - left - clefs.header) && clefsFit(s, staves, clefs), overflow: Math.max(0, needed - available) };
 }

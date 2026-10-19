@@ -14,7 +14,7 @@ test('barlines are opt-in, normalize bounded independent values and leave old co
   assert.equal(a.barlines.enabled, false); a.barlines.measures = 8; assert.equal(b.barlines.measures, 4);
   for (const value of [null, false, 'invalid', []]) assert.equal(normalizeSettings({ barlines: value }).barlines.enabled, false);
   const invalid = normalizeSettings({ barlines: { enabled: 'true', measures: 100, thickness: -1, style: 'repeat', connect: 'all' } });
-  assert.deepEqual(invalid.barlines, { enabled: false, measures: 16, thickness: .05, style: 'single', connect: 'none' });
+  assert.deepEqual(invalid.barlines, { enabled: false, measures: 16, thickness: .05, thicknessMode: 'custom', style: 'single', connect: 'none' });
   assert.equal(normalizeSettings({ barlines: enabled({ measures: 3.7, thickness: .179 }) }).barlines.thickness, .18);
   for (const code of ['P1-N9-G3-E22-T12', 'P2-A4-P-I20-T12-N9-G0-E22', 'P3-A4-P-I20-T12-H30-N9-G0-E22', 'P4-A4-P-I20-T12-M16.28.16.10-N9-G0-E22']) {
     const settings = decodeReference(code); assert.equal(settings.barlines.enabled, false); assert.equal(bars(createDocument(settings).pages[0]).length, 0);

@@ -1,4 +1,5 @@
-import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.0.0-alpha.2';
+import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.0.0-alpha.3';
+import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.0.0-alpha.3';
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
@@ -12,8 +13,10 @@ export function normalizeSettings(value = {}) {
   const blocks = Array.isArray(value.blocks) ? value.blocks.slice(0, 24).filter(b => b && typeof b === 'object').map(b => ({
     label: typeof b.label === 'string' ? b.label.trim().slice(0, 60) : '',
     count: Math.round(numeric(b.count, 2, 1, 32)), inside: round(numeric(b.inside, 8, 1, 40)), after: round(numeric(b.after, 14, 1, 60)),
+    ...(normalizeClefPattern(b.clefs, 32).length ? { clefs: normalizeClefPattern(b.clefs, 32) } : {}),
   })) : [];
   const bars = value.barlines && typeof value.barlines === 'object' ? value.barlines : {};
+  const clefs = value.clefs && typeof value.clefs === 'object' ? value.clefs : {};
   return {
     count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
     reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -24,8 +27,10 @@ export function normalizeSettings(value = {}) {
       enabled: bars.enabled === true, measures: Math.round(numeric(bars.measures, DEFAULT_BARLINES.measures, 1, 16)),
       style: ['single', 'double', 'dashed'].includes(bars.style) ? bars.style : DEFAULT_BARLINES.style,
       thickness: Math.round(numeric(bars.thickness, DEFAULT_BARLINES.thickness, 0.05, 0.6) * 100) / 100,
+      thicknessMode: bars.thicknessMode === 'custom' || bars.thicknessMode === undefined && Object.hasOwn(bars, 'thickness') ? 'custom' : 'staff',
       connect: ['none', 'solid', 'dashed'].includes(bars.connect) ? bars.connect : DEFAULT_BARLINES.connect,
     },
+    clefs: { enabled: clefs.enabled === true, type: CLEF_TYPES.includes(clefs.type) ? clefs.type : 'treble', mode: clefs.mode === 'pattern' ? 'pattern' : 'uniform', pattern: normalizeClefPattern(clefs.pattern, 64) },
   };
 }
 

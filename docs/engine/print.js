@@ -1,4 +1,4 @@
-import { renderSvgPage } from './svg.js?v=2.0.0-alpha.2';
+import { renderSvgPage } from './svg.js?v=2.0.0-alpha.3';
 
 export function renderPrintDocument(document) {
   if (!document.valid) throw new Error('layoutInvalid');

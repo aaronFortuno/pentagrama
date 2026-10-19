@@ -1,4 +1,5 @@
-import { normalizeSettings } from './settings.js?v=2.0.0-alpha.2';
+import { normalizeSettings } from './settings.js?v=2.0.0-alpha.3';
+import { clefForStaff } from './clefs.js?v=2.0.0-alpha.3';
 
 export const DOCUMENT_SCHEMA_VERSION = 2;
 export const MAX_DOCUMENT_PAGES = 32;
@@ -28,7 +29,7 @@ function structure(settings, pageId, identities = {}) {
       const staves = Array.from({ length: count }, (_, staffIndex) => {
         const staffId = `${blockId}/staves/${identity(suppliedBlock.staves?.[staffIndex]?.id, `staff-${staffIndex + 1}`, new Set())}`;
         if (used.has(staffId)) throw new Error('invalidDocumentIdentity'); used.add(staffId);
-        return { id: staffId };
+        return { id: staffId, clef: clefForStaff(settings, blockIndex, staffIndex, systemIndex * (settings.group || 1) + staffIndex) };
       });
       return { id: blockId, label: settings.mode === 'blocks' ? settings.blocks[blockIndex].label : '', staves };
     }) };
@@ -45,7 +46,7 @@ export function normalizeDocument(value = {}) {
     if (!page || typeof page !== 'object') throw new Error('invalidDocumentPage');
     const id = identity(page.id, `page-${index + 1}`, used);
     const common = normalizeSettings(value.settings);
-    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines } } : page.settings);
+    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines }, clefs: { ...common.clefs, ...page.settings?.clefs } } : page.settings);
     const localId = node => node.id.split('/').at(-1);
     const identities = page.identities || (Array.isArray(page.systems) ? { systems: page.systems.map(system => ({ id: localId(system), blocks: system.blocks.map(block => ({ id: localId(block), staves: block.staves.map(staff => ({ id: localId(staff) })) })) })) } : undefined);
     return { id, settings, systems: structure(settings, id, identities) };

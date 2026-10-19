@@ -105,11 +105,19 @@ select{cursor:pointer}
 .barlines-options{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows var(--motion-duration) var(--motion-ease),opacity var(--motion-duration) var(--motion-ease)}
 .barlines-options[data-enabled=true]{grid-template-rows:1fr;opacity:1}
 .barlines-options>div{min-height:0;overflow:hidden}
-.barlines-fields{min-width:0;margin:0;padding:10px 0 0;border:0;display:grid;gap:10px}
+.barlines-fields{min-width:0;margin:0;padding:6px 0 0;border:0;display:grid;gap:6px}
 .barlines-fields .two-fields{margin:0;align-items:end}.barlines-fields .two-fields>div{min-width:0}
 .barlines-fields .select-trigger{height:34px;padding:6px 8px;font-size:11px;gap:5px}
 .barlines-fields .select-trigger [data-select-value]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .barlines-fields .field-hint{margin:0}
+.field-label-row{display:flex;align-items:center;justify-content:space-between;gap:4px}.field-label-row label{margin:0}
+.auto-thickness{font-size:9px;padding:0 3px;color:var(--muted);min-width:30px;min-height:24px;margin:-5px 0}.auto-thickness[aria-pressed=true]{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.clefs-fields{margin:0;padding:5px 0 0;border:0;min-width:0;display:grid;gap:5px}
+.clefs-fields .two-fields{margin:0;align-items:end}.clefs-fields .two-fields>div{min-width:0}
+.clefs-fields .select-trigger{height:34px;padding:6px 8px;font-size:11px;gap:5px}
+.clefs-fields [data-select-value]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clefs-fields .field-hint{margin-top:2px}.clefs-fields .segmented button{padding:7px 4px;font-size:10px}
+.settings-disclosure.clefs-controls>.details-content::after{height:4px}.settings-disclosure.barlines-controls>.details-content::after{height:6px}
 .measurement{display:flex;align-items:center;gap:3px;flex-shrink:0;width:78px;border:1px solid #d8ddcf;border-radius:4px;background:#fcfcf8;padding-right:7px;color:#737e67}
 .measurement input[type=number]{width:100%;border:0;background:transparent;padding:5px 2px 5px 5px;font-size:11px;text-align:right;font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}
 .measurement input::-webkit-inner-spin-button,.measurement input::-webkit-outer-spin-button{appearance:none;margin:0}

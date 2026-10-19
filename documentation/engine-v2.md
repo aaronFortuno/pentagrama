@@ -1,4 +1,4 @@
-# Motor v2 · 2.0.0-alpha.2
+# Motor v2 · 2.0.0-alpha.3
 
 Primera etapa de la branca `codex/v2-modular-engine`, basada en **1.17.2** (`db130fe`). L’objectiu és separar el motor de la interfície sense canviar els fulls que ja funcionen. La publicació estable i la branca `main` es mantenen independents.
 
@@ -11,11 +11,12 @@ La geometria es calcula en mil·límetres. Els renderitzadors consumeixen una es
 | Mòdul a `docs/engine/` | Responsabilitat |
 |---|---|
 | `constants.js`, `settings.js` | Formats, valors inicials i normalització de les opcions existents |
-| `references.js` | Codis P1–P5 i fragments d’enllaços compartits |
+| `references.js` | Codis P1–P6 i fragments d’enllaços compartits |
 | `model.js` | Pàgines, conjunts, blocs i pentagrames amb identitats |
 | `page-layout.js`, `fit.js` | Distribució física i ajust explícit quan el contingut no hi cap |
 | `footers.js`, `typography.js` | Peus opcionals i mesures tipogràfiques |
 | `document.js`, `scene.js` | Composició del document i escena comuna en mm |
+| `clefs.js`, `path-data.js` | Resolució dels patrons, límits dels glifs, traçats vectorials i validació compartida |
 | `barlines.js` | Límits dels compassos, traços dobles, patrons discontinus i unions dins de cada bloc |
 | `svg.js`, `print.js`, `pdf.js` | Sortides vectorials i pàgines d’impressió |
 | `index.js` | API pública per a consumidors del motor |
@@ -79,7 +80,7 @@ Les proves també cobreixen jerarquia, identitats, independència dels objectes,
 
 ## Línies de compàs
 
-`settings.barlines` conté `{ enabled, measures, style, thickness, connect }`. Els valors inicials són `false`, `4`, `single`, `0.16` i `none`. `measures` admet 1–16, `style` és `single`, `double` o `dashed`, `thickness` admet 0,05–0,60 mm i `connect` és `none`, `solid` o `dashed`. El model normalitzat sempre en retorna una còpia independent. Les excepcions parcials per pàgina conserven els altres camps heretats del document.
+`settings.barlines` conté `{ enabled, measures, style, thicknessMode, thickness, connect }`. Els valors inicials són `false`, `4`, `single`, `staff`, `0.16` i `none`. `barlineThickness(settings)` resol el gruix: en mode `staff` segueix `settings.thickness`; `custom` utilitza el valor absolut. Els objectes antics amb gruix explícit i sense mode es normalitzen com a `custom`, per preservar-ne la impressió. El valor absolut inactiu es conserva localment però no forma part del codi amb `A`. `measures` admet 1–16, `style` és `single`, `double` o `dashed`, `thickness` admet 0,05–0,60 mm i `connect` és `none`, `solid` o `dashed`. El model normalitzat sempre en retorna una còpia independent. Les excepcions parcials per pàgina conserven els altres camps heretats del document.
 
 Cada pentagrama té `measures` divisions iguals, inclosa la frontera final, sense línia al començament. El traç final s’alinea per dins del marge dret. Les dobles són dos traços del mateix gruix; no són una barra final de traç gruixut. Els patrons discontinus són físics (1 mm de traç i 0,7 mm de buit) i s’apliquen de la mateixa manera a SVG i PDF. Els renderitzadors no calculen cap posició musical.
 
@@ -89,10 +90,26 @@ L’amplada mínima per compàs reserva el gruix del traç (i la separació dobl
 
 `docs/barlines-control.js` només adapta els controls a la configuració. No calcula línies ni modifica el motor des del preview. Les plantilles, l’historial i el punt de restabliment conserven també els valors mentre l’opció és desactivada; els codis descriuen el full actiu i ometen els paràmetres inactius. `tests/barlines.test.mjs` comprova geometria, gruixos i patrons de les sortides per a tots els tipus i unions, formats i plantilles; també límits, P5, persistència, historial i herència entre pàgines.
 
+## Claus i contorns musicals
+
+`settings.clefs` conté `{ enabled:false, type:'treble', mode:'uniform', pattern:[] }`. Els tipus són `none`, `treble`, `bass`, `alto` i `tenor`. En mode `pattern`, cada entrada és un tipus o `null` per heretar el tipus comú. S’admeten fins a 64 posicions en el patró senzill; les posicions finals nul·les s’ometen. Si hi ha grups, es repeteix cada grup; sense grups s’aplica per índex al full. Els grups incomplets només utilitzen les posicions existents.
+
+En mode blocs, cada objecte de `settings.blocks` pot tenir `clefs`, amb fins a 32 entrades del mateix format. Les excepcions viatgen amb el bloc quan s’intercanvien objectes i es repeteixen a cada conjunt. El selector de posició agrupa la informació en etiquetes amb el nom del bloc i el número de pentagrama, sense afegir cap editor de partitures. Les instantànies de plantilles, desfer/refer i Restableix són còpies completes, inclosos aquests arrays.
+
+`clefForStaff()` és l’única resolució del tipus; el model semàntic l’incorpora a cada pentagrama. `clefMetrics()` reserva l’amplada de la clau més ampla i espai vertical fora de les cinc línies. `layout.musicLeft` només existeix quan cal reservar capçalera; totes les barres del full es distribueixen entre aquest punt i el marge dret. Els pentagrames sense clau conserven la mateixa amplada útil i alineació dels compassos.
+
+Els punts d’ancoratge són sol a la segona línia des de baix, fa a la quarta i do a la tercera (alto) o quarta (tenor). Les dimensions s’escalen amb l’interlineat, sense un control addicional de mida. Es comproven marges i col·lisions verticals amb els límits reals dels glifs; l’ajust explícit dels blocs pot ampliar-ne les separacions mínimes. El patró discontinu i el gruix dels compassos són independents del farciment dels glifs.
+
+Els tres contorns provenen de [Bravura](https://github.com/steinbergmedia/bravura), sota SIL OFL 1.1. `tools/vendor/bravura-source.json` fixa la revisió, les adreces oficials i el checksum del font de `tools/vendor/Bravura.otf`; el subconjunt de mètriques oficials dels tres glifs és a `tools/vendor/bravura_metadata.json`. `tools/extract-clefs.py` genera `docs/vendor/clef-glyphs.js` en unitats d’espai de pentagrama i comprova els límits contra les mètriques. La llicència i el copyright es distribueixen a `docs/vendor/bravura-OFL.txt`, amb enllaç al diàleg del projecte.
+
+Només per regenerar aquests recursos, cal Python amb FontTools de `tools/requirements-glyphs.txt`. Es pot instal·lar a `tools/.glyph-deps/` (ignorat) amb `python -m pip install --target tools/.glyph-deps -r tools/requirements-glyphs.txt` i executar `python tools/extract-clefs.py`. No cal Python ni cap instal·lació per desenvolupar la interfície, provar el motor o servir el web. Els renderitzadors reben primitives `path` amb ordres M, L, C i Z en mm; SVG i PDF utilitzen els mateixos contorns i rebutgen ordres desconegudes o coordenades no finites. No es carrega ni s’incrusta un font musical al navegador o al PDF.
+
+`tests/clefs.test.mjs` cobreix la font i la seva procedència, ancoratges, coordenades SVG/PDF, marges, espai de capçalera, col·lisions, grups parcials, blocs reordenats, patrons, persistència, P6 i herència entre pàgines. Es manté l’oracle binari per als fulls sense noves opcions.
+
 ## Següents ampliacions
 
 1. Incorporar primera pàgina i doble cara a la interfície utilitzant les pàgines i excepcions del model.
-2. Afegir claus homogènies com a dades dels pentagrames, amb una capa de glifs musicals i espai reservat al començament de la pauta.
+2. Revisar els casos docents de claus i compassos i la impressió real abans de preparar la versió candidata 2.0.
 3. Valorar altres tipus de barra, la línia inicial o excepcions per pentagrama només si els casos d’ús ho justifiquen. La primera configuració de compassos ja és homogènia i no incorpora edició local de cada línia.
 
 No hi ha encara dades de notes, pulsacions ni edició de partitures. Les primitives desconegudes fallen explícitament fins que cada sortida les admeti. Les futures opcions han d’actualitzar el model i la geometria compartits abans d’afegir controls; no han de dibuixar elements exclusius del preview.

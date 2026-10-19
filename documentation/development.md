@@ -34,6 +34,7 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/settings-history.js` | Historial temporal de configuracions i dreceres de teclat |
 | `docs/settings-baseline.js` | Punt de partida independent per restablir una plantilla sense perdre’n la configuració original |
 | `docs/number-input.js`, `docs/select-control.js` | Controls numèrics amb unitats i selector de paper accessible, amb el temps d’animació compartit |
+| `docs/clefs-control.js` | Claus comunes i excepcions per posició, amb patrons associats als blocs |
 | `docs/barlines-control.js` | Controls opcionals i homogenis dels compassos, sense lògica geomètrica |
 | `docs/layout.js`, `docs/pdf.js` | Adaptadors compatibles amb els punts d’entrada de la versió 1 |
 | `docs/engine/` | Motor modular: configuració, document, geometria, escena vectorial, SVG, impressió i PDF |
@@ -73,6 +74,9 @@ Es manté la compatibilitat amb els formats anteriors:
 - **P4** incorpora marges personalitzats amb `Msuperior.dret.inferior.esquerre`, en mm enters, i pot mantenir `H` per a l’espai superior extra. Per exemple, `P4-A4-P-I20-T12-H30-M16.28.16.10-N9-G0-E22`. Quan els marges són els originals (21, 18, 21, 18 mm), es continua generant P2 o P3; els codis anteriors conserven la geometria.
 - **P5** afegeix compassos amb el sufix `-Vquantitat.tipus.gruix.unió`: tipus `S` (simple), `D` (doble), `H` (discontinu); gruix en centèsimes de mm; unió `N` (cap), `S` (contínua) o `D` (discontínua). Exemple: `P5-A4-P-I20-T12-N9-G3-E22-V4.S.16.D`. Els marges `M` i l’espai superior `H` són opcionals. Els fulls sense compassos continuen utilitzant P2–P4, i els codis antics els mantenen desactivats.
 
+
+- **P6** incorpora el gruix vinculat dels compassos (`A` en lloc del gruix absolut del sufix `V`) i les claus: `-KU.G` aplica la mateixa clau; `-KP.G.S.IIF` defineix un patró senzill amb les dues primeres posicions heretades i fa a la tercera; `-KP.G.B.IIIF_IF` defineix patrons per als blocs. `G`, `F`, `A`, `T` i `N` són sol, fa, do alto, do tenor i cap; `I` hereta la clau comuna. `0` representa un patró buit i `_` separa blocs. Els patrons nuls finals s’ometen. Ex.: `P6-A4-P-I20-T12-N9-G3-E22-V4.S.A.D-KP.G.S.IIF`. Els camps de codi admeten fins a 1.600 caràcters; els codis descriuen les opcions actives, i les plantilles locals conserven també les inactives.
+
 ## Traduccions
 
 Els missatges són a `docs/i18n.js`, amb una entrada per idioma. Les proves comproven que no faltin claus ni variables. La detecció inicial consulta les preferències del navegador, reconeix variants regionals i utilitza l’anglès si no troba cap idioma compatible. La tria manual es desa localment.
@@ -97,7 +101,7 @@ La versió del peu obre l’historial amb una entrada concisa per versió: núme
 
 ## Sidebar i desplegables
 
-El format del paper i la impressió es mantenen visibles. `#settings-accordion` conté sis desplegables natius; només la distribució s’obre inicialment. `bindAnimatedDetails()` retorna `setOpen()` i accepta `onOpen` per replegar els altres desplegables amb la mateixa transició, sense interferir amb els detalls de privadesa del diàleg V4V. El contingut replegat queda inert i els canvis ràpids reprenen l’animació des de la posició actual.
+El format del paper i la impressió es mantenen visibles. `#settings-accordion` conté set desplegables natius; només la distribució s’obre inicialment. `bindAnimatedDetails()` retorna `setOpen()` i accepta `onOpen` per replegar els altres desplegables amb la mateixa transició, sense interferir amb els detalls de privadesa del diàleg V4V. El contingut replegat queda inert i els canvis ràpids reprenen l’animació des de la posició actual.
 
 Un `ResizeObserver` reserva l’alçada de totes les capçaleres i limita el contingut obert a l’espai restant. En pantalles baixes o configuracions amb molts blocs, només es desplaça aquest contingut. Al mòbil s’elimina aquest límit i la pàgina conserva el desplaçament natural. L’estat dels desplegables no forma part de la configuració del full, de les referències ni de les plantilles desades.
 
@@ -107,7 +111,7 @@ En escriptori es reserva un mínim de 100 px per al contingut obert a més de le
 
 `enhanceNumberInputs()` conserva els inputs numèrics natius i hi afegeix fletxes Lucide coherents, fora de l’etiqueta del camp. Les fletxes petites no afegeixen passos al tabulador; el camp accepta les tecles amunt/avall i manté la seva descripció completa. Els espais de blocs utilitzen `step="any"` i `data-increment="1"`: així una plantilla amb 7,3 mm continua sent vàlida i passa a 8,3 mm en augmentar-la, sense arrodoniments implícits. La normalització del layout continua admetent dècimes. Els controls fins mantenen els seus passos originals i cada clic incremental és una acció reversible.
 
-`bindSelectControl()` sincronitza el botó de format amb el select intern, inclosos canvis procedents de plantilles, desfer/refer i restablir. El menú es col·loca al `body`, es posiciona al costat del botó i utilitza `showPopover()` amb els mateixos 220 ms i la preferència de moviment reduït. Admet fletxes, Inici/Fi, selecció amb Enter/Espai, Escape, tabulador i cerca per inicial. Obrir paper, tipus de compàs, unió de grup o idioma tanca els altres menús; desplaçar la pàgina o canviar-ne la mida tanca el menú de paper.
+`bindSelectControl()` sincronitza el botó de format amb el select intern, inclosos canvis procedents de plantilles, desfer/refer i restablir. El menú es col·loca al `body`, es posiciona al costat del botó i utilitza `showPopover()` amb els mateixos 220 ms i la preferència de moviment reduït. Admet fletxes, Inici/Fi, selecció amb Enter/Espai, Escape, tabulador i cerca per inicial. Obrir paper, un selector de compassos o claus, o idioma tanca els altres menús; desplaçar la pàgina o canviar-ne la mida tanca el menú de paper.
 
 ## Nota del logotip
 
