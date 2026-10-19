@@ -19,13 +19,27 @@ function timer() {
   return { clock, advance, states, get expires() { return expires; }, get pending() { return pending.size; } };
 }
 
-test('release notices are opt-in and do not reappear for a version already seen', () => {
+test('release notices are opt-in, for returning visitors, and do not reappear for a version already seen', () => {
   const release = { version: '2.0.0', announcement: ['one', 'two'] };
-  assert.equal(shouldAnnounceRelease(release), true);
-  assert.equal(shouldAnnounceRelease(release, '1.17.2'), true);
-  assert.equal(shouldAnnounceRelease(release, '2.0.0'), false);
-  assert.equal(shouldAnnounceRelease({ version: '2.0.1' }, '2.0.0'), false);
-  assert.equal(shouldAnnounceRelease({ version: '2.0.1', announcement: [] }), false);
+  const returning = { returningVisitor: true };
+  assert.equal(shouldAnnounceRelease(release), false);
+  assert.equal(shouldAnnounceRelease(release, undefined, returning), true);
+  assert.equal(shouldAnnounceRelease(release, '1.17.2', returning), true);
+  assert.equal(shouldAnnounceRelease(release, '2.0.0', returning), false);
+  assert.equal(shouldAnnounceRelease({ version: '2.0.1' }, '2.0.0', returning), false);
+  assert.equal(shouldAnnounceRelease({ version: '2.0.1', announcement: [] }, undefined, returning), false);
+});
+
+test('the launch announcement expires at the deadline and keeps its identity across maintenance releases', () => {
+  const release = { version: '2.0.1', announcementVersion: '2.0.0', announcement: ['one'], announcementUntil: '2026-10-22T00:00:00+02:00' };
+  const deadline = Date.parse('2026-10-21T22:00:00Z');
+  const returning = { returningVisitor: true, now: deadline - 1 };
+  assert.equal(shouldAnnounceRelease(release, '1.17.2', returning), true);
+  assert.equal(shouldAnnounceRelease(release, '2.0.0', returning), false);
+  assert.equal(shouldAnnounceRelease(release, undefined, { ...returning, now: deadline }), false);
+  assert.equal(shouldAnnounceRelease(release, undefined, { ...returning, now: deadline + 86400000 }), false);
+  assert.equal(shouldAnnounceRelease(release, undefined, { ...returning, returningVisitor: false }), false);
+  assert.equal(shouldAnnounceRelease({ ...release, announcementUntil: 'invalid' }, undefined, returning), false);
 });
 
 test('the notice and its progress bar share exactly twelve seconds of active reading time', () => {

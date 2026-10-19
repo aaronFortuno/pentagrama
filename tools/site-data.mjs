@@ -15,8 +15,12 @@ for (const entry of history) {
   versions.add(entry.version);
 }
 if (release.announcement !== undefined && (!Array.isArray(release.announcement) || !release.announcement.length || release.announcement.length > 2 || release.announcement.some(key => typeof key !== 'string' || !/^[\w]+$/.test(key)))) throw new Error('Invalid release announcement');
+if (release.announcementVersion !== undefined) parseVersion(release.announcementVersion);
+if (release.announcementUntil !== undefined && (typeof release.announcementUntil !== 'string' || !release.announcementUntil.includes('T') || !Number.isFinite(Date.parse(release.announcementUntil)))) throw new Error('Invalid release announcement expiry');
 export const RELEASE = Object.freeze({ version, date: release.date, changes: Object.freeze(release.changes),
-  ...(release.announcement ? { announcement: Object.freeze(release.announcement) } : {}),
+  ...(release.announcement ? { announcement: Object.freeze(release.announcement),
+    ...(release.announcementVersion ? { announcementVersion: release.announcementVersion } : {}),
+    ...(release.announcementUntil ? { announcementUntil: release.announcementUntil } : {}) } : {}),
   history: Object.freeze(history.map(entry => Object.freeze({ ...entry, changes: Object.freeze(entry.changes) }))) });
 export const SUPPORT = Object.freeze(lightningDetails(read('src/support.json').lightningAddress));
 export function releaseDate(locale, date = RELEASE.date) {

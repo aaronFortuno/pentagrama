@@ -16,7 +16,7 @@ Per preparar una versió del web:
 
 **Cada nova versió ha d’actualitzar també el resum de novetats accessible des del footer.** Escriu un o pocs punts breus, concisos i orientats a l’usuari, amb la data de publicació i les traduccions als idiomes disponibles. Aquest resum complementa l’historial detallat de `CHANGELOG.md`; no el substitueix ni n’ha de copiar els detalls tècnics.
 
-Conserva totes les versions anteriors a `history` de `src/release.json`, de més nova a més antiga, cadascuna amb número, data i resum propi d’aproximadament una a tres línies. En preparar una nova versió, incorpora l’anterior a l’historial abans de substituir-ne la data i el resum actuals. No agrupis entrades sota «versions anteriors». Mantén el detall complet de les modificacions a `CHANGELOG.md`.
+L’historial del popup comença a **2.0.0**. Les versions 1.x es conserven íntegrament a `CHANGELOG.md`, accessibles des de l’enllaç de la capçalera, però no es mostren al popup. Conserva les versions des de 2.0.0 a `history` de `src/release.json`, de més nova a més antiga, cadascuna amb número, data i resum propi d’aproximadament una a tres línies. En preparar una nova versió, incorpora l’anterior a l’historial abans de substituir-ne la data i el resum actuals. No agrupis entrades sota «versions anteriors». Mantén el detall complet de les modificacions a `CHANGELOG.md`.
 
 1. Actualitza `version` a `package.json`, la data i les claus del resum a `src/release.json`, les traduccions corresponents a `docs/i18n.js` i les notes de `CHANGELOG.md`.
 2. Executa `node tools/version-assets.mjs`.
@@ -25,7 +25,7 @@ Conserva totes les versions anteriors a `history` de `src/release.json`, de més
 
 L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 
-L’avís flotant és opcional: `announcement` a `src/release.json` conté una o dues claus de traducció breus. Es mostra un sol cop per versió i navegador al generador o la guia, amb una barra de 12 segons i pausa durant la lectura o amb la pestanya oculta. En una versió sense avís, elimina `announcement`; el resum del footer continua sent obligatori. Les preversions de la 2.0.0 s’agrupen sota la versió estable al footer i es conserven amb el seu detall a `CHANGELOG.md`.
+L’avís flotant és opcional: `announcement` a `src/release.json` conté una o dues claus de traducció breus. Es mostra un sol cop als navegadors amb configuració prèvia desada, al generador o la guia, amb una barra de 12 segons i pausa durant la lectura o amb la pestanya oculta. `announcementVersion` manté la identitat d’un mateix anunci entre versions de manteniment, sense tornar-lo a mostrar; `announcementUntil` en fixa la caducitat absoluta amb fus horari. L’anunci de la 2.0.0 expira el 22 d’octubre de 2026 a les 00:00 d’Europa/Berlín. En una versió sense avís, elimina els camps `announcement`, `announcementVersion` i `announcementUntil`; el resum del footer continua sent obligatori. Les preversions de la 2.0.0 s’agrupen sota la versió estable al footer i es conserven amb el seu detall a `CHANGELOG.md`.
 
 ## Previsualització de la branca 2.x
 

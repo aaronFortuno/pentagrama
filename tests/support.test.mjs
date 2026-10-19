@@ -40,12 +40,14 @@ test('release version, date and summaries stay synchronized in every language be
   }
 });
 
-test('footer history covers each top-level release separately, in order, with dated translated summaries', async () => {
+test('footer history starts at 2.0.0 with translated entries and retains a link to the complete older history', async () => {
   const entries = [RELEASE, ...RELEASE.history];
   const changelog = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
   const versions = [...changelog.matchAll(/^## (\d+\.\d+\.\d+(?:-[\w.-]+)?)/gm)].map(match => match[1]);
-  assert.deepEqual(entries.map(entry => entry.version), versions);
+  assert.deepEqual(entries.map(entry => entry.version), versions.filter(version => compareVersions(version, '2.0.0') >= 0));
   assert.equal(new Set(versions).size, versions.length);
+  assert.ok(versions.includes('1.0.0')); assert.ok(versions.includes('1.17.2'));
+  assert.ok(entries.every(entry => compareVersions(entry.version, '2.0.0') >= 0));
   // The public 2.0.0 release consolidates its seven experimental versions.
   if (versions.includes('2.0.0')) {
     assert.equal(entries.some(entry => entry.version.startsWith('2.0.0-alpha.')), false);
@@ -58,6 +60,8 @@ test('footer history covers each top-level release separately, in order, with da
   }
   for (const locale of Object.keys(LANGUAGES)) {
     const html = await readFile(new URL(`../docs/${locale}/index.html`, import.meta.url), 'utf8');
+    assert.ok(html.includes('href="https://github.com/aaronFortuno/pentagrama/blob/main/CHANGELOG.md"'));
+    assert.ok(!html.includes('data-version="1.'));
     assert.equal([...html.matchAll(/class="release-entry"/g)].length, entries.length);
     for (const entry of entries) {
       assert.equal(RELEASE_DATES[locale][entry.date], releaseDate(locale, entry.date));

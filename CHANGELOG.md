@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.0.1 · 2026-10-19
+
+- L’historial resumit del footer comença a la 2.0.0 i mostra només les versions d’aquesta nova etapa. Es retiren del popup les entrades 1.x, però totes les versions, dates i notes detallades continuen disponibles a CHANGELOG.md des de l’enllaç de la capçalera. Les actualitzacions futures afegiran la seva entrada resumida a partir d’aquest punt.
+- Capçalera del diàleg de versions adaptada a mòbil: títol i enllaç en dues files alineades a l’esquerra, amb el botó de tancar separat a la dreta. Mida del títol protegida de la regla genèrica dels diàlegs per evitar salts i desalineacions; disposició d’escriptori conservada.
+- L’avís de llançament es limita als navegadors amb configuració prèvia desada i caduca automàticament el 22 d’octubre de 2026 a les 00:00, hora d’Europa/Berlín (21 d’octubre a les 22:00 UTC). No es presenta en un primer accés ni quan no es pot determinar una visita anterior.
+- La identitat de l’avís continua sent la 2.0.0 encara que la versió del web sigui 2.0.1: es mantenen el títol del llançament i la marca local de lectura, evitant un segon avís per aquesta correcció. Data de caducitat i identitat configurables des de les metadades de la versió.
+- Política editorial documentada a AGENTS.md i desplegament, resum traduït als deu idiomes i comprovacions de l’historial abreujat, l’enllaç complet, la caducitat i la continuïtat de l’avís entre versions.
+
 ## 2.0.0 · 2026-10-19
 
 - Primera versió estable del motor modular 2.x: configuració, document, geometria en mil·límetres i escena comuna per a SVG, impressió i PDF. Els fulls, les plantilles i les referències anteriors continuen sent compatibles; es conserven 276 casos de paritat amb la versió 1.17.2.
