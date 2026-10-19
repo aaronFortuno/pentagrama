@@ -33,19 +33,25 @@ test('release version, date and summaries stay synchronized in every language be
     const html = await readFile(new URL(`${locale}/index.html`, root), 'utf8');
     assert.ok(html.includes(`>${RELEASE.version}</button>`));
     assert.ok(html.includes(`<time id="release-date" datetime="${RELEASE.date}">${releaseDate(locale)}</time>`));
-    for (const key of RELEASE.changes) assert.notEqual(translate(locale, key), key);
+    for (const key of [...RELEASE.changes, ...(RELEASE.announcement || [])]) assert.notEqual(translate(locale, key), key);
     assert.ok(html.includes(`href="${SUPPORT.href}"`)); assert.ok(html.includes(`<span id="lightning-address">${SUPPORT.address}</span>`));
     assert.ok(html.includes(lightningQr(SUPPORT.payload).trim()));
     assert.ok(!html.includes('data-i18n="lightningHint"')); assert.ok(!html.includes('input id="lightning-address"'));
   }
 });
 
-test('footer history covers each documented version separately, in order, with dated translated summaries', async () => {
+test('footer history covers each top-level release separately, in order, with dated translated summaries', async () => {
   const entries = [RELEASE, ...RELEASE.history];
   const changelog = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
   const versions = [...changelog.matchAll(/^## (\d+\.\d+\.\d+(?:-[\w.-]+)?)/gm)].map(match => match[1]);
   assert.deepEqual(entries.map(entry => entry.version), versions);
   assert.equal(new Set(versions).size, versions.length);
+  // The public 2.0.0 release consolidates its seven experimental versions.
+  if (versions.includes('2.0.0')) {
+    assert.equal(entries.some(entry => entry.version.startsWith('2.0.0-alpha.')), false);
+    assert.deepEqual([...changelog.matchAll(/^### (2\.0\.0-alpha\.\d+)/gm)].map(match => match[1]),
+      ['7', '6', '5', '4', '3', '2', '1'].map(number => `2.0.0-alpha.${number}`));
+  }
   for (let index = 1; index < entries.length; index++) {
     assert.ok(compareVersions(entries[index - 1].version, entries[index].version) > 0);
     assert.ok(entries[index - 1].date >= entries[index].date);

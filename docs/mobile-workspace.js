@@ -43,7 +43,7 @@ export function bindMobileWorkspace({ t, onOpen, onClose, root = document } = {}
   const get = id => root.getElementById(id), workspace = get('workspace');
   const panel = root.querySelector('.settings'), content = get('settings-content');
   const toggle = get('toggle-settings'), label = get('mobile-settings-label'), stage = get('paper-stage');
-  const header = get('settings-header'), actions = panel.querySelector('.settings-top');
+  const header = get('settings-header');
   const media = window.matchMedia('(max-width:760px)');
   let open = false;
   function refresh() {
@@ -70,9 +70,8 @@ export function bindMobileWorkspace({ t, onOpen, onClose, root = document } = {}
     workspace.dataset.settingsOpen = String(open);
     toggle.setAttribute('aria-expanded', String(open));
     refresh();
-    const restoreFocus = focus || content.contains(root.activeElement) || actions.contains(root.activeElement);
+    const restoreFocus = focus || content.contains(root.activeElement);
     content.inert = media.matches && !open;
-    actions.inert = media.matches && !open;
     content.tabIndex = media.matches ? 0 : -1;
     if (media.matches) content.setAttribute('aria-hidden', String(!open)); else content.removeAttribute('aria-hidden');
     if (!open && restoreFocus && media.matches) toggle.focus({ preventScroll: true });

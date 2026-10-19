@@ -1,51 +1,9 @@
 {
   "date": "2026-10-19",
   "changes": [
-    "release20MobileRefinement"
+    "release20Summary"
   ],
   "history": [
-    {
-      "version": "2.0.0-alpha.6",
-      "date": "2026-10-19",
-      "changes": [
-        "release20Mobile"
-      ]
-    },
-    {
-      "version": "2.0.0-alpha.5",
-      "date": "2026-10-19",
-      "changes": [
-        "release20Polish"
-      ]
-    },
-    {
-      "version": "2.0.0-alpha.4",
-      "date": "2026-10-19",
-      "changes": [
-        "release20Sidebar"
-      ]
-    },
-    {
-      "version": "2.0.0-alpha.3",
-      "date": "2026-10-19",
-      "changes": [
-        "release20Clefs"
-      ]
-    },
-    {
-      "version": "2.0.0-alpha.2",
-      "date": "2026-10-19",
-      "changes": [
-        "release20Barlines"
-      ]
-    },
-    {
-      "version": "2.0.0-alpha.1",
-      "date": "2026-10-19",
-      "changes": [
-        "release20Engine"
-      ]
-    },
     {
       "version": "1.17.2",
       "date": "2026-10-18",
@@ -263,5 +221,9 @@
         "release100Summary"
       ]
     }
+  ],
+  "announcement": [
+    "release20NoticeNotation",
+    "release20NoticeWorkspace"
   ]
 }

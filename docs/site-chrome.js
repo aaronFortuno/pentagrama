@@ -1,15 +1,21 @@
-import { analytics } from './analytics.js?v=2.0.0-alpha.7';
-import { iconMarkup } from './icons.js?v=2.0.0-alpha.7';
-import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.7';
-import { bindTooltips } from './tooltips.js?v=2.0.0-alpha.7';
+import { analytics } from './analytics.js?v=2.0.0';
+import { iconMarkup } from './icons.js?v=2.0.0';
+import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=2.0.0';
+import { bindTooltips } from './tooltips.js?v=2.0.0';
+import { RELEASE } from './release.js?v=2.0.0';
+import { bindReleaseNotice } from './release-notice.js?v=2.0.0';
 
 // Shared footer behavior for the editor and the static template guide.
 export function bindSiteDialogs({ t, copy, toast }) {
   bindTooltips();
   const $ = id => document.getElementById(id);
+  let releaseNotice;
+  function openHistory() {
+    releaseNotice?.dismiss(); openDialog($('version-dialog')); $('version-dialog').querySelector('.release-timeline').scrollTop = 0;
+  }
+  $('version-button').addEventListener('click', openHistory);
   for (const [button, dialog, content] of [
     ['about-button', 'about-dialog', '.about-content'],
-    ['version-button', 'version-dialog', '.release-timeline'],
   ]) $(button).addEventListener('click', () => {
     openDialog($(dialog)); $(dialog).querySelector(content).scrollTop = 0;
   });
@@ -38,4 +44,5 @@ export function bindSiteDialogs({ t, copy, toast }) {
     });
   });
   document.querySelectorAll('.privacy-details').forEach(details => bindAnimatedDetails(details));
+  releaseNotice = bindReleaseNotice({ release: RELEASE, t, openHistory });
 }

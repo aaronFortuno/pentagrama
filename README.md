@@ -4,7 +4,7 @@ Paper pautat a mida per escriure música a mà. Configura el full, comprova’l 
 
 **[Obre Pentagrama →](https://pentagrama.page/)**
 
-> Aquesta branca (`codex/v2-modular-engine`) prepara **2.0.0-alpha.3**. La versió estable continua a `main`. La [previsualització experimental](https://aaronfortuno.github.io/pentagrama-preview/) es publica en un repositori auxiliar, sense modificar pentagrama.page. Vegeu el [motor v2](documentation/engine-v2.md).
+La versió **2.0.0** incorpora claus i compassos opcionals, una configuració més compacta i una vista mòbil amb el full sempre accessible. Vegeu el [motor v2](documentation/engine-v2.md).
 
 ## Què hi pots fer
 

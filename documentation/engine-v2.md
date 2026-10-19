@@ -1,6 +1,6 @@
-# Motor v2 · 2.0.0-alpha.3
+# Motor v2 · 2.0.0
 
-Primera etapa de la branca `codex/v2-modular-engine`, basada en **1.17.2** (`db130fe`). L’objectiu és separar el motor de la interfície sense canviar els fulls que ja funcionen. La publicació estable i la branca `main` es mantenen independents.
+Motor incorporat a la versió estable **2.0.0**, desenvolupat inicialment a `codex/v2-modular-engine` a partir de **1.17.2** (`db130fe`). Separa la geometria i les sortides de la interfície, conserva els fulls existents i afegeix claus i compassos opcionals.
 
 ## Recorregut del document
 
@@ -45,7 +45,7 @@ const score = createDocument({
 });
 ```
 
-El límit és de 32 pàgines. Cada pàgina hereta les opcions comunes i aplica les seves excepcions. `normalizeDocument()` retorna còpies independents i és idempotent. Un document creat també es pot tornar a passar a `createDocument()`. La interfície actual continua configurant **un sol full**; aquesta etapa no afegeix controls nous.
+El límit és de 32 pàgines. Cada pàgina hereta les opcions comunes i aplica les seves excepcions. `normalizeDocument()` retorna còpies independents i és idempotent. Un document creat també es pot tornar a passar a `createDocument()`. La interfície actual continua configurant **un sol full**; les futures opcions de diverses pàgines poden utilitzar aquest mateix model.
 
 `document.valid` indica si totes les pàgines hi caben. El SVG pot mostrar una pàgina amb desbordament perquè la interfície n’informi; impressió i PDF rebutgen el document complet si alguna pàgina no és vàlida. No s’exporten documents parcials. Les pàgines d’impressió comparteixen exactament el SVG del preview; cada secció declara el seu format físic. El PDF admet diverses pàgines i comparteix la font incrustada entre elles.
 

@@ -1,6 +1,17 @@
 # Canvis
 
-## 2.0.0-alpha.7 · 2026-10-19
+## 2.0.0 · 2026-10-19
+
+- Primera versió estable del motor modular 2.x: configuració, document, geometria en mil·límetres i escena comuna per a SVG, impressió i PDF. Els fulls, les plantilles i les referències anteriors continuen sent compatibles; es conserven 276 casos de paritat amb la versió 1.17.2.
+- Claus opcionals de sol, fa i do, comunes o amb patrons per posició dins de grups i blocs. Glifs vectorials Bravura amb llicència i mètriques locals. Línies de compàs simples, dobles o discontínues, quantitat configurable, gruix vinculat al pentagrama per defecte i unions limitades al mateix grup o bloc.
+- Configuració agrupada en cinc categories, amb una sola secció oberta i memòria local de l’apartat. Menús, indicacions emergents, camps i transicions homogenis; idioma Carta localitzat i idiomes ordenats alfabèticament.
+- Mòbil amb capçalera compacta, paper ajustat a l’amplada i ancorat a dalt, zoom i desplaçament independents de la impressió. Panell de configuració superposat, desplegable amb clic o arrossegament, i footer més compacte.
+- Imprimir, desfer, refer i restablir sempre visibles a la capçalera mòbil, també amb el panell replegat. Les accions no desapareixen ni perden el focus en tancar la configuració i es poden utilitzar directament sobre el full complet.
+- Avís flotant de la 2.0.0 amb dues línies de novetats i barra temporal de 12 segons. Un sol avís per versió i navegador, tancament manual, pausa independent amb cursor, focus o pestanya oculta, i obertura de l’historial de versions en clicar-lo. Respecta la reducció de moviment i funciona també a la guia, sense afectar la impressió.
+- Novetats i avís als deu idiomes. Les preversions 2.0.0-alpha es presenten al footer com una única versió 2.0.0; el seu detall es conserva a continuació. Les versions estables anteriors mantenen les seves entrades individuals.
+- Promoció de la branca 2.x a main després de les proves de motor, gestos, persistència, traduccions, novetats i revisió visual local. Es mantenen el domini, el sitemap, l’analítica i les llicències de producció.
+
+### 2.0.0-alpha.7 · 2026-10-19
 
 - En mòbil, el full s’ajusta a tota l’amplada disponible i queda alineat a la part superior. Obrir o replegar la configuració ja no redueix la previsualització: el panell se superposa al paper. Ajusta recupera l’amplada i l’inici del full, també en horitzontal.
 - Desplaçament del paper quan excedeix l’alçada disponible, inclòs el nivell inicial del 100%; es mantenen els límits, el zoom i la navegació amb teclat. Cap canvi a la geometria d’impressió ni a l’ajust complet del full en escriptori.
@@ -9,7 +20,7 @@
 - Footer mòbil de l’editor més compacte: s’oculta l’enllaç a la guia i s’equilibra la mida de la frase amb V4V, mantenint l’historial de versions. La guia conserva la seva navegació.
 - Resum de novetats als deu idiomes i comprovacions locals de geometria, gestos, cancel·lació, zoom, controls i disposició responsive. Publicació només a la branca 2.x i al repositori auxiliar de proves.
 
-## 2.0.0-alpha.6 · 2026-10-19
+### 2.0.0-alpha.6 · 2026-10-19
 
 - Les categories obertes conserven la mida i el pes del títol, amb color terracota. S’eliminen el fons ressaltat i la vora lateral gruixuda; les alçades i els controls d’escriptori continuen iguals.
 - Editor mòbil ajustat a l’alçada disponible, amb capçalera compacta i previsualització permanent. La configuració s’obre des d’una barra inferior en un panell flotant, amb una única zona de scroll intern i les accions d’imprimir, desfer, refer i restablir sempre accessibles a la part superior del panell.
@@ -18,7 +29,7 @@
 - Mòdul independent de disposició mòbil, amb ajust a la mida disponible i al viewport visual quan apareix el teclat. Transicions comunes de 220 ms, canvi entre mòbil i escriptori sense deixar controls desactivats i guia de plantilles amb la navegació natural anterior.
 - Controls nous i resum del footer als deu idiomes. Comprovacions locals de disposició mòbil, espai de previsualització i compatibilitat amb els fulls existents. Publicació limitada a la branca i al web de proves.
 
-## 2.0.0-alpha.5 · 2026-10-19
+### 2.0.0-alpha.5 · 2026-10-19
 
 - Indicacions emergents compartides pel generador i la guia, amb fons càlid, tipografia, vora i ombra pròpies i transicions de 220 ms. Se substitueixen els atributs title del navegador, inclosos els textos dinàmics de les melodies, els blocs i els marges; es conserven els noms accessibles.
 - Aparició amb ratolí o focus de teclat, permanència quan el cursor passa sobre el text i tancament amb Escape, interacció, scroll o canvi de mida. No s’intercepten els gestos tàctils. Posicionament limitat a la pantalla i ús de la capa superior dins dels diàlegs, sense quedar retallades pel sidebar. Es respecten les descripcions accessibles prèvies i s’eviten repeticions del nom dels botons.
@@ -27,7 +38,7 @@
 - Títols de les cinc categories una mica més grans i amb més pes. L’apartat obert es distingeix amb fons càlid suau, text terracota i una línia lateral; les capçaleres mantenen les alçades de 40/36/46 px i l’espai disponible per als controls.
 - Resum de novetats als deu idiomes, comprovacions de límits de les indicacions i de l’ordre dels idiomes a les pàgines generades. Publicació només a la branca i al web experimentals.
 
-## 2.0.0-alpha.4 · 2026-10-19
+### 2.0.0-alpha.4 · 2026-10-19
 
 - Sidebar reorganitzat en cinc apartats: Full, Pentagrames, Claus i compassos, Peu del full i Codi de configuració. El format, l’orientació, els marges i l’espai superior extra comparteixen Full; la distribució i el traç dels pentagrames comparteixen Pentagrames.
 - Una sola fila fixa amb Imprimeix i les icones de desfer, refer i restablir, amb noms accessibles i indicacions en passar-hi per sobre. El títol El teu full es conserva per a lectors de pantalla. Amplada del sidebar lleugerament incrementada fins a 270–288 px en desktop/tablet.
@@ -36,7 +47,7 @@
 - Format Letter localitzat a Carta i als equivalents dels deu idiomes en el selector, les dimensions, les miniatures, les descripcions accessibles i les guies. El valor intern LETTER i els codis anteriors es mantenen.
 - Transicions de 220 ms, controls i geometria d’impressió preservats; els menús flotants es tanquen quan es canvia d’apartat. Resum de la versió traduït als deu idiomes i publicació limitada a la previsualització experimental.
 
-## 2.0.0-alpha.3 · 2026-10-19
+### 2.0.0-alpha.3 · 2026-10-19
 
 - El gruix dels compassos segueix per defecte el de les línies del pentagrama. «Auto» permet desvincular-lo i ajustar-lo en mm; tornar a activar-lo recupera el seguiment. Les configuracions antigues amb gruix absolut mantenen el resultat original.
 - Claus opcionals de sol, fa i do en posició d’alto o tenor, amb opció «Cap». La vista «Mateixa clau» les aplica a tot el full; «Per posició» permet triar excepcions per a cada posició d’un grup, cada pentagrama d’un full sense grups o cada posició dins d’un bloc.
@@ -47,7 +58,7 @@
 - Desplegable compacte de claus, selectors de posició amb noms de bloc i menús dinàmics accessibles. Només un menú de configuració queda obert; la selecció visible segueix el focus en llistes llargues. Bravura afegida als crèdits de «Sobre el projecte».
 - Opcions i resum del footer traduïts als deu idiomes. Proves de migració de gruixos, patrons, blocs reordenats, geometria, contorns SVG/PDF, marges, col·lisions, codis, historial i herència entre pàgines. Publicació només a la branca i al web experimentals.
 
-## 2.0.0-alpha.2 · 2026-10-19
+### 2.0.0-alpha.2 · 2026-10-19
 
 - Línies de compàs opcionals, desactivades per defecte i homogènies per a tots els pentagrames. Entre 1 i 16 compassos iguals per fila, amb una línia de tancament a la dreta i sense afegir cap línia d’obertura a l’esquerra.
 - Tipus simple, doble o discontinu, amb gruix independent de les línies del pentagrama (0,05–0,60 mm). La línia final conserva el mateix tipus i tot el traç queda dins del marge dret.
@@ -58,7 +69,7 @@
 - Comprovació dels límits horitzontals en continguts molt estrets; «Ajusta al full» pot reduir el nombre de compassos sense alterar marges, tipus ni gruix. Un document invàlid no es pot imprimir ni exportar parcialment.
 - Resum del footer als deu idiomes, documentació i proves de compatibilitat, geometria, sortides vectorials, referències, grups, blocs, plantilles, historial i documents de diverses pàgines. Publicació limitada a la branca experimental i al repositori auxiliar de previsualització.
 
-## 2.0.0-alpha.1 · 2026-10-19
+### 2.0.0-alpha.1 · 2026-10-19
 
 - Primera versió experimental de la branca `codex/v2-modular-engine`, desenvolupada en una còpia de treball separada de `main` i sense canvis a pentagrama.page.
 - Motor dividit en configuració, referències P1–P4, distribució física, peus, estructura del document, escena vectorial, SVG, impressió i PDF. Els punts d’entrada anteriors es conserven com a adaptadors compatibles.

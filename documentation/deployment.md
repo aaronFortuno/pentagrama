@@ -8,7 +8,7 @@ La capçalera i el peu es defineixen una sola vegada a `src/components/site-head
 
 ## Publicació del projecte
 
-**A la branca experimental 2.x, segueix l’apartat «Previsualització de la branca 2.x»; no publiquis aquests canvis a `main`.**
+La versió estable **2.0.0** incorpora el motor modular i es publica a `main`. La branca `codex/v2-modular-engine` i el repositori auxiliar continuen disponibles per a futures proves.
 
 La publicació actual utilitza GitHub Pages, amb la branca `main` i el directori `/docs`. Les actualitzacions d’aquesta branca es publiquen automàticament a https://pentagrama.page/.
 
@@ -25,9 +25,11 @@ Conserva totes les versions anteriors a `history` de `src/release.json`, de més
 
 L’eina de versionat afegeix la versió a les adreces dels estils i dels mòduls perquè el navegador carregui junts els recursos de la mateixa versió. També regenera `docs/index.html`, els directoris d’idioma, `docs/sitemap.xml`, `docs/release.js` i el QR de suport a partir de les fonts de `src/` i les traduccions. El número de versió del peu i del diàleg sempre prové de `package.json`; la data i les novetats són editorials. No instal·la dependències. Els canvis exclusivament de documentació no necessiten incrementar la versió del web.
 
+L’avís flotant és opcional: `announcement` a `src/release.json` conté una o dues claus de traducció breus. Es mostra un sol cop per versió i navegador al generador o la guia, amb una barra de 12 segons i pausa durant la lectura o amb la pestanya oculta. En una versió sense avís, elimina `announcement`; el resum del footer continua sent obligatori. Les preversions de la 2.0.0 s’agrupen sota la versió estable al footer i es conserven amb el seu detall a `CHANGELOG.md`.
+
 ## Previsualització de la branca 2.x
 
-El codi font experimental viu a `codex/v2-modular-engine` del repositori principal. GitHub Pages de producció continua llegint `main:/docs`. Publicar una carpeta `/v2/` al mateix domini exigiria canviar aquesta branca; per mantenir-la intacta, el paquet de proves es publica a [aaronFortuno/pentagrama-preview](https://github.com/aaronFortuno/pentagrama-preview), branca `main`, arrel `/`, sense domini propi.
+Les preversions es poden preparar a `codex/v2-modular-engine` del repositori principal. GitHub Pages de producció llegeix `main:/docs`. Publicar una carpeta `/v2/` al mateix domini exigiria canviar aquesta branca; per mantenir-la intacta, el paquet de proves es publica a [aaronFortuno/pentagrama-preview](https://github.com/aaronFortuno/pentagrama-preview), branca `main`, arrel `/`, sense domini propi.
 
 1. Prepara les metadades de la versió preliminar (per exemple, `2.0.0-alpha.1`) amb el mateix procediment de versions.
 2. Executa `node tools/version-assets.mjs` i `npm test`; comprova la interfície i la impressió en local.

@@ -14,7 +14,10 @@ for (const entry of history) {
   if (versions.has(entry.version) || !/^\d{4}-\d{2}-\d{2}$/.test(entry.date) || !Number.isFinite(Date.parse(entry.date)) || !Array.isArray(entry.changes) || !entry.changes.length) throw new Error('Invalid release history');
   versions.add(entry.version);
 }
-export const RELEASE = Object.freeze({ version, date: release.date, changes: Object.freeze(release.changes), history: Object.freeze(history.map(entry => Object.freeze({ ...entry, changes: Object.freeze(entry.changes) }))) });
+if (release.announcement !== undefined && (!Array.isArray(release.announcement) || !release.announcement.length || release.announcement.length > 2 || release.announcement.some(key => typeof key !== 'string' || !/^[\w]+$/.test(key)))) throw new Error('Invalid release announcement');
+export const RELEASE = Object.freeze({ version, date: release.date, changes: Object.freeze(release.changes),
+  ...(release.announcement ? { announcement: Object.freeze(release.announcement) } : {}),
+  history: Object.freeze(history.map(entry => Object.freeze({ ...entry, changes: Object.freeze(entry.changes) }))) });
 export const SUPPORT = Object.freeze(lightningDetails(read('src/support.json').lightningAddress));
 export function releaseDate(locale, date = RELEASE.date) {
   return new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
