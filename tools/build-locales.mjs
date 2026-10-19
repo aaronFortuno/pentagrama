@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { LANGUAGES, translate } from '../docs/i18n.js';
+import { LANGUAGES, orderedLanguages, translate } from '../docs/i18n.js';
 import { RELEASE, SUPPORT, releaseDate } from './site-data.mjs';
 import { lightningQr } from './lightning.mjs';
 import { buildTemplatePages } from './build-template-pages.mjs';
@@ -24,7 +24,7 @@ export function renderLocalizedPage(source, locale, homepage, { automatic = fals
   const alternates = Object.keys(LANGUAGES).map(code => `<link rel="alternate" hreflang="${code}" href="${escapeHTML(new URL(`${code}/`, site).href)}">`);
   alternates.push(`<link rel="alternate" hreflang="x-default" href="${escapeHTML(site.href)}">`);
   const head = `<base href="${automatic ? './' : '../'}">\n  <link rel="canonical" href="${escapeHTML(url.href)}">\n  ${alternates.join('\n  ')}`;
-  const links = Object.entries(LANGUAGES).map(([code, label]) => `<a href="./${code}/" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${code === locale}" tabindex="-1"><span>${escapeHTML(label)}</span><span data-icon="check"></span></a>`).join('');
+  const links = orderedLanguages(locale).map(([code, label]) => `<a href="./${code}/" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${code === locale}" tabindex="-1"><span>${escapeHTML(label)}</span><span data-icon="check"></span></a>`).join('');
   let html = source.replace('<html lang="ca">', `<html lang="${locale}">`)
     .replace('<!-- localized-head -->', head).replace('<!-- language-links -->', links)
     .replace('href="./ca/templates/"', `href="./${locale}/templates/"`)
@@ -41,7 +41,7 @@ export function renderLocalizedPage(source, locale, homepage, { automatic = fals
   html = html.replace(/<([a-z][\w-]*)(\s[^>]*\bdata-i18n="([^"]+)"[^>]*)>[\s\S]*?<\/\1>/g,
     (_, tag, attributes, key) => `<${tag}${attributes}>${t(key)}</${tag}>`);
   html = html.replace(/<[a-z][^>]*>/g, tag => {
-    for (const [data, attribute] of [['aria', 'aria-label'], ['title', 'title'], ['placeholder', 'placeholder']]) {
+    for (const [data, attribute] of [['aria', 'aria-label'], ['title', 'data-tooltip'], ['placeholder', 'placeholder']]) {
       const key = new RegExp(`\\bdata-${data}="([^"]+)"`).exec(tag)?.[1];
       if (!key) continue;
       const value = `${attribute}="${t(key)}"`, current = new RegExp(` ${attribute}="[^"]*"`);

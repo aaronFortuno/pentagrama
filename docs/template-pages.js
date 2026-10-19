@@ -1,8 +1,8 @@
-import { analytics } from './analytics.js?v=2.0.0-alpha.4';
-import { LANGUAGES, translate } from './i18n.js?v=2.0.0-alpha.4';
-import { renderIcons } from './icons.js?v=2.0.0-alpha.4';
-import { openDialog, showPopover } from './motion.js?v=2.0.0-alpha.4';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.4';
+import { analytics } from './analytics.js?v=2.0.0-alpha.5';
+import { LANGUAGES, translate } from './i18n.js?v=2.0.0-alpha.5';
+import { renderIcons } from './icons.js?v=2.0.0-alpha.5';
+import { openDialog, showPopover } from './motion.js?v=2.0.0-alpha.5';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.5';
 
 const $ = id => document.getElementById(id), locale = document.documentElement.lang;
 const t = key => translate(locale, key);
@@ -21,7 +21,7 @@ bindSiteDialogs({ t, copy, toast });
 const trigger = $('language-button'), menu = $('language-menu');
 const languages = [...menu.querySelectorAll('[data-language]')];
 let menuOpen = false;
-trigger.title = `${t('language')} · ${LANGUAGES[locale]}`;
+trigger.dataset.tooltip = `${t('language')} · ${LANGUAGES[locale]}`;
 function focusLanguage(link) { link?.focus({ preventScroll: true }); link?.scrollIntoView({ block: 'nearest' }); }
 function setOpen(open, focus) {
   if (menuOpen === open) return;

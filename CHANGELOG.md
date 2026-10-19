@@ -1,5 +1,14 @@
 # Canvis
 
+## 2.0.0-alpha.5 · 2026-10-19
+
+- Indicacions emergents compartides pel generador i la guia, amb fons càlid, tipografia, vora i ombra pròpies i transicions de 220 ms. Se substitueixen els atributs title del navegador, inclosos els textos dinàmics de les melodies, els blocs i els marges; es conserven els noms accessibles.
+- Aparició amb ratolí o focus de teclat, permanència quan el cursor passa sobre el text i tancament amb Escape, interacció, scroll o canvi de mida. No s’intercepten els gestos tàctils. Posicionament limitat a la pantalla i ús de la capa superior dins dels diàlegs, sense quedar retallades pel sidebar. Es respecten les descripcions accessibles prèvies i s’eviten repeticions del nom dels botons.
+- Menú d’idiomes amb colors neutres i terracota, coherents amb els selectors i botons actius del web. Indicador d’obertura, selecció, focus, vora i ombra actualitzats; els menús de configuració comparteixen els mateixos tons.
+- Idiomes ordenats alfabèticament pels noms propis que es mostren al menú, amb comparació lingüística segons l’idioma de la pàgina. L’ordre s’aplica a l’HTML estàtic, al canvi d’idioma sense recarregar i a les guies, sense alterar les columnes de les traduccions ni les rutes existents.
+- Títols de les cinc categories una mica més grans i amb més pes. L’apartat obert es distingeix amb fons càlid suau, text terracota i una línia lateral; les capçaleres mantenen les alçades de 40/36/46 px i l’espai disponible per als controls.
+- Resum de novetats als deu idiomes, comprovacions de límits de les indicacions i de l’ordre dels idiomes a les pàgines generades. Publicació només a la branca i al web experimentals.
+
 ## 2.0.0-alpha.4 · 2026-10-19
 
 - Sidebar reorganitzat en cinc apartats: Full, Pentagrames, Claus i compassos, Peu del full i Codi de configuració. El format, l’orientació, els marges i l’espai superior extra comparteixen Full; la distribució i el traç dels pentagrames comparteixen Pentagrames.

@@ -1,4 +1,4 @@
-import { validatePath } from './path-data.js?v=2.0.0-alpha.4';
+import { validatePath } from './path-data.js?v=2.0.0-alpha.5';
 const escape = text => String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 
 export function renderSvgPage(page) {

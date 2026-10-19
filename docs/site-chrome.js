@@ -1,9 +1,11 @@
-import { analytics } from './analytics.js?v=2.0.0-alpha.4';
-import { iconMarkup } from './icons.js?v=2.0.0-alpha.4';
-import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.4';
+import { analytics } from './analytics.js?v=2.0.0-alpha.5';
+import { iconMarkup } from './icons.js?v=2.0.0-alpha.5';
+import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.5';
+import { bindTooltips } from './tooltips.js?v=2.0.0-alpha.5';
 
 // Shared footer behavior for the editor and the static template guide.
 export function bindSiteDialogs({ t, copy, toast }) {
+  bindTooltips();
   const $ = id => document.getElementById(id);
   for (const [button, dialog, content] of [
     ['about-button', 'about-dialog', '.about-content'],

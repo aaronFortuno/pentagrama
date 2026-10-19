@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=2.0.0-alpha.4';
+import { motionOptions } from './motion.js?v=2.0.0-alpha.5';
 
 export const MARGIN_AXES = Object.freeze({ horizontal: ['marginLeft', 'marginRight'], vertical: ['marginTop', 'marginBottom'] });
 export const asymmetricMargins = settings => Object.values(MARGIN_AXES).some(([first, second]) => settings[first] !== settings[second]);
@@ -25,7 +25,7 @@ export function bindMarginsControl({ read, change, t }) {
       input.placeholder = mixed ? '—' : '';
       if (mixed) input.setAttribute('aria-valuetext', t('mixedMargins'));
       else input.removeAttribute('aria-valuetext');
-      input.title = mixed ? t('mixedMargins') : '';
+      input.dataset.tooltip = mixed ? t('mixedMargins') : '';
       if (document.activeElement !== input) input.value = value;
     }
   }

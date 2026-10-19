@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { LANGUAGES, translate } from '../docs/i18n.js';
+import { LANGUAGES, orderedLanguages, translate } from '../docs/i18n.js';
 import { DEFAULT_TEMPLATES, suggestedTemplateSettings } from '../docs/library.js';
 import { createLayout, renderSheet, encodeShareHash } from '../docs/layout.js';
 import { RELEASE } from './site-data.mjs';
@@ -24,7 +24,7 @@ export function renderTemplatePage(locale, homepage, guide, generatorHTML) {
   const title = t(guide ? `${guide.prefix}Title` : 'catalogTitle');
   const description = t(guide ? `${guide.prefix}Description` : 'catalogIntro');
   const route = code => templatePath(code, guide);
-  const links = Object.entries(LANGUAGES).map(([code, name]) => `<a href="./${route(code)}" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${locale === code}" tabindex="-1"><span>${escape(name)}</span><span data-icon="check"></span></a>`).join('');
+  const links = orderedLanguages(locale).map(([code, name]) => `<a href="./${route(code)}" data-language="${code}" lang="${code}" hreflang="${code}" role="menuitemradio" aria-checked="${locale === code}" tabindex="-1"><span>${escape(name)}</span><span data-icon="check"></span></a>`).join('');
   const chrome = guideChrome(generatorHTML, locale, links, t);
   const alternates = Object.keys(LANGUAGES).map(code => `<link rel="alternate" hreflang="${code}" href="${escape(new URL(route(code), site).href)}">`).join('\n');
   const facts = template => {

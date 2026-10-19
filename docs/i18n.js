@@ -1,7 +1,13 @@
 export const LANGUAGES = Object.freeze({ ca: 'Català', en: 'English', es: 'Español', de: 'Deutsch', fr: 'Français', it: 'Italiano', pt: 'Português', nl: 'Nederlands', eu: 'Euskara', gl: 'Galego' });
 const locales = Object.keys(LANGUAGES);
+// Sort the displayed native names without changing the translation table's column order.
+export function orderedLanguages(locale = 'ca') {
+  const collator = new Intl.Collator(locale, { sensitivity: 'base' });
+  return Object.entries(LANGUAGES).sort((a, b) => collator.compare(a[1], b[1]));
+}
 // One row per message. Keep all translations together when adding a key.
 const rows = `
+release20Polish|Indicacions emergents amb estil propi, categories més clares i menú d’idiomes en tons càlids, ordenat alfabèticament.|Consistent help labels, clearer settings headings and a language menu in warm tones, sorted alphabetically.|Indicaciones emergentes con estilo propio, categorías más claras y menú de idiomas en tonos cálidos, ordenado alfabéticamente.|Einheitlich gestaltete Hinweistexte, deutlichere Kategorien und ein alphabetisch geordnetes Sprachmenü in warmen Farben.|Infobulles harmonisées, catégories plus lisibles et menu des langues aux tons chauds, classé par ordre alphabétique.|Suggerimenti con uno stile coerente, categorie più chiare e menu delle lingue in toni caldi, ordinato alfabeticamente.|Dicas com estilo próprio, categorias mais claras e menu de idiomas em tons quentes, ordenado alfabeticamente.|Hulpteksten in een eigen stijl, duidelijkere categorieën en een alfabetisch taalmenu in warme tinten.|Estilo bateratuko laguntza-mezuak, kategoria argiagoak eta hizkuntza-menua tonu epeletan, alfabetikoki ordenatuta.|Indicacións emerxentes con estilo propio, categorías máis claras e menú de idiomas en tons cálidos, ordenado alfabeticamente.
 settingsPage|Full|Sheet|Hoja|Blatt|Feuille|Foglio|Folha|Blad|Orria|Folla
 settingsNotation|Claus i compassos|Clefs and barlines|Claves y compases|Schlüssel und Taktstriche|Clés et barres de mesure|Chiavi e stanghette|Claves e compassos|Sleutels en maatstrepen|Gakoak eta konpas-marrak|Claves e compases
 settingsNotationOn|Activats|On|Activados|Aktiv|Activés|Attivi|Ativados|Aan|Aktibatuta|Activados

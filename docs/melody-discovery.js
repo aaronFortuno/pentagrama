@@ -1,7 +1,7 @@
-import { createMelodyPicker } from './melodies.js?v=2.0.0-alpha.4';
-import { createMelodyPlayer } from './melody-player.js?v=2.0.0-alpha.4';
-import { createWordmark } from './wordmark.js?v=2.0.0-alpha.4';
-import { openDialog, closeDialog } from './motion.js?v=2.0.0-alpha.4';
+import { createMelodyPicker } from './melodies.js?v=2.0.0-alpha.5';
+import { createMelodyPlayer } from './melody-player.js?v=2.0.0-alpha.5';
+import { createWordmark } from './wordmark.js?v=2.0.0-alpha.5';
+import { openDialog, closeDialog } from './motion.js?v=2.0.0-alpha.5';
 
 export const DISCOVERY_CLICKS = 5;
 
@@ -18,11 +18,11 @@ export function createMelodyDiscovery({ button, note, player, home, trigger, dia
   function refresh({ immediate = true } = {}) {
     const playing = state === 'playing' || state === 'loading';
     button.dataset.melodyState = state;
-    button.setAttribute('aria-label', t(playing ? 'stopMelody' : 'jumpNote')); button.title = button.getAttribute('aria-label');
+    button.setAttribute('aria-label', t(playing ? 'stopMelody' : 'jumpNote')); button.dataset.tooltip = button.getAttribute('aria-label');
     $('melody-replay').textContent = t(playing ? 'stopMelody' : 'replayMelody');
     if (!selected) return;
     const name = t(`melody_${selected.id}_title`);
-    trigger.setAttribute('aria-label', t('aboutMelody', { name })); trigger.title = t('aboutMelody', { name });
+    trigger.setAttribute('aria-label', t('aboutMelody', { name })); trigger.dataset.tooltip = t('aboutMelody', { name });
     wordmark.change(t(`melody_${selected.id}_label`), { immediate });
     $('melody-title').textContent = name;
     $('melody-composer').textContent = `${selected.composer} · ${selected.work}`;
@@ -41,7 +41,7 @@ export function createMelodyDiscovery({ button, note, player, home, trigger, dia
     state = value;
     button.dataset.melodyState = value;
     const playing = value === 'playing' || value === 'loading';
-    button.setAttribute('aria-label', t(playing ? 'stopMelody' : 'jumpNote')); button.title = button.getAttribute('aria-label');
+    button.setAttribute('aria-label', t(playing ? 'stopMelody' : 'jumpNote')); button.dataset.tooltip = button.getAttribute('aria-label');
     $('melody-replay').textContent = t(playing ? 'stopMelody' : 'replayMelody');
     if (value === 'unavailable') notify(t('melodyUnavailable'));
     if (value === 'playing') report('melody_started', { melody: melody.id, source: playbackSource });

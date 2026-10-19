@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
-import { LANGUAGES, translate } from '../docs/i18n.js';
+import { LANGUAGES, orderedLanguages, translate } from '../docs/i18n.js';
 import { languageFromURL, languageURL } from '../docs/language-routing.js';
 import { renderLocalizedPage, escapeHTML } from '../tools/build-locales.mjs';
 import { RELEASE } from '../tools/site-data.mjs';
@@ -10,6 +10,19 @@ import { TEMPLATE_GUIDES, templatePath } from '../tools/build-template-pages.mjs
 const root = new URL('../', import.meta.url), site = 'https://pentagrama.page/';
 const source = await readFile(new URL('src/index.html', root), 'utf8');
 const codes = Object.keys(LANGUAGES);
+
+test('language menus alphabetize their native names without changing translation columns', async () => {
+  const expected = ['ca', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'it', 'nl', 'pt'];
+  for (const locale of codes) {
+    assert.deepEqual(orderedLanguages(locale).map(([code]) => code), expected);
+    for (const path of [`docs/${locale}/index.html`, `docs/${locale}/templates/index.html`]) {
+      const html = await readFile(new URL(path, root), 'utf8');
+      assert.deepEqual([...html.matchAll(/data-language="([a-z]+)"/g)].map(match => match[1]), expected);
+      assert.ok(!/\stitle="/.test(html), `${path}: native tooltip remains`);
+    }
+  }
+  assert.deepEqual(Object.keys(LANGUAGES), codes);
+});
 
 test('every published language has translated HTML, a self canonical and reciprocal absolute alternates before JavaScript', async () => {
   for (const locale of codes) {

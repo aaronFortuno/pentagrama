@@ -1,7 +1,7 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.0.0-alpha.4';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.0.0-alpha.4';
-import { footerTextWidth } from './typography.js?v=2.0.0-alpha.4';
-import { validatePath } from './path-data.js?v=2.0.0-alpha.4';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.0.0-alpha.5';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.0.0-alpha.5';
+import { footerTextWidth } from './typography.js?v=2.0.0-alpha.5';
+import { validatePath } from './path-data.js?v=2.0.0-alpha.5';
 
 let fontProgram;
 function embeddedFont() {
