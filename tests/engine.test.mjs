@@ -12,6 +12,7 @@ import { RELEASE } from '../tools/site-data.mjs';
 import { buildPreview } from '../tools/build-preview.mjs';
 
 test('the modular engine exactly matches frozen 1.17.2 settings, geometry, references, SVG and PDF', () => {
+  const legacyFields = ({ barlines, ...settings }) => settings;
   const variants = [];
   for (const template of DEFAULT_TEMPLATES) for (const paper of ['A3', 'A4', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
     for (const options of [{}, { topSpace: 30, reference: true, source: true }, { marginLeft: 11, marginRight: 29, marginTop: 17, marginBottom: 8 }]) variants.push({ ...template.settings, paper, orientation, ...options });
@@ -23,12 +24,13 @@ test('the modular engine exactly matches frozen 1.17.2 settings, geometry, refer
     thickness: .05 + random(46) / 100, marginLeft: random(70), marginRight: random(70), marginTop: random(70), marginBottom: random(70),
     systems: 1 + random(4), reference: Boolean(random(2)), source: Boolean(random(2)) });
   for (const value of variants) {
-    assert.deepEqual(current.normalizeSettings(value), legacy.normalizeSettings(value));
-    assert.deepEqual(current.createLayout(value), legacy.createLayout(value));
+    assert.deepEqual(legacyFields(current.normalizeSettings(value)), legacy.normalizeSettings(value));
+    assert.deepEqual(legacyFields(current.createLayout(value)), legacy.createLayout(value));
     assert.equal(current.encodeReference(value), legacy.encodeReference(value));
     assert.equal(current.encodeShareHash(value), legacy.encodeShareHash(value));
-    assert.deepEqual(current.decodeShareHash(current.encodeShareHash(value)), legacy.decodeShareHash(legacy.encodeShareHash(value)));
-    assert.deepEqual(current.fitSettings(value), legacy.fitSettings(value));
+    assert.deepEqual(legacyFields(current.decodeShareHash(current.encodeShareHash(value))), legacy.decodeShareHash(legacy.encodeShareHash(value)));
+    assert.deepEqual(legacyFields(current.fitSettings(value)), legacy.fitSettings(value));
+    assert.equal(current.normalizeSettings(value).barlines.enabled, false);
     assert.equal(current.renderSheet(value), legacy.renderSheet(value));
     assert.equal(renderSvgPage(createDocument(value).pages[0]), legacy.renderSheet(value));
     if (legacy.createLayout(value).valid) assert.deepEqual(createPdf(value), legacyPdf(value));

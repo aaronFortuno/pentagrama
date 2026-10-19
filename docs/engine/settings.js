@@ -1,4 +1,4 @@
-import { PAPER_SIZES, DEFAULT_MARGINS } from './constants.js?v=2.0.0-alpha.1';
+import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.0.0-alpha.2';
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
@@ -13,12 +13,19 @@ export function normalizeSettings(value = {}) {
     label: typeof b.label === 'string' ? b.label.trim().slice(0, 60) : '',
     count: Math.round(numeric(b.count, 2, 1, 32)), inside: round(numeric(b.inside, 8, 1, 40)), after: round(numeric(b.after, 14, 1, 60)),
   })) : [];
+  const bars = value.barlines && typeof value.barlines === 'object' ? value.barlines : {};
   return {
     count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
     reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
     lineSpacing: round(numeric(value.lineSpacing, 2, 1, 4)), topSpace: Math.round(numeric(value.topSpace, 0, 0, 100)), mode: value.mode === 'blocks' ? 'blocks' : 'simple', systems: Math.round(numeric(value.systems, 1, 1, 8)), systemGap: round(numeric(value.systemGap, 18, 1, 60)),
     ...Object.fromEntries(Object.entries(DEFAULT_MARGINS).map(([key, fallback]) => [key, Math.round(numeric(value[key], fallback, 0, 100))])),
     blocks: blocks.length ? blocks : value.mode === 'blocks' ? [{ label: '', count: 4, inside: 12, after: 14 }, { label: '', count: 2, inside: 6, after: 14 }] : [],
+    barlines: {
+      enabled: bars.enabled === true, measures: Math.round(numeric(bars.measures, DEFAULT_BARLINES.measures, 1, 16)),
+      style: ['single', 'double', 'dashed'].includes(bars.style) ? bars.style : DEFAULT_BARLINES.style,
+      thickness: Math.round(numeric(bars.thickness, DEFAULT_BARLINES.thickness, 0.05, 0.6) * 100) / 100,
+      connect: ['none', 'solid', 'dashed'].includes(bars.connect) ? bars.connect : DEFAULT_BARLINES.connect,
+    },
   };
 }
 

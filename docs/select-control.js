@@ -1,5 +1,5 @@
-import { iconMarkup } from './icons.js?v=2.0.0-alpha.1';
-import { showPopover } from './motion.js?v=2.0.0-alpha.1';
+import { iconMarkup } from './icons.js?v=2.0.0-alpha.2';
+import { showPopover } from './motion.js?v=2.0.0-alpha.2';
 
 export function bindSelectControl(select, button, menu, { onOpen } = {}) {
   let open = false;
@@ -25,7 +25,10 @@ export function bindSelectControl(select, button, menu, { onOpen } = {}) {
   }
   function refresh() {
     button.querySelector('[data-select-value]').textContent = select.options[select.selectedIndex]?.textContent || '';
-    [...menu.children].forEach((option, index) => { option.setAttribute('aria-selected', String(index === select.selectedIndex)); });
+    [...menu.children].forEach((option, index) => {
+      option.firstChild.textContent = select.options[index]?.textContent || '';
+      option.setAttribute('aria-selected', String(index === select.selectedIndex));
+    });
   }
   for (const option of select.options) {
     const item = document.createElement('button'); item.type = 'button'; item.tabIndex = -1; item.setAttribute('role', 'option');

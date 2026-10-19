@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.0.0-alpha.2 · 2026-10-19
+
+- Línies de compàs opcionals, desactivades per defecte i homogènies per a tots els pentagrames. Entre 1 i 16 compassos iguals per fila, amb una línia de tancament a la dreta i sense afegir cap línia d’obertura a l’esquerra.
+- Tipus simple, doble o discontinu, amb gruix independent de les línies del pentagrama (0,05–0,60 mm). La línia final conserva el mateix tipus i tot el traç queda dins del marge dret.
+- Unions opcionals contínues o discontínues entre pentagrames del mateix grup o bloc. No travessen la separació entre blocs, conjunts ni pàgines; els grups parcials i els blocs de veus i piano conserven els seus límits.
+- Un únic desplegable al sidebar, amb activació, camps numèrics compactes amb unitats i selectors del mateix estil animat i accessible que el format de paper. Les unions queden desactivades quan no hi ha pentagrames agrupats. Els menús es tradueixen també quan es canvia l’idioma sense recarregar.
+- Les opcions s’inclouen a les plantilles personals, la persistència local, Restableix i desfer/refer. Codis P5 per recrear i compartir els fulls amb compassos, inclosos marges i espai superior; els fulls sense compassos continuen generant P2–P4 i es mantenen els codis anteriors.
+- Mòdul propi de geometria de compassos que alimenta l’escena vectorial comuna. SVG, impressió i PDF utilitzen els mateixos traços, gruixos i patrons de discontinuïtat. Les excepcions per pàgina hereten les altres opcions de compassos del document.
+- Comprovació dels límits horitzontals en continguts molt estrets; «Ajusta al full» pot reduir el nombre de compassos sense alterar marges, tipus ni gruix. Un document invàlid no es pot imprimir ni exportar parcialment.
+- Resum del footer als deu idiomes, documentació i proves de compatibilitat, geometria, sortides vectorials, referències, grups, blocs, plantilles, historial i documents de diverses pàgines. Publicació limitada a la branca experimental i al repositori auxiliar de previsualització.
+
 ## 2.0.0-alpha.1 · 2026-10-19
 
 - Primera versió experimental de la branca `codex/v2-modular-engine`, desenvolupada en una còpia de treball separada de `main` i sense canvis a pentagrama.page.

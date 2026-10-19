@@ -1,9 +1,16 @@
 {
   "date": "2026-10-19",
   "changes": [
-    "release20Engine"
+    "release20Barlines"
   ],
   "history": [
+    {
+      "version": "2.0.0-alpha.1",
+      "date": "2026-10-19",
+      "changes": [
+        "release20Engine"
+      ]
+    },
     {
       "version": "1.17.2",
       "date": "2026-10-18",

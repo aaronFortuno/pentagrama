@@ -1,4 +1,4 @@
-import { normalizeSettings } from './settings.js?v=2.0.0-alpha.1';
+import { normalizeSettings } from './settings.js?v=2.0.0-alpha.2';
 
 export const DOCUMENT_SCHEMA_VERSION = 2;
 export const MAX_DOCUMENT_PAGES = 32;
@@ -44,7 +44,8 @@ export function normalizeDocument(value = {}) {
   return { schemaVersion: DOCUMENT_SCHEMA_VERSION, pages: pages.map((page, index) => {
     if (!page || typeof page !== 'object') throw new Error('invalidDocumentPage');
     const id = identity(page.id, `page-${index + 1}`, used);
-    const settings = normalizeSettings(explicit ? { ...normalizeSettings(value.settings), ...page.settings } : page.settings);
+    const common = normalizeSettings(value.settings);
+    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines } } : page.settings);
     const localId = node => node.id.split('/').at(-1);
     const identities = page.identities || (Array.isArray(page.systems) ? { systems: page.systems.map(system => ({ id: localId(system), blocks: system.blocks.map(block => ({ id: localId(block), staves: block.staves.map(staff => ({ id: localId(staff) })) })) })) } : undefined);
     return { id, settings, systems: structure(settings, id, identities) };

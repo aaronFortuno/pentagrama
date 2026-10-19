@@ -1,6 +1,7 @@
-import { FOOTER_SIZE } from './constants.js?v=2.0.0-alpha.1';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.0-alpha.1';
-import { footerLines } from './footers.js?v=2.0.0-alpha.1';
+import { FOOTER_SIZE } from './constants.js?v=2.0.0-alpha.2';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.0-alpha.2';
+import { footerLines } from './footers.js?v=2.0.0-alpha.2';
+import { barlinesFit } from './barlines.js?v=2.0.0-alpha.2';
 
 export function layoutPage(value) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
@@ -28,5 +29,5 @@ export function layoutPage(value) {
       if (system < s.systems - 1) y += s.systemGap;
     }
   }
-  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves: positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing)), valid: needed <= available + 1e-6 && right > left && count <= 256, overflow: Math.max(0, needed - available) };
+  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves: positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing)), valid: needed <= available + 1e-6 && right > left && count <= 256 && barlinesFit(s, right - left), overflow: Math.max(0, needed - available) };
 }

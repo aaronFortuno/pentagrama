@@ -102,6 +102,14 @@ select{cursor:pointer}
 .distribution-fields>div{min-width:0}
 .distribution-fields select{height:36px;font-size:11px;padding:8px 6px}
 .range-field+.range-field{margin-top:14px}
+.barlines-options{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows var(--motion-duration) var(--motion-ease),opacity var(--motion-duration) var(--motion-ease)}
+.barlines-options[data-enabled=true]{grid-template-rows:1fr;opacity:1}
+.barlines-options>div{min-height:0;overflow:hidden}
+.barlines-fields{min-width:0;margin:0;padding:10px 0 0;border:0;display:grid;gap:10px}
+.barlines-fields .two-fields{margin:0;align-items:end}.barlines-fields .two-fields>div{min-width:0}
+.barlines-fields .select-trigger{height:34px;padding:6px 8px;font-size:11px;gap:5px}
+.barlines-fields .select-trigger [data-select-value]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.barlines-fields .field-hint{margin:0}
 .measurement{display:flex;align-items:center;gap:3px;flex-shrink:0;width:78px;border:1px solid #d8ddcf;border-radius:4px;background:#fcfcf8;padding-right:7px;color:#737e67}
 .measurement input[type=number]{width:100%;border:0;background:transparent;padding:5px 2px 5px 5px;font-size:11px;text-align:right;font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}
 .measurement input::-webkit-inner-spin-button,.measurement input::-webkit-outer-spin-button{appearance:none;margin:0}

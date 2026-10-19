@@ -4,13 +4,14 @@ Paper pautat a mida per escriure música a mà. Configura el full, comprova’l 
 
 **[Obre Pentagrama →](https://pentagrama.page/)**
 
-> Aquesta branca (`codex/v2-modular-engine`) prepara **2.0.0-alpha.1**. La versió estable continua a `main`. La [previsualització experimental](https://aaronfortuno.github.io/pentagrama-preview/) es publica en un repositori auxiliar, sense modificar pentagrama.page. Vegeu el [motor v2](documentation/engine-v2.md).
+> Aquesta branca (`codex/v2-modular-engine`) prepara **2.0.0-alpha.2**. La versió estable continua a `main`. La [previsualització experimental](https://aaronfortuno.github.io/pentagrama-preview/) es publica en un repositori auxiliar, sense modificar pentagrama.page. Vegeu el [motor v2](documentation/engine-v2.md).
 
 ## Què hi pots fer
 
 - Preparar fulls **A3, A4 i Letter**, en vertical o horitzontal.
 - Ajustar el nombre de pentagrames, el gruix de les línies, l’interlineat i l’espai superior.
 - Agrupar pentagrames o crear blocs amb separacions diferents, per exemple per a veus i piano o famílies instrumentals.
+- Afegir opcionalment compassos simples, dobles o discontinus, amb quantitat, gruix i unions entre pentagrames del mateix grup o bloc.
 - Partir de plantilles suggerides, desar-ne de pròpies i compartir configuracions amb un enllaç.
 - Desfer i refer els canvis de configuració amb les fletxes o les dreceres de teclat.
 - Explorar el full amb zoom i imprimir-lo o desar-lo com a PDF des del diàleg del navegador.

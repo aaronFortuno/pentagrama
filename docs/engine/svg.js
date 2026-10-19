@@ -3,7 +3,7 @@ const escape = text => String(text).replaceAll('&', '&amp;').replaceAll('<', '&l
 export function renderSvgPage(page) {
   if (page.scene.some(element => !['line', 'text'].includes(element.kind))) throw new Error('unsupportedSceneElement');
   const { width, height } = page.frame;
-  const lines = page.scene.filter(element => element.kind === 'line').map(line => `<line x1="${line.x1}" x2="${line.x2}" y1="${line.y1.toFixed(5)}" y2="${line.y2.toFixed(5)}"${line.strokeWidth !== page.layout.thickness ? ` stroke-width="${line.strokeWidth}"` : ''}/>`).join('');
+  const lines = page.scene.filter(element => element.kind === 'line').map(line => `<line x1="${line.x1}" x2="${line.x2}" y1="${line.y1.toFixed(5)}" y2="${line.y2.toFixed(5)}"${line.strokeWidth !== page.layout.thickness ? ` stroke-width="${line.strokeWidth}"` : ''}${line.dash?.length ? ` stroke-dasharray="${line.dash.join(' ')}"` : ''}/>`).join('');
   const texts = page.scene.filter(element => element.kind === 'text').map(text => {
     const color = `#${text.gray.toString(16).repeat(3)}`;
     return `<text x="${text.x}" y="${text.y}" text-anchor="${text.anchor}" font-family="'Pentagrama Footer',serif" font-size="${text.fontSize}" font-weight="100" style="font-kerning:none;font-variant-ligatures:none" fill="${color}">${escape(text.text)}</text>`;
