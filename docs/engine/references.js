@@ -1,5 +1,5 @@
-import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.0.0-alpha.3';
-import { normalizeSettings } from './settings.js?v=2.0.0-alpha.3';
+import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.0.0-alpha.4';
+import { normalizeSettings } from './settings.js?v=2.0.0-alpha.4';
 
 const styles = { single: 'S', double: 'D', dashed: 'H' }, connections = { none: 'N', solid: 'S', dashed: 'D' };
 const clefCodes = { none: 'N', treble: 'G', bass: 'F', alto: 'A', tenor: 'T' };

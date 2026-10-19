@@ -1,5 +1,5 @@
-import { normalizeSettings } from './settings.js?v=2.0.0-alpha.3';
-import { clefForStaff } from './clefs.js?v=2.0.0-alpha.3';
+import { normalizeSettings } from './settings.js?v=2.0.0-alpha.4';
+import { clefForStaff } from './clefs.js?v=2.0.0-alpha.4';
 
 export const DOCUMENT_SCHEMA_VERSION = 2;
 export const MAX_DOCUMENT_PAGES = 32;

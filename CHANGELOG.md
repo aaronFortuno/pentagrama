@@ -1,5 +1,14 @@
 # Canvis
 
+## 2.0.0-alpha.4 · 2026-10-19
+
+- Sidebar reorganitzat en cinc apartats: Full, Pentagrames, Claus i compassos, Peu del full i Codi de configuració. El format, l’orientació, els marges i l’espai superior extra comparteixen Full; la distribució i el traç dels pentagrames comparteixen Pentagrames.
+- Una sola fila fixa amb Imprimeix i les icones de desfer, refer i restablir, amb noms accessibles i indicacions en passar-hi per sobre. El títol El teu full es conserva per a lectors de pantalla. Amplada del sidebar lleugerament incrementada fins a 270–288 px en desktop/tablet.
+- Un sol apartat obert alhora, inicialment Pentagrames. L’últim apartat obert o el tancament de tots es recorda localment, independentment de la plantilla, l’historial o el codi de configuració. Les capçaleres replegades mostren format i orientació, nombre de pentagrames i estat de la notació.
+- L’apartat obert aprofita l’alçada restant. Els controls de distribució mantenen el selector Senzilla/Per blocs visible i una única zona de desplaçament per a continguts llargs, inclòs el traç. Full i notació utilitzen separacions interiors simples, sense nous desplegables ni scrolls imbricats; mòbil conserva el desplaçament natural.
+- Format Letter localitzat a Carta i als equivalents dels deu idiomes en el selector, les dimensions, les miniatures, les descripcions accessibles i les guies. El valor intern LETTER i els codis anteriors es mantenen.
+- Transicions de 220 ms, controls i geometria d’impressió preservats; els menús flotants es tanquen quan es canvia d’apartat. Resum de la versió traduït als deu idiomes i publicació limitada a la previsualització experimental.
+
 ## 2.0.0-alpha.3 · 2026-10-19
 
 - El gruix dels compassos segueix per defecte el de les línies del pentagrama. «Auto» permet desvincular-lo i ajustar-lo en mm; tornar a activar-lo recupera el seguiment. Les configuracions antigues amb gruix absolut mantenen el resultat original.

@@ -1,30 +1,30 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.3';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.3';
-import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.3';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.3';
-import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.3';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.3';
-import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.3';
-import { analytics } from './analytics.js?v=2.0.0-alpha.3';
-import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.3';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.3';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.3';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.3';
-import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.3';
-import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.3';
-import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.3';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.3';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.3';
-import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.3';
-import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.3';
-import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.3';
-import { createDocument } from './engine/document.js?v=2.0.0-alpha.3';
-import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.3';
-import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.3';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.3';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.0-alpha.4';
+import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.0-alpha.4';
+import { LANGUAGES, detectLanguage, translate } from './i18n.js?v=2.0.0-alpha.4';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.0-alpha.4';
+import { iconMarkup, renderIcons } from './icons.js?v=2.0.0-alpha.4';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.0-alpha.4';
+import { bindTouchRange } from './touch-range.js?v=2.0.0-alpha.4';
+import { analytics } from './analytics.js?v=2.0.0-alpha.4';
+import { createLogoNote } from './logo-note.js?v=2.0.0-alpha.4';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.0-alpha.4';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.0-alpha.4';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.0-alpha.4';
+import { createResetBaseline } from './settings-baseline.js?v=2.0.0-alpha.4';
+import { enhanceNumberInputs } from './number-input.js?v=2.0.0-alpha.4';
+import { bindSelectControl } from './select-control.js?v=2.0.0-alpha.4';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.0.0-alpha.4';
+import { bindSiteDialogs } from './site-chrome.js?v=2.0.0-alpha.4';
+import { bindMarginsControl } from './margins-control.js?v=2.0.0-alpha.4';
+import { bindClefsControl } from './clefs-control.js?v=2.0.0-alpha.4';
+import { bindBarlinesControl } from './barlines-control.js?v=2.0.0-alpha.4';
+import { createDocument } from './engine/document.js?v=2.0.0-alpha.4';
+import { renderSvgPage } from './engine/svg.js?v=2.0.0-alpha.4';
+import { renderPrintDocument } from './engine/print.js?v=2.0.0-alpha.4';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.0-alpha.4';
 
 const $ = id => document.getElementById(id);
-const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1';
+const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
 function read(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }
 function write(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
 let settings = normalizeSettings(read(SETTINGS_KEY, read('pentagrama.settings.v1', DEFAULTS)));
@@ -47,6 +47,7 @@ const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl
 const t = (key, variables) => translate(language, key, { version: RELEASE.version, ...variables });
 const number = value => new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
 const staffCount = count => t(count === 1 ? 'oneStaff' : 'staffCount', { n: count });
+const paperName = paper => paper === 'LETTER' ? t('paperLetter') : paper;
 
 function toast(message) {
   $('toast').textContent = message; $('toast').classList.add('visible');
@@ -181,7 +182,7 @@ function renderLibrary(animate = true) { const change = () => {
     const wrapper = node('div', 'template-card'), load = node('button', 'template-load'); load.type = 'button'; load.dataset.action = 'load'; load.dataset.id = template.id; load.dataset.suggested = String(isSuggested); load.setAttribute('aria-label', name);
     wrapper.dataset.motionKey = `${isSuggested ? 'suggested' : 'saved'}-${template.id}`;
     const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false, source: false }).replace('aria-hidden="true">', 'aria-hidden="true"><rect width="100%" height="100%" fill="#fff"/>');
-    const copy = node('span', 'template-copy'), detail = node('span', 'template-description', `${s.paper === 'LETTER' ? 'Letter' : s.paper} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`);
+    const copy = node('span', 'template-copy'), detail = node('span', 'template-description', `${paperName(s.paper)} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`);
     detail.id = `template-details-${detailIndex++}`; load.setAttribute('aria-describedby', detail.id); copy.append(node('span', 'template-name', name), detail);
     load.append(thumbnail, copy);
     const actions = node('div', 'template-actions'), share = icon('share-2', `${t('share')}: ${name}`, 'share', 0), remove = icon('trash', `${t('remove')}: ${name}`, 'delete', 0);
@@ -215,11 +216,15 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1; $('system-gap-field').hidden = settings.systems === 1;
   $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
   const sheet = renderSvgPage(page); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = score.valid ? renderPrintDocument(score) : '';
-  $('preview-paper').setAttribute('aria-label', `${settings.paper} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}${settings.barlines.enabled ? ` · ${t('measuresPerStaff')}: ${number(settings.barlines.measures)}` : ''}${settings.clefs.enabled ? ` · ${t('clefs')}: ${settings.clefs.mode === 'uniform' ? t(`clef_${settings.clefs.type}`) : t('clefPattern')}` : ''}`);
+  $('preview-paper').setAttribute('aria-label', `${paperName(settings.paper)} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}${settings.barlines.enabled ? ` · ${t('measuresPerStaff')}: ${number(settings.barlines.measures)}` : ''}${settings.clefs.enabled ? ` · ${t('clefs')}: ${settings.clefs.mode === 'uniform' ? t(`clef_${settings.clefs.type}`) : t('clefPattern')}` : ''}`);
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
   $('layout-summary').textContent = `${staffCount(layout.count)} · ${grouping} · ${number(settings.thickness)} mm`;
   $('layout-summary').title = $('layout-summary').textContent;
-  $('paper-dimensions').textContent = `${settings.paper === 'LETTER' ? 'Letter' : settings.paper} · ${number(layout.width)} × ${number(layout.height)} mm`;
+  $('paper-dimensions').textContent = `${paperName(settings.paper)} · ${number(layout.width)} × ${number(layout.height)} mm`;
+  $('page-settings-value').textContent = `${paperName(settings.paper)} · ${t(settings.orientation)}`;
+  $('staves-settings-value').textContent = number(layout.count);
+  $('staves-settings-value').title = `${staffCount(layout.count)} · ${grouping}`;
+  $('notation-settings-value').textContent = t(settings.clefs.enabled || settings.barlines.enabled ? 'settingsNotationOn' : 'settingsNotationOff');
   $('layout-warning').hidden = layout.valid; $('print-button').disabled = !layout.valid;
   $('fit-button').disabled = !createLayout(fitSettings(settings)).valid;
   document.documentElement.style.setProperty('--page-width', `${layout.width}mm`); document.documentElement.style.setProperty('--page-height', `${layout.height}mm`);
@@ -411,10 +416,14 @@ $('templates-panel').addEventListener('click', event => {
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
 bindSiteDialogs({ t, copy, toast });
 const settingsAccordion = $('settings-accordion'), settingsDetails = new Map();
+const rememberedSection = read(SIDEBAR_KEY, 'staves-settings');
+const activeSection = rememberedSection === null || [...settingsAccordion.children].some(details => details.id === rememberedSection) ? rememberedSection : 'staves-settings';
 for (const details of settingsAccordion.children) {
+  details.open = details.id === activeSection;
   settingsDetails.set(details, bindAnimatedDetails(details, { onOpen() {
     for (const [other, controller] of settingsDetails) if (other !== details) controller.setOpen(false);
-  } }));
+    closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close();
+  }, onChange(opening) { write(SIDEBAR_KEY, opening ? details.id : null); } }));
 }
 // Reserve every heading before giving the open section the remaining height.
 // Only its contents scroll when a long block layout exceeds the viewport.

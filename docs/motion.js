@@ -41,7 +41,7 @@ export function showPopover(element, visible) {
   animate(element, [from, visible ? { opacity: 1, transform: 'none' } : { opacity: 0, transform: 'translateY(-6px) scale(.98)' }], () => { element.hidden = !visible; });
 }
 
-export function bindAnimatedDetails(details, { onOpen } = {}) {
+export function bindAnimatedDetails(details, { onOpen, onChange } = {}) {
   const summary = details.querySelector('summary'), content = document.createElement('div');
   content.className = 'details-content';
   while (summary.nextSibling) content.append(summary.nextSibling);
@@ -52,6 +52,7 @@ export function bindAnimatedDetails(details, { onOpen } = {}) {
     if (expanded === opening) return;
     expanded = opening;
     if (opening) onOpen?.();
+    onChange?.(opening);
     const from = details.open ? content.getBoundingClientRect().height : 0;
     const opacity = details.open ? getComputedStyle(content).opacity : 0;
     details.open = true; details.dataset.motion = opening ? 'opening' : 'closing'; content.style.overflow = 'hidden';

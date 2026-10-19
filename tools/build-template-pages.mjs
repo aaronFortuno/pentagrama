@@ -29,7 +29,7 @@ export function renderTemplatePage(locale, homepage, guide, generatorHTML) {
   const alternates = Object.keys(LANGUAGES).map(code => `<link rel="alternate" hreflang="${code}" href="${escape(new URL(route(code), site).href)}">`).join('\n');
   const facts = template => {
     const settings = suggestedTemplateSettings(template, key => translate(locale, key)), layout = createLayout(settings);
-    return `${settings.paper === 'LETTER' ? 'Letter' : settings.paper} · ${t('staffCount', { n: layout.count })} · ${t('lineSpacing')}: ${new Intl.NumberFormat(locale).format(settings.lineSpacing)} mm`;
+    return `${settings.paper === 'LETTER' ? t('paperLetter') : settings.paper} · ${t('staffCount', { n: layout.count })} · ${t('lineSpacing')}: ${new Intl.NumberFormat(locale).format(settings.lineSpacing)} mm`;
   };
   const editorLink = template => escape(`./${locale}/${templateEditorURL(locale, template, homepage).hash}`);
   const card = template => {
