@@ -1,7 +1,8 @@
-import { FOOTER_GRAY, FOOTER_SIZE } from './constants.js?v=2.1.2';
-import { footerLines } from './footers.js?v=2.1.2';
-import { createBarlines } from './barlines.js?v=2.1.2';
-import { createClefs } from './clefs.js?v=2.1.2';
+import { FOOTER_GRAY, FOOTER_SIZE } from './constants.js?v=2.2.0';
+import { footerLines } from './footers.js?v=2.2.0';
+import { createBarlines } from './barlines.js?v=2.2.0';
+import { createClefs } from './clefs.js?v=2.2.0';
+import { headerContent } from './page-text.js?v=2.2.0';
 
 // A physical, renderer-independent display list. Both SVG and PDF consume
 // these exact coordinates; renderers do not calculate staff positions.
@@ -12,9 +13,10 @@ export function createScene(layout, systems, pageId, referenceSettings) {
     x1: layout.left, x2: layout.right, y1: y, y2: y, stroke: '#000', strokeWidth: layout.thickness,
   })));
   elements.push(...createBarlines(layout, systems), ...createClefs(layout, systems));
+  headerContent(layout).elements.forEach((element, index) => elements.push({ id: `${pageId}/headers/header-${index + 1}`, ownerId: pageId, ...element }));
   footerLines(layout, referenceSettings).forEach((footer, index) => elements.push({
     id: `${pageId}/footers/footer-${index + 1}`, kind: 'text', ownerId: pageId, ...footer,
-    fontSize: FOOTER_SIZE, gray: FOOTER_GRAY,
+    fontSize: footer.fontSize ?? FOOTER_SIZE, gray: FOOTER_GRAY,
   }));
   return elements;
 }

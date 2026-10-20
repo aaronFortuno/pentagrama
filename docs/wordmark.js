@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=2.1.2';
+import { motionOptions } from './motion.js?v=2.2.0';
 
 // The red period lives outside both labels and is never replaced or faded out.
 export function createWordmark(home, trigger) {

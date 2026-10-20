@@ -1,28 +1,29 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.1.2';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.1.2';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.1.2';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.1.2';
-import { iconMarkup, renderIcons } from './icons.js?v=2.1.2';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.1.2';
-import { bindTouchRange } from './touch-range.js?v=2.1.2';
-import { analytics } from './analytics.js?v=2.1.2';
-import { createLogoNote } from './logo-note.js?v=2.1.2';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.1.2';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.1.2';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.1.2';
-import { createResetBaseline } from './settings-baseline.js?v=2.1.2';
-import { enhanceNumberInputs } from './number-input.js?v=2.1.2';
-import { bindSelectControl } from './select-control.js?v=2.1.2';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.1.2';
-import { bindSiteDialogs } from './site-chrome.js?v=2.1.2';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.1.2';
-import { bindClefsControl } from './clefs-control.js?v=2.1.2';
-import { bindBarlinesControl } from './barlines-control.js?v=2.1.2';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.1.2';
-import { createDocument } from './engine/document.js?v=2.1.2';
-import { renderSvgPage } from './engine/svg.js?v=2.1.2';
-import { renderPrintDocument } from './engine/print.js?v=2.1.2';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.1.2';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.2.0';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.2.0';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.2.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.2.0';
+import { iconMarkup, renderIcons } from './icons.js?v=2.2.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.2.0';
+import { bindTouchRange } from './touch-range.js?v=2.2.0';
+import { analytics } from './analytics.js?v=2.2.0';
+import { createLogoNote } from './logo-note.js?v=2.2.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.2.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.2.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.2.0';
+import { createResetBaseline } from './settings-baseline.js?v=2.2.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.2.0';
+import { bindSelectControl } from './select-control.js?v=2.2.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.2.0';
+import { bindSiteDialogs } from './site-chrome.js?v=2.2.0';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.2.0';
+import { bindPageTextControl } from './page-text-control.js?v=2.2.0';
+import { bindClefsControl } from './clefs-control.js?v=2.2.0';
+import { bindBarlinesControl } from './barlines-control.js?v=2.2.0';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.2.0';
+import { createDocument } from './engine/document.js?v=2.2.0';
+import { renderSvgPage } from './engine/svg.js?v=2.2.0';
+import { renderPrintDocument } from './engine/print.js?v=2.2.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.2.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -212,7 +213,9 @@ function renderLibrary(animate = true) { const change = () => {
 }; if (animate && templatesOpen) animateReflow($('templates-library'), change); else change(); }
 
 function render({ blocks = false, templates = false, record = true } = {}) {
-  settings = editorSettings(settings); score = createDocument(settings);
+  settings = editorSettings(settings);
+  if (settings.pageText.nameDate) settings.pageText.language = language;
+  score = createDocument(settings);
   const page = score.pages[0]; layout = page.layout;
   if (record) settingsHistory?.record(settings, { group: historyGroup });
   $('undo-button').disabled = !settingsHistory?.canUndo; $('redo-button').disabled = !settingsHistory?.canRedo;
@@ -259,7 +262,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
-  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
+  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); pageTextControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
   write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
 }
 
@@ -318,7 +321,7 @@ function restoreLocation() {
   const changedHash = location.hash !== handledHash;
   if (!changedHash && nextLanguage === language) return;
   const restored = !changedHash || restoreFromHash();
-  language = nextLanguage; closeLanguageMenu(); translatePage(); render({ blocks: true, templates: true });
+  language = nextLanguage; closeLanguageMenu(); translatePage(); render({ blocks: true, templates: true, record: changedHash });
   if (changedHash) toast(t(restored ? 'restored' : 'invalidRef'));
 }
 
@@ -333,7 +336,7 @@ $('language-menu').addEventListener('click', event => {
   closeLanguageMenu(true); languageChoice = button.dataset.language; language = detectLanguage(languageChoice); write(LANGUAGE_KEY, languageChoice);
   const url = languageURL(language, location.href, siteRoot);
   if (url.href !== location.href) history.pushState(null, '', url);
-  translatePage(); render({ blocks: true, templates: true });
+  translatePage(); render({ blocks: true, templates: true, record: false });
 });
 $('language-menu').addEventListener('keydown', event => {
   const buttons = [...$('language-menu').querySelectorAll('[data-language]')], index = buttons.indexOf(document.activeElement);
@@ -352,7 +355,7 @@ document.addEventListener('pointerdown', event => { if (languageOpen && !event.t
 // A drag or a field edit is one step; discrete buttons remain separate steps.
 const settingsPanel = document.querySelector('.settings');
 settingsPanel.addEventListener('input', event => {
-  if (event.target.matches('input[type=range],input[type=number],input[data-field=label]')) historyGroup = event.target;
+  if (event.target.matches('input[type=range],input[type=number],input[data-field=label],.page-text-field')) historyGroup = event.target;
 }, true);
 for (const type of ['change', 'focusout', 'pointercancel', 'lostpointercapture']) settingsPanel.addEventListener(type, finishHistoryGroup);
 $('undo-button').addEventListener('click', () => travelHistory('undo'));
@@ -365,6 +368,7 @@ const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('pa
 const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); } });
 const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); } });
 const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
+const pageTextControl = bindPageTextControl({ read: () => settings, change: patch => update('pageText', { ...settings.pageText, ...patch, language }) });
 $('toggle-duplex').addEventListener('click', () => update('duplex', { ...settings.duplex, enabled: !settings.duplex.enabled }));
 $('first-page-only').addEventListener('change', event => update('duplex', { ...settings.duplex, firstPageOnly: event.target.checked }));
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
@@ -504,7 +508,9 @@ mobileWorkspace = bindMobileWorkspace({ t, onOpen() {
   closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close();
 }, onClose() { paperControl.close(); barlinesControl.close(); clefsControl.close(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
-restoreFromHash({ initial: true }); settingsHistory = createSettingsHistory(settings); renderIcons(); translatePage(); render({ blocks: true, templates: true });
+restoreFromHash({ initial: true });
+if (settings.pageText.nameDate) settings.pageText.language = language;
+settingsHistory = createSettingsHistory(settings); renderIcons(); translatePage(); render({ blocks: true, templates: true });
 const logoPlayer = createGlockenspiel(), logoNote = createLogoNote($('logo-note'), { interactive: false });
 connectLogoSound($('logo-note'), { player: logoPlayer });
 melodyDiscovery = createMelodyDiscovery({ button: $('logo-note'), note: logoNote, player: logoPlayer,

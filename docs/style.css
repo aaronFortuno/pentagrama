@@ -1,15 +1,16 @@
 @charset "UTF-8";
 @font-face{font-family:"Pentagrama Footer";src:url("./vendor/noto-serif-thin.woff2") format("woff2");font-style:normal;font-weight:100;font-display:block}
+@font-face{font-family:"Pentagrama Text";src:url("./vendor/noto-serif-extralight.woff2") format("woff2");font-style:normal;font-weight:200;font-display:block}
 :root{--bg:#f6f5f1;--ink:#292d29;--muted:#737b6b;--line:#dedfd8;--accent:#bd4932;--panel:#eeeee8;--motion-duration:220ms;--motion-ease:cubic-bezier(.2,.7,.2,1);font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none;--page-width:210mm;--page-height:297mm}
 .template-catalog-link{margin-left:12px;color:inherit;font-size:inherit;text-underline-offset:3px}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{overflow:hidden}
-button,input,select{font:inherit}
+button,input,select,textarea{font:inherit}
 button{cursor:pointer;color:inherit}
 button:disabled{cursor:default;opacity:.4}
 button,a,input,select,summary{-webkit-tap-highlight-color:transparent}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 h1,h2,h3,p{margin:0}
 svg{display:block}
 button,a{transition:background var(--motion-duration) var(--motion-ease),color var(--motion-duration) var(--motion-ease),box-shadow var(--motion-duration) var(--motion-ease)}
@@ -186,6 +187,14 @@ input[type=range]::-moz-range-thumb{width:8px;height:8px;border:3px solid var(--
 .switch input:focus-visible+.switch-track{outline:2px solid var(--accent);outline-offset:4px}
 .footer-options .switch-row+.switch-row{margin-top:12px}
 .footer-options .switch{align-self:flex-start;margin-top:1px}
+.page-text-fields{display:grid;gap:10px}
+.page-text-fields label{display:block;margin-bottom:5px}
+.page-text-fields textarea{display:block;min-height:56px;max-height:130px;resize:vertical;width:100%;border:1px solid #d8ddcf;border-radius:4px;background:#fcfcf8;color:#4c5542;padding:8px 10px;font-size:12px;line-height:1.5}
+.footer-options .header-options-heading{margin-bottom:10px}
+.header-options-heading .settings-subheading{margin:0}
+.header-options-heading .inline-check{font-size:10px;font-weight:400}
+.footer-options .name-date-row{margin-top:10px}
+.footer-options .footer-switches{margin-top:12px}
 .details-content{display:flow-root}
 .reference-row{display:flex;align-items:center;background:#eff1e7;border:1px dashed #d4dbc8;border-radius:4px;padding:3px;margin-top:14px;gap:3px}
 .reference-row input{border:0;background:transparent;font:10px ui-monospace,monospace;padding:7px 4px;color:#7b886a}

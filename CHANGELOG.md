@@ -1,5 +1,15 @@
 # Canvis
 
+## 2.2.0 · 2026-10-20
+
+- Apartat Capçalera i peu de pàgina: títol, instruccions amb salts de línia, fila opcional per escriure nom i data, i peu de text personalitzat. Tots els camps són opcionals i buits per defecte. Els controls d’adreça del web i referència continuen disponibles.
+- La fila de nom i data es localitza als deu idiomes del web. El nom ocupa aproximadament tres quartes parts de l’amplada útil i la data la resta, amb separació pròpia i línies fines per emplenar a mà. El contingut escrit per l’usuari es conserva literalment; només es tradueixen les etiquetes de nom/data.
+- Mòduls separats de configuració, tipografia i composició física dels textos. El motor ajusta les línies llargues a l’amplada útil, reserva l’espai de capçalera i evita col·lisions amb pentagrames, claus i peu. L’espai superior extra actua com a mínim d’aquesta reserva, sense sumar dues vegades un espai ja previst per al títol. El document no s’imprimeix si alguna pàgina no hi cap.
+- En doble cara, capçalera només a l’anvers per defecte, independent de l’espai superior extra. Es pot repetir a les dues cares; el peu personalitzat és comú a totes dues i segueix els marges reflectits. El text propi pot aparèixer sol o junt amb l’adreça i la referència, en files que no se superposen.
+- Font local Noto Serif ExtraLight 200 per als textos nous, amb accents europeus, grec, ciríl·lic i puntuació. Mateixes mètriques i contorns a SVG, impressió i PDF; PDF Unicode amb font compartida incrustada, mapa de caràcters i text recuperable. La font i la sortida dels peus anteriors es mantenen intactes. Procedència fixada, checksum, llicència OFL i generador reproduïble.
+- Codis P8 amb contingut UTF-8, majúscules/minúscules, paràgrafs, idioma de les etiquetes i opcions de capçalera. Compatibilitat P1–P7 preservada; biblioteca local, compartir, desfer/refer i restablir conserven els camps nous. Els codis impresos en diverses files també es poden enganxar amb salts de línia. Els textos no s’envien a l’analítica.
+- Resum del footer als deu idiomes i historial anterior preservat. Proves de formats, idiomes, reserva d’espai, proporció nom/data, doble cara, referències, persistència, escapament, fonts i exportació. Paritat dels fulls anteriors comprovada sense opcions noves actives.
+
 ## 2.1.2 · 2026-10-20
 
 - Vista de llibre homogènia en escriptori i tauleta, també en orientació vertical. L’ajust prioritza l’altura disponible de l’anvers i, quan les dues pàgines no hi caben, manté l’anvers sencer a la dreta amb el desbordament a l’esquerra. Si l’amplada és el límit, es conserva una part del revers visible. En mòbil es manté l’anvers al 86% de l’amplada útil.

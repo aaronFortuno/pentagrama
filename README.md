@@ -16,9 +16,11 @@ La versió **2.0.0** incorpora claus i compassos opcionals, una configuració m�
 - Partir de plantilles suggerides, desar-ne de pròpies i compartir configuracions amb un enllaç.
 - Desfer i refer els canvis de configuració amb les fletxes o les dreceres de teclat.
 - Preparar anvers i revers amb espai superior només a la primera cara i marges interiors/exteriors per enquadernar.
+- Crear activitats amb títol, instruccions i espais per al nom i la data, traduïts a l’idioma del web i amb més espai per al nom.
+- Escriure un peu personalitzat, per exemple amb el nom d’una escola de música; repetir la capçalera o mostrar-la només a l’anvers.
 - Explorar el full amb zoom i imprimir-lo o desar-lo com a PDF des del diàleg del navegador.
 
-Per defecte, el full només conté les línies dels pentagrames. Pots afegir-hi voluntàriament una referència de configuració o l’adreça del web al peu.
+Per defecte, el full només conté les línies dels pentagrames. Tots els textos són opcionals, inclosos una referència de configuració o l’adreça del web al peu. Els textos propis es conserven a les plantilles i als enllaços compartits.
 
 És gratuït i no requereix compte. Les plantilles pròpies es desen en aquest navegador, sense sincronització entre dispositius. La interfície està disponible en català, castellà, anglès, alemany, francès, italià, portuguès, neerlandès, euskara i galego.
 

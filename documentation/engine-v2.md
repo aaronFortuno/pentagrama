@@ -11,10 +11,12 @@ La geometria es calcula en mil·límetres. Els renderitzadors consumeixen una es
 | Mòdul a `docs/engine/` | Responsabilitat |
 |---|---|
 | `constants.js`, `settings.js` | Formats, valors inicials i normalització de les opcions existents |
-| `references.js` | Codis P1–P6 i fragments d’enllaços compartits |
+| `references.js` | Codis P1–P8 i fragments d’enllaços compartits |
 | `model.js` | Pàgines, conjunts, blocs i pentagrames amb identitats |
 | `page-layout.js`, `fit.js` | Distribució física i ajust explícit quan el contingut no hi cap |
 | `footers.js`, `typography.js` | Peus opcionals i mesures tipogràfiques |
+| `page-text-settings.js`, `page-text.js` | Textos normalitzats, idiomes de nom/data, composició de capçalera i reserva física |
+| `page-font.js`, `page-font-pdf.js` | Mètriques Unicode, salts de línia i recursos PDF amb text recuperable |
 | `document.js`, `scene.js` | Composició del document i escena comuna en mm |
 | `clefs.js`, `path-data.js` | Resolució dels patrons, límits dels glifs, traçats vectorials i validació compartida |
 | `barlines.js` | Límits dels compassos, traços dobles, patrons discontinus i unions dins de cada bloc |
@@ -127,3 +129,15 @@ Els codis P7 afegeixen `-DF.N`, `-DF.M`, `-DA.N` o `-DA.M`: F/A indica espai sup
 No hi ha encara dades de notes, pulsacions ni edició de partitures. Les primitives desconegudes fallen explícitament fins que cada sortida les admeti. Les futures opcions han d’actualitzar el model i la geometria compartits abans d’afegir controls; no han de dibuixar elements exclusius del preview.
 
 La [publicació experimental](deployment.md#previsualització-de-la-branca-2x) utilitza un paquet separat. La versió estable es publica des de `main` després de la revisió local.
+
+## Capçalera i peu personalitzats · 2.2.0
+
+`settings.pageText` conté `{ title:'', instructions:'', nameDate:false, firstPageOnly:true, language:'ca', footer:'' }`. Títol, instruccions i peu admeten 100, 500 i 160 caràcters, respectivament. Es normalitzen a Unicode NFC, sense controls; els espais finals es mantenen per no interrompre l’edició i els salts de paràgraf d’instruccions es conserven. Els camps buits no afegeixen primitives ni canvien el full anterior.
+
+`headerContent()` reparteix títol, paràgrafs i fila de nom/data dins dels marges. Un 74% de l’amplada disponible entre camps es reserva al nom i un 26% a la data, separats per 8 mm. Les etiquetes impreses es resolen als deu idiomes, amb l’idioma actual de la interfície durant l’edició i l’idioma desat per a consumidors del motor. El contingut de l’usuari no es tradueix. La reserva superior és el màxim entre l’altura real de capçalera i l’espai superior extra; s’hi afegeix l’extensió de les claus.
+
+La capçalera es pot ometre al revers, sense afectar el peu compartit ni l’opció independent de limitar l’espai superior extra a l’anvers. Les pàgines explícites hereten i poden sobreescriure parcialment `pageText`. El peu de text propi es reparteix en files independents de l’adreça i la referència; la seva altura es reserva abans dels pentagrames. Si no hi cap, impressió i PDF es bloquegen per a tot el document.
+
+P8 incorpora al final un bloc `-Q` amb una tupla JSON UTF-8 codificada en base64url (sensible a majúscules/minúscules). Conserva textos, paràgrafs, opcions i idioma. La resta de la geometria continua amb les regles P2–P7. El descodificador valida estructura, tipus, límits i representació canònica abans d’acceptar-la. Els codis sense textos nous mantenen el seu format antic. Compartir conserva també els noms dels blocs; els dos peus d’un document de dues cares codifiquen els ajustos comuns.
+
+Els textos nous utilitzen Noto Serif ExtraLight 200, generada amb el mateix origen fixat que la font antiga. SVG i PDF comparteixen amplades, mides i salts de línia. El PDF incrusta un únic recurs Unicode Type0 amb el TrueType, `CIDToGIDMap` i `ToUnicode`; els accents i els textos són seleccionables i recuperables. La font ASCII Thin dels peus antics es manté sense canvis. Els programes binaris del PDF no formen part de les dependències inicials de la interfície. Els textos romanen al navegador i als enllaços creats expressament; l’analítica continua excloent fragments, noms i continguts.

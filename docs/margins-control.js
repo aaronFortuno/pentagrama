@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=2.1.2';
+import { motionOptions } from './motion.js?v=2.2.0';
 
 export const MARGIN_AXES = Object.freeze({ horizontal: ['marginLeft', 'marginRight'], vertical: ['marginTop', 'marginBottom'] });
 export const asymmetricMargins = settings => Object.values(MARGIN_AXES).some(([first, second]) => settings[first] !== settings[second]);

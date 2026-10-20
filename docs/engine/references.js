@@ -1,5 +1,6 @@
-import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.1.2';
-import { normalizeSettings } from './settings.js?v=2.1.2';
+import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.2.0';
+import { normalizeSettings } from './settings.js?v=2.2.0';
+import { hasPageText, encodePageText, decodePageText } from './page-text-settings.js?v=2.2.0';
 
 const styles = { single: 'S', double: 'D', dashed: 'H' }, connections = { none: 'N', solid: 'S', dashed: 'D' };
 const clefCodes = { none: 'N', treble: 'G', bass: 'F', alto: 'A', tenor: 'T' };
@@ -10,41 +11,46 @@ export function encodeReference(value) {
   const s = normalizeSettings(value);
   const customMargins = Object.entries(DEFAULT_MARGINS).some(([key, value]) => s[key] !== value);
   const margins = customMargins ? `-M${[s.marginTop, s.marginRight, s.marginBottom, s.marginLeft].join('.')}` : '';
-  const prefix = `P${s.duplex.enabled ? 7 : s.clefs.enabled || s.barlines.enabled && s.barlines.thicknessMode === 'staff' ? 6 : s.barlines.enabled ? 5 : customMargins ? 4 : s.topSpace ? 3 : 2}-${s.paper === 'LETTER' ? 'LT' : s.paper}-${s.orientation === 'landscape' ? 'L' : 'P'}-I${Math.round(s.lineSpacing * 10)}-T${Math.round(s.thickness * 100)}${s.topSpace ? `-H${s.topSpace}` : ''}${margins}`;
+  const personalized = hasPageText(s.pageText);
+  const prefix = `P${personalized ? 8 : s.duplex.enabled ? 7 : s.clefs.enabled || s.barlines.enabled && s.barlines.thicknessMode === 'staff' ? 6 : s.barlines.enabled ? 5 : customMargins ? 4 : s.topSpace ? 3 : 2}-${s.paper === 'LETTER' ? 'LT' : s.paper}-${s.orientation === 'landscape' ? 'L' : 'P'}-I${Math.round(s.lineSpacing * 10)}-T${Math.round(s.thickness * 100)}${s.topSpace ? `-H${s.topSpace}` : ''}${margins}`;
   const distribution = s.mode === 'simple' ? `-N${s.count}-G${s.group}-E${Math.round(s.spacing * 10)}` : `-S${s.systems}-J${Math.round(s.systemGap * 10)}-B${s.blocks.map(b => `${b.count}.${Math.round(b.inside * 10)}.${Math.round(b.after * 10)}`).join('_')}`;
   const bars = s.barlines;
   const clefs = s.clefs, key = clefs.enabled ? `-K${clefs.mode === 'uniform' ? 'U' : 'P'}.${clefCodes[clefs.type]}${clefs.mode === 'pattern' ? s.mode === 'simple' ? `.S.${patternCode(clefs.pattern)}` : `.B.${s.blocks.map(block => patternCode(block.clefs || [])).join('_')}` : ''}` : '';
-  return `${prefix}${distribution}${bars.enabled ? `-V${bars.measures}.${styles[bars.style]}.${bars.thicknessMode === 'staff' ? 'A' : Math.round(bars.thickness * 100)}.${connections[bars.connect]}` : ''}${key}${s.duplex.enabled ? `-D${s.duplex.firstPageOnly ? 'F' : 'A'}.${s.duplex.mirrorMargins ? 'M' : 'N'}` : ''}`;
+  return `${prefix}${distribution}${bars.enabled ? `-V${bars.measures}.${styles[bars.style]}.${bars.thicknessMode === 'staff' ? 'A' : Math.round(bars.thickness * 100)}.${connections[bars.connect]}` : ''}${key}${s.duplex.enabled ? `-D${s.duplex.firstPageOnly ? 'F' : 'A'}.${s.duplex.mirrorMargins ? 'M' : 'N'}` : ''}${personalized ? '-Q' + encodePageText(s.pageText) : ''}`;
 }
 
 export function decodeReference(text) {
-  if (typeof text !== 'string' || text.length > 1600) throw new Error('invalidRef');
-  const code = text.trim().toUpperCase();
+  if (typeof text !== 'string' || text.length > 12000) throw new Error('invalidRef');
+  const source = text.trim().replace(/\s+/g, '');
+  const separator = source.toUpperCase().startsWith('P8-') ? source.toUpperCase().indexOf('-Q') : -1;
+  const payload = separator >= 0 ? source.slice(separator + 2) : undefined;
+  const code = (separator >= 0 ? source.slice(0, separator) : source).toUpperCase();
   const old = /^P1-N(\d{1,2})-G(\d{1,2})-E(\d{2})-T(\d{1,2})$/.exec(code);
   if (old) {
     const [, n, g, e, t] = old.map((v, i) => i ? Number(v) : v);
     if (n < 1 || n > 24 || (g !== 0 && (g < 2 || g >= n)) || e < 12 || e > 40 || t < 5 || t > 50) throw new Error('invalidRef');
     return normalizeSettings({ ...DEFAULTS, count: n, group: g, spacing: e / 10, thickness: t / 100 });
   }
-  const match = /^P([234567])-(A4|A3|LT)-(P|L)-I(\d{2})-T(\d{1,2})(?:-H(\d{1,3}))?(?:-M(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))?-(.+)$/.exec(code);
+  const match = /^P([2345678])-(A4|A3|LT)-(P|L)-I(\d{2})-T(\d{1,2})(?:-H(\d{1,3}))?(?:-M(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))?-(.+)$/.exec(code);
   if (!match) throw new Error('invalidRef');
   const [, version, paper, orientation, interline, thickness, topSpace, marginTop, marginRight, marginBottom, marginLeft, tail] = match;
   if (version === '2' && (topSpace !== undefined || marginTop !== undefined) || version === '3' && (topSpace === undefined || marginTop !== undefined) || version === '4' && marginTop === undefined) throw new Error('invalidRef');
   let raw = { ...DEFAULTS, paper: paper === 'LT' ? 'LETTER' : paper, orientation: orientation === 'L' ? 'landscape' : 'portrait', lineSpacing: Number(interline) / 10, thickness: Number(thickness) / 100, topSpace: Number(topSpace || 0) };
   if (marginTop !== undefined) Object.assign(raw, { marginTop: Number(marginTop), marginRight: Number(marginRight), marginBottom: Number(marginBottom), marginLeft: Number(marginLeft) });
   let suffix = tail, clefPatterns;
-  if (version === '7') {
+  if (version === '8') { try { raw.pageText = decodePageText(payload); } catch { throw new Error('invalidRef'); } }
+  if (version === '7' || version === '8' && suffix.includes('-D')) {
     const sides = /^(.*)-D([FA])\.([MN])$/.exec(suffix);
     if (!sides) throw new Error('invalidRef');
     suffix = sides[1]; raw.duplex = { enabled: true, firstPageOnly: sides[2] === 'F', mirrorMargins: sides[3] === 'M' };
   }
-  if ((version === '6' || version === '7') && suffix.includes('-K')) {
+  if (['6', '7', '8'].includes(version) && suffix.includes('-K')) {
     const key = /^(.*)-K([UP])\.([NGFAT])(?:\.([SB])\.([INGFAT0_]+))?$/.exec(suffix);
     if (!key || (key[2] === 'P') !== Boolean(key[4])) throw new Error('invalidRef');
     suffix = key[1]; raw.clefs = { enabled: true, type: fromCode(clefCodes, key[3]), mode: key[2] === 'P' ? 'pattern' : 'uniform' };
     if (key[4]) clefPatterns = { mode: key[4], values: key[5].split('_').map(chunk => chunk === '0' ? [] : [...chunk].map(code => code === 'I' ? null : fromCode(clefCodes, code))) };
   }
-  if (version === '5' || (version === '6' || version === '7') && suffix.includes('-V')) {
+  if (version === '5' || ['6', '7', '8'].includes(version) && suffix.includes('-V')) {
     const bars = /^(.*)-V(\d{1,2})\.([SDH])\.(A|\d{1,2})\.([NSD])$/.exec(suffix);
     if (!bars || version === '5' && bars[4] === 'A') throw new Error('invalidRef');
     suffix = bars[1]; raw.barlines = { enabled: true, measures: Number(bars[2]), style: fromCode(styles, bars[3]), thicknessMode: bars[4] === 'A' ? 'staff' : 'custom', ...(bars[4] === 'A' ? {} : { thickness: Number(bars[4]) / 100 }), connect: fromCode(connections, bars[5]) };
@@ -67,7 +73,7 @@ export function decodeReference(text) {
     }
   }
   const normalized = normalizeSettings(raw);
-  if (encodeReference(normalized) !== code) throw new Error('invalidRef');
+  if (encodeReference(normalized) !== code + (payload !== undefined ? '-Q' + payload : '')) throw new Error('invalidRef');
   return normalized;
 }
 
