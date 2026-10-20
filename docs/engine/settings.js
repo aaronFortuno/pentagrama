@@ -1,5 +1,5 @@
-import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.1.1';
-import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.1.1';
+import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.1.2';
+import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.1.2';
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;

@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.1.2 · 2026-10-20
+
+- Vista de llibre homogènia en escriptori i tauleta, també en orientació vertical. L’ajust prioritza l’altura disponible de l’anvers i, quan les dues pàgines no hi caben, manté l’anvers sencer a la dreta amb el desbordament a l’esquerra. Si l’amplada és el límit, es conserva una part del revers visible. En mòbil es manté l’anvers al 86% de l’amplada útil.
+- Etiquetes Senars · Anvers i Parells · Revers, sense numeració 1/2. Ombra central d’enquadernació discreta, coordinada amb el zoom i el desplaçament. Etiquetes i ombra pertanyen només a la previsualització: no alteren el document, les referències ni la impressió anvers–revers.
+- Botó de doble cara amb mida exterior i espaiat homogenis amb els botons d’orientació, també en mòbil; icona a la mateixa escala i estats de color coherents. Es corregeix la regla genèrica que el reduïa a 30 px.
+- Opció d’espai superior només a l’anvers integrada a la fila del títol i la mida, amb etiqueta visible Anvers i indicació completa accessible i emergent. Disponible sempre en doble cara, sense ocupar una fila pròpia.
+- Resum del footer als deu idiomes, historial preservat i proves d’ajust, desbordament, desplaçament i recuperació de la vista en pantalles estretes i amples, sense modificar la geometria impresa.
+
 ## 2.1.1 · 2026-10-20
 
 - Control de doble cara compacte amb la icona local Book Open de Lucide i indicador 1/2, a la mateixa fila que el format i l’orientació. Es retiren la fila Una cara / Dues cares, la indicació del diàleg d’impressió i l’interruptor independent d’enquadernació.

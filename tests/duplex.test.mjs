@@ -108,17 +108,35 @@ test('the editor uses binding margins automatically without losing legacy P7 ref
   assert.equal(encodeReference(decodeReference(encodeReference(editable))), encodeReference(editable));
 });
 
-test('desktop spreads fit side by side and portrait tablet spreads fit vertically', () => {
+test('desktop and portrait tablet use a height-fitted book view, keeping the front fully visible', () => {
   const pages = [{ width: 210, height: 297 }, { width: 210, height: 297 }];
   for (const [screen, viewport, mode] of [[{ width: 1280, height: 720 }, { width: 850, height: 530 }, 'row'],
-    [{ width: 900, height: 1280 }, { width: 550, height: 1080 }, 'column']]) {
+    [{ width: 900, height: 1280 }, { width: 550, height: 1080 }, 'row']]) {
     assert.equal(spreadMode(screen), mode);
     const view = spreadView(pages, viewport, 1, undefined, { mode, labelHeight: 22 });
-    assert.ok(view.width <= viewport.width + 1e-6); assert.ok(view.height <= viewport.height + 1e-6);
-    assert.equal(mode === 'row' ? view.pages[1].top : view.pages[1].left, mode === 'row' ? 22 : 0);
-    assert.ok(mode === 'row' ? view.pages[0].left > view.pages[1].width : view.pages[1].top - 22 > view.pages[0].top + view.pages[0].height);
+    assert.ok(view.height <= viewport.height + 1e-6);
+    assert.equal(view.pages[1].top, 22);
+    assert.ok(view.pages[0].left > view.pages[1].width);
+    assert.ok(view.left + view.pages[0].left >= 0);
+    assert.ok(view.left + view.pages[0].left + view.pages[0].width <= viewport.width + 1e-6);
+    near(view.pages[0].height, Math.min(viewport.height - 22, viewport.width * .9 / 210 * 297));
+    if (view.width > viewport.width) near(view.left + view.width, viewport.width);
     for (const frame of view.pages) { assert.ok(frame.top >= 22); assert.ok(frame.top + frame.height <= view.height + 1e-6); }
     near(view.x, 0); near(view.y, 0);
+  }
+});
+
+test('desktop book overflow stays on the left and can be panned to either page at every zoom', () => {
+  for (const page of [{ width: 210, height: 297 }, { width: 420, height: 297 }]) {
+    const viewport = { width: 480, height: 650 }, pages = [page, page], options = { mode: 'row', labelHeight: 22 };
+    const fitted = spreadView(pages, viewport, 1, undefined, options);
+    assert.ok(fitted.left < 0); assert.equal(fitted.canPan, true);
+    for (const zoom of [1, 2, 4]) {
+      const right = spreadView(pages, viewport, zoom, { x: -99999, y: 0 }, options);
+      const left = spreadView(pages, viewport, zoom, { x: 99999, y: 0 }, options);
+      near(right.left + right.width, viewport.width); near(left.left, 0);
+    }
+    assert.deepEqual(spreadView(pages, viewport, 1, undefined, options), fitted);
   }
 });
 
