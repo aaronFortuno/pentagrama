@@ -110,11 +110,13 @@ Només per regenerar aquests recursos, cal Python amb FontTools de `tools/requir
 
 `settings.duplex` conté `{ enabled:false, firstPageOnly:true, mirrorMargins:false }`. El mòdul `sides.js` deriva dues pàgines quan s’activa: l’anvers conserva els ajustos originals i el revers pot ometre `topSpace` i intercanviar `marginLeft`/`marginRight`. Amb marges reflectits, aquests camps representen interior/exterior del llibre, enquadernat a l’esquerra de l’anvers. Cap altre ajust canvia entre cares.
 
+Des de la 2.1.1, l’editor aplica marges reflectits automàticament quan es trien dues cares: `bookMargins()` adapta els ajustos entrants, inclosos els codis P7 antics sense reflexió. L’API del motor continua admetent les dues variants. «Ajusta cada costat» controla només la granularitat dels camps, i els eixos agrupats continuen disponibles.
+
 Les pàgines derivades conserven `referenceSettings`, una còpia de la plantilla compartida. La geometria del peu i la seva escena calculen el mateix codi de configuració per a totes dues cares; un codi imprès al revers també recupera el document complet. Les pàgines explícites continuen resolent les seves excepcions individualment.
 
 Els codis P7 afegeixen `-DF.N`, `-DF.M`, `-DA.N` o `-DA.M`: F/A indica espai superior només al front o a totes dues cares, N/M indica marges normals o reflectits. El sufix segueix els compassos i les claus opcionals. Sense dues cares s’utilitzen els codis anteriors, i els ajustos inactius es conserven només a les instantànies locals.
 
-`spreadView()` calcula la disposició de pantalla sense alterar cap dimensió impresa: fila en escriptori, columna en pantalles verticals de més de 760 px i fila parcial en mòbil. En aquesta última vista, cada pàgina ocupa inicialment el 86% de l’amplada útil i la transformació inicial mostra el principi de l’anvers. El conjunt comparteix zoom i desplaçament limitat als extrems dels fulls.
+`spreadView()` calcula la disposició de pantalla sense alterar cap dimensió impresa: vista de llibre en escriptori (revers a l’esquerra, anvers a la dreta), columna en pantalles verticals de més de 760 px (anvers primer) i fila parcial en mòbil. En aquesta última vista, cada pàgina ocupa inicialment el 86% de l’amplada útil; la transformació inicial enfoca l’anvers a la dreta i deixa entreveure el revers a l’esquerra. El conjunt comparteix zoom i desplaçament limitat als extrems dels fulls. Les anotacions 1 · Anvers i 2 · Revers tenen espai de pantalla reservat amb `labelHeight`, fora del paper. Els índexs de les pàgines i l’ordre d’impressió continuen sent anvers–revers.
 
 ## Següents ampliacions
 

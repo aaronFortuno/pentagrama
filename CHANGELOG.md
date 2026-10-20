@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.1.1 · 2026-10-20
+
+- Control de doble cara compacte amb la icona local Book Open de Lucide i indicador 1/2, a la mateixa fila que el format i l’orientació. Es retiren la fila Una cara / Dues cares, la indicació del diàleg d’impressió i l’interruptor independent d’enquadernació.
+- Marges agrupats per eixos, amb Ajusta cada costat sempre disponible. En dues cares, la vista granular mostra Interior i Exterior i reflecteix automàticament els marges al revers. En una cara conserva Esquerre i Dret. Els codis P7 anteriors continuen sent llegibles; l’editor adapta els de dues cares a aquest criteri sense alterar el descodificador ni les pàgines explícites del motor.
+- Previsualització de llibre: revers (2) a l’esquerra i anvers (1) a la dreta, amb anotacions discretes que no s’imprimeixen. La tauleta vertical manté l’anvers sobre el revers, identificats; en mòbil Ajusta enfoca l’anvers i deixa entreveure el revers a l’esquerra. Les etiquetes tenen espai reservat perquè no es retallin ni se superposin al paper. L’ordre d’impressió i PDF continua sent anvers–revers.
+- Bloc Sobre l’autor · Aarón Fortuño al diàleg V4V, amb la fotografia aportada per l’autor al costat del text. Mides coordinades amb el QR en escriptori i mòbil, també a la guia de plantilles i als seus idiomes.
+- Resum de la versió traduït als deu idiomes, historial anterior preservat i comprovacions de l’ordre visual, l’accés mòbil a les dues cares, la impressió i la compatibilitat de marges i referències.
+
 ## 2.1.0 · 2026-10-20
 
 - Opció Una cara / Dues cares a Full, amb configuració compartida. El document de dues cares conté anvers i revers com a pàgines físiques independents del mateix format, tant en impressió com en PDF. Una indicació breu recorda seleccionar doble cara al diàleg d’impressió; el web no modifica les preferències de la impressora.

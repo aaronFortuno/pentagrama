@@ -1,35 +1,36 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.1.0';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.1.0';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.1.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.1.0';
-import { iconMarkup, renderIcons } from './icons.js?v=2.1.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.1.0';
-import { bindTouchRange } from './touch-range.js?v=2.1.0';
-import { analytics } from './analytics.js?v=2.1.0';
-import { createLogoNote } from './logo-note.js?v=2.1.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.1.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.1.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.1.0';
-import { createResetBaseline } from './settings-baseline.js?v=2.1.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.1.0';
-import { bindSelectControl } from './select-control.js?v=2.1.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.1.0';
-import { bindSiteDialogs } from './site-chrome.js?v=2.1.0';
-import { bindMarginsControl } from './margins-control.js?v=2.1.0';
-import { bindClefsControl } from './clefs-control.js?v=2.1.0';
-import { bindBarlinesControl } from './barlines-control.js?v=2.1.0';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.1.0';
-import { createDocument } from './engine/document.js?v=2.1.0';
-import { renderSvgPage } from './engine/svg.js?v=2.1.0';
-import { renderPrintDocument } from './engine/print.js?v=2.1.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.1.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.1.1';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.1.1';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.1.1';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.1.1';
+import { iconMarkup, renderIcons } from './icons.js?v=2.1.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.1.1';
+import { bindTouchRange } from './touch-range.js?v=2.1.1';
+import { analytics } from './analytics.js?v=2.1.1';
+import { createLogoNote } from './logo-note.js?v=2.1.1';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.1.1';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.1.1';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.1.1';
+import { createResetBaseline } from './settings-baseline.js?v=2.1.1';
+import { enhanceNumberInputs } from './number-input.js?v=2.1.1';
+import { bindSelectControl } from './select-control.js?v=2.1.1';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.1.1';
+import { bindSiteDialogs } from './site-chrome.js?v=2.1.1';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.1.1';
+import { bindClefsControl } from './clefs-control.js?v=2.1.1';
+import { bindBarlinesControl } from './barlines-control.js?v=2.1.1';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.1.1';
+import { createDocument } from './engine/document.js?v=2.1.1';
+import { renderSvgPage } from './engine/svg.js?v=2.1.1';
+import { renderPrintDocument } from './engine/print.js?v=2.1.1';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.1.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
 function read(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }
 function write(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
-let settings = normalizeSettings(read(SETTINGS_KEY, read('pentagrama.settings.v1', DEFAULTS)));
-const resetBaseline = createResetBaseline(read(BASELINE_KEY, DEFAULTS));
+function editorSettings(value) { return bookMargins(normalizeSettings(value)); }
+let settings = editorSettings(read(SETTINGS_KEY, read('pentagrama.settings.v1', DEFAULTS)));
+const resetBaseline = createResetBaseline(editorSettings(read(BASELINE_KEY, DEFAULTS)));
 let handledHash;
 let library = normalizeLibrary(read(LIBRARY_KEY, {}));
 let languageChoice = read(LANGUAGE_KEY, 'auto');
@@ -99,7 +100,8 @@ function fitPreview() {
   const width = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
   const height = stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
   const fitWidth = mode === 'peek';
-  const view = spreadView(score.pages.map(page => page.frame), { width, height }, previewZoom, previewPan, { mode, fitWidth });
+  const labelHeight = score.pages.length > 1 ? 22 : 0;
+  const view = spreadView(score.pages.map(page => page.frame), { width, height }, previewZoom, previewPan, { mode, fitWidth, labelHeight });
   previewPan = { x: view.x, y: view.y };
   const spread = $('preview-spread');
   spread.style.width = view.width + 'px'; spread.style.height = view.height + 'px';
@@ -108,7 +110,11 @@ function fitPreview() {
   view.pages.forEach((frame, index) => {
     const paper = $(index ? 'preview-back' : 'preview-paper');
     for (const key of ['left', 'top', 'width', 'height']) paper.style[key] = frame[key] + 'px';
+    const label = $(index ? 'preview-back-label' : 'preview-front-label');
+    label.hidden = score.pages.length === 1;
+    label.style.left = frame.left + 'px'; label.style.top = frame.top - labelHeight + 'px'; label.style.width = frame.width + 'px';
   });
+  $('book-view-label').hidden = score.pages.length === 1 || mode !== 'row';
   stage.dataset.zoomed = String(view.canPan); stage.dataset.spread = score.pages.length > 1 ? mode : 'single';
   const resetKey = fitWidth ? score.pages.length > 1 ? 'previewFitSides' : 'previewFitWidth' : 'previewReset';
   $('zoom-reset').dataset.aria = resetKey; $('zoom-reset').dataset.title = resetKey;
@@ -198,7 +204,7 @@ function renderLibrary(animate = true) { const change = () => {
 }; if (animate && templatesOpen) animateReflow($('templates-library'), change); else change(); }
 
 function render({ blocks = false, templates = false, record = true } = {}) {
-  settings = normalizeSettings(settings); score = createDocument(settings);
+  settings = editorSettings(settings); score = createDocument(settings);
   const page = score.pages[0]; layout = page.layout;
   if (record) settingsHistory?.record(settings, { group: historyGroup });
   $('undo-button').disabled = !settingsHistory?.canUndo; $('redo-button').disabled = !settingsHistory?.canRedo;
@@ -219,10 +225,10 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('group-size').value = settings.group; $('group-size').disabled = settings.count < 3;
   $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1; $('system-gap-field').hidden = settings.systems === 1;
   $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
-  $('one-side').setAttribute('aria-pressed', String(!settings.duplex.enabled));
-  $('two-sides').setAttribute('aria-pressed', String(settings.duplex.enabled));
-  $('duplex-hint').hidden = !settings.duplex.enabled; $('binding-option').hidden = !settings.duplex.enabled;
-  $('mirror-margins').checked = settings.duplex.mirrorMargins;
+  $('toggle-duplex').setAttribute('aria-pressed', String(settings.duplex.enabled));
+  $('duplex-count').textContent = settings.duplex.enabled ? '2' : '1';
+  $('toggle-duplex').dataset.tooltip = t(settings.duplex.enabled ? 'twoSides' : 'oneSide');
+  for (const id of ['preview-front-label', 'preview-back-label']) $(id).hidden = !settings.duplex.enabled;
   $('first-page-option').hidden = !settings.duplex.enabled || !settings.topSpace;
   $('first-page-only').checked = settings.duplex.firstPageOnly;
   for (let index = 0; index < 2; index++) {
@@ -285,7 +291,7 @@ async function copy(text) {
 }
 function selectStartingLayout(value) {
   finishHistoryGroup();
-  settings = resetBaseline.capture(value);
+  settings = resetBaseline.capture(editorSettings(value));
   const url = new URL(location.href); url.hash = encodeShareHash(settings);
   if (url.href !== location.href) history.replaceState(history.state, '', url);
   handledHash = location.hash;
@@ -295,7 +301,7 @@ function restoreFromHash({ initial = false } = {}) {
   if (initial && !handledHash) return true;
   finishHistoryGroup();
   try {
-    settings = handledHash ? resetBaseline.fromHash(handledHash, settings) : resetBaseline.capture(DEFAULTS);
+    settings = handledHash ? resetBaseline.capture(editorSettings(resetBaseline.fromHash(handledHash, settings))) : resetBaseline.capture(DEFAULTS);
     return true;
   } catch { return false; }
 }
@@ -351,8 +357,8 @@ const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('pa
 const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); } });
 const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); } });
 const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
-for (const [id, key, value] of [['one-side', 'enabled', false], ['two-sides', 'enabled', true]]) $(id).addEventListener('click', () => update('duplex', { ...settings.duplex, [key]: value }));
-for (const [id, key] of [['first-page-only', 'firstPageOnly'], ['mirror-margins', 'mirrorMargins']]) $(id).addEventListener('change', event => update('duplex', { ...settings.duplex, [key]: event.target.checked }));
+$('toggle-duplex').addEventListener('click', () => update('duplex', { ...settings.duplex, enabled: !settings.duplex.enabled }));
+$('first-page-only').addEventListener('change', event => update('duplex', { ...settings.duplex, firstPageOnly: event.target.checked }));
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));

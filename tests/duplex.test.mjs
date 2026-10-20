@@ -6,6 +6,7 @@ import { createSettingsHistory } from '../docs/settings-history.js';
 import { createResetBaseline } from '../docs/settings-baseline.js';
 import { addTemplate, normalizeLibrary } from '../docs/library.js';
 import { spreadMode, spreadView } from '../docs/preview.js';
+import { bookMargins } from '../docs/margins-control.js';
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, `${a} != ${b}`);
 
 test('two derived sides preserve common settings, resolve top space and mirror physical margins without mutation', () => {
@@ -96,33 +97,49 @@ test('explicit document pages remain explicit rather than being duplicated by du
   assert.deepEqual(normalizeSettings(null).duplex, { enabled: false, firstPageOnly: true, mirrorMargins: false });
 });
 
+test('the editor uses binding margins automatically without losing legacy P7 references or single-side margins', () => {
+  const legacy = normalizeSettings({ marginLeft: 30, marginRight: 12, duplex: { enabled: true, mirrorMargins: false } });
+  const code = encodeReference(legacy), decoded = decodeReference(code);
+  assert.equal(decoded.duplex.mirrorMargins, false);
+  const editable = bookMargins(decoded), doc = createDocument(editable);
+  assert.equal(editable.duplex.mirrorMargins, true); assert.equal(decoded.duplex.mirrorMargins, false);
+  assert.equal(doc.pages[0].layout.left, 30); assert.equal(doc.pages[1].settings.marginRight, 30);
+  assert.deepEqual(bookMargins(normalizeSettings({ ...legacy, duplex: { enabled: false } })), normalizeSettings({ ...legacy, duplex: { enabled: false } }));
+  assert.equal(encodeReference(decodeReference(encodeReference(editable))), encodeReference(editable));
+});
+
 test('desktop spreads fit side by side and portrait tablet spreads fit vertically', () => {
   const pages = [{ width: 210, height: 297 }, { width: 210, height: 297 }];
   for (const [screen, viewport, mode] of [[{ width: 1280, height: 720 }, { width: 850, height: 530 }, 'row'],
     [{ width: 900, height: 1280 }, { width: 550, height: 1080 }, 'column']]) {
     assert.equal(spreadMode(screen), mode);
-    const view = spreadView(pages, viewport, 1, undefined, { mode });
+    const view = spreadView(pages, viewport, 1, undefined, { mode, labelHeight: 22 });
     assert.ok(view.width <= viewport.width + 1e-6); assert.ok(view.height <= viewport.height + 1e-6);
-    assert.equal(mode === 'row' ? view.pages[1].top : view.pages[1].left, 0);
-    assert.ok(mode === 'row' ? view.pages[1].left > view.pages[0].width : view.pages[1].top > view.pages[0].height);
+    assert.equal(mode === 'row' ? view.pages[1].top : view.pages[1].left, mode === 'row' ? 22 : 0);
+    assert.ok(mode === 'row' ? view.pages[0].left > view.pages[1].width : view.pages[1].top - 22 > view.pages[0].top + view.pages[0].height);
+    for (const frame of view.pages) { assert.ok(frame.top >= 22); assert.ok(frame.top + frame.height <= view.height + 1e-6); }
     near(view.x, 0); near(view.y, 0);
   }
 });
 
-test('mobile starts with 86% page width and a visible back edge; both page edges stay reachable at every zoom', () => {
+test('mobile fits the right-hand front at 86% width with a visible back edge on the left; both pages remain reachable', () => {
   for (const width of [282, 352, 700]) for (const page of [{ width: 210, height: 297 }, { width: 420, height: 297 }]) {
     const viewport = { width, height: 480 }, pages = [page, page];
     assert.equal(spreadMode({ width: 390, height: 844 }), 'peek');
-    const initial = spreadView(pages, viewport, 1, undefined, { mode: 'peek' });
-    near(initial.pages[0].width / width, .86); near(initial.left, 0); near(initial.top, 0);
-    assert.ok(initial.pages[1].left < width); assert.ok(initial.pages[1].left > initial.pages[0].width);
+    const options = { mode: 'peek', labelHeight: 22 };
+    const initial = spreadView(pages, viewport, 1, undefined, options);
+    near(initial.pages[0].width / width, .86); near(initial.top, 0);
+    near(initial.left + initial.pages[0].left, width * .14);
+    near(initial.left + initial.pages[0].left + initial.pages[0].width, width);
+    assert.ok(initial.left < 0); assert.equal(initial.pages[1].left, 0);
+    assert.ok(initial.left + initial.pages[1].width > 0);
     assert.equal(initial.canPan, true);
     for (const zoom of [1, 2, 4]) {
-      const end = spreadView(pages, viewport, zoom, { x: -99999, y: -99999 }, { mode: 'peek' });
+      const end = spreadView(pages, viewport, zoom, { x: -99999, y: -99999 }, options);
       near(end.left + end.width, width); near(end.top + end.height, Math.min(480, end.height));
-      const start = spreadView(pages, viewport, zoom, { x: 99999, y: 99999 }, { mode: 'peek' });
+      const start = spreadView(pages, viewport, zoom, { x: 99999, y: 99999 }, options);
       near(start.left, 0); near(start.top, 0);
     }
-    const reset = spreadView(pages, viewport, 1, undefined, { mode: 'peek' }); assert.deepEqual(reset, initial);
+    const reset = spreadView(pages, viewport, 1, undefined, options); assert.deepEqual(reset, initial);
   }
 });

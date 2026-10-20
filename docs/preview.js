@@ -17,7 +17,7 @@ export function spreadMode({ width, height }) {
 }
 
 // A spread is one navigable surface. Physical page sizes never change here.
-export function spreadView(pages, viewport, zoom = 1, pan = { x: 0, y: 0 }, { mode = 'row', fitWidth = false } = {}) {
+export function spreadView(pages, viewport, zoom = 1, pan = { x: 0, y: 0 }, { mode = 'row', fitWidth = false, labelHeight = 0 } = {}) {
   const width = Math.max(0, viewport.width), height = Math.max(0, viewport.height);
   if (pages.length === 1) {
     const view = previewView(pages[0], viewport, zoom, pan, { fitWidth });
@@ -29,18 +29,25 @@ export function spreadView(pages, viewport, zoom = 1, pan = { x: 0, y: 0 }, { mo
   const vertical = mode === 'column', peek = mode === 'peek';
   const physicalWidth = vertical ? Math.max(...pages.map(page => page.width)) : pages.reduce((sum, page) => sum + page.width, 0) + gap * (pages.length - 1);
   const physicalHeight = vertical ? pages.reduce((sum, page) => sum + page.height, 0) + gap * (pages.length - 1) : Math.max(...pages.map(page => page.height));
-  const scale = (peek ? width * .86 / pages[0].width : Math.min(width / physicalWidth, height / physicalHeight)) * level;
-  const spreadWidth = physicalWidth * scale, spreadHeight = physicalHeight * scale;
+  const labelsHeight = labelHeight * (vertical ? pages.length : 1);
+  const scale = (peek ? width * .86 / pages[0].width : Math.min(width / physicalWidth, Math.max(0, height - labelsHeight) / physicalHeight)) * level;
+  const spreadWidth = physicalWidth * scale, spreadHeight = physicalHeight * scale + labelsHeight;
   const maxX = Math.max(0, (spreadWidth - width) / 2), maxY = Math.max(0, (spreadHeight - height) / 2);
-  const x = peek ? Math.max(Math.min(0, width - spreadWidth), Math.min(0, pan.x)) : Math.max(-maxX, Math.min(maxX, pan.x));
+  // The front is the right-hand (odd) page. A zero pan fits that page on
+  // mobile, leaving the back visible on its left; dragging right reveals it.
+  const x = peek ? Math.max(0, Math.min(Math.max(0, spreadWidth - width), pan.x)) : Math.max(-maxX, Math.min(maxX, pan.x));
   const y = peek ? Math.max(Math.min(0, height - spreadHeight), Math.min(0, pan.y)) : Math.max(-maxY, Math.min(maxY, pan.y));
   let offset = 0;
-  const frames = pages.map(page => {
+  const frames = new Array(pages.length);
+  const order = pages.map((_, index) => index);
+  if (!vertical && pages.length === 2) order.reverse();
+  order.forEach((pageIndex, index) => {
+    const page = pages[pageIndex];
     const frame = { left: vertical ? (physicalWidth - page.width) * scale / 2 : offset * scale,
-      top: vertical ? offset * scale : 0, width: page.width * scale, height: page.height * scale };
-    offset += (vertical ? page.height : page.width) + gap; return frame;
+      top: (vertical ? offset * scale + index * labelHeight : 0) + labelHeight, width: page.width * scale, height: page.height * scale };
+    offset += (vertical ? page.height : page.width) + gap; frames[pageIndex] = frame;
   });
   return { zoom: level, width: spreadWidth, height: spreadHeight, x, y,
-    left: (peek ? 0 : (width - spreadWidth) / 2) + x, top: (peek ? 0 : (height - spreadHeight) / 2) + y,
+    left: (peek ? width - spreadWidth : (width - spreadWidth) / 2) + x, top: (peek ? 0 : (height - spreadHeight) / 2) + y,
     canPan: maxX > .01 || maxY > .01, pages: frames };
 }

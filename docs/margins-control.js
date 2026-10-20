@@ -1,7 +1,11 @@
-import { motionOptions } from './motion.js?v=2.1.0';
+import { motionOptions } from './motion.js?v=2.1.1';
 
 export const MARGIN_AXES = Object.freeze({ horizontal: ['marginLeft', 'marginRight'], vertical: ['marginTop', 'marginBottom'] });
 export const asymmetricMargins = settings => Object.values(MARGIN_AXES).some(([first, second]) => settings[first] !== settings[second]);
+// The editor presents two sides as a bound sheet. Keep legacy unmirrored P7
+// references readable by the engine, but use inside/outside margins in the UI.
+export const bookMargins = settings => settings.duplex.enabled
+  ? { ...settings, duplex: { ...settings.duplex, mirrorMargins: true } } : settings;
 export function marginPatch(field, value) {
   return Object.fromEntries((MARGIN_AXES[field] || [field]).map(key => [key, value]));
 }
@@ -12,11 +16,10 @@ export function bindMarginsControl({ read, change, t }) {
   const fields = ['horizontal', 'vertical', 'Top', 'Right', 'Bottom', 'Left'];
   function refresh() {
     const settings = read(), asymmetric = asymmetricMargins(settings);
-    const mirrored = settings.duplex.enabled && settings.duplex.mirrorMargins;
+    const mirrored = settings.duplex.enabled;
     if (asymmetric && !previousAsymmetric) individual = true;
     previousAsymmetric = asymmetric;
-    $('margin-pairs').hidden = individual || mirrored; $('margin-sides').hidden = !individual && !mirrored;
-    toggle.hidden = mirrored;
+    $('margin-pairs').hidden = individual; $('margin-sides').hidden = !individual;
     for (const [side, key] of [['left', mirrored ? 'marginInside' : 'marginLeft'], ['right', mirrored ? 'marginOutside' : 'marginRight']]) {
       const label = document.querySelector(`label[for="margin-${side}"]`); label.dataset.i18n = key; label.textContent = t(key);
     }
