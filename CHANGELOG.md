@@ -1,5 +1,15 @@
 # Canvis
 
+## 2.1.0 · 2026-10-20
+
+- Opció Una cara / Dues cares a Full, amb configuració compartida. El document de dues cares conté anvers i revers com a pàgines físiques independents del mateix format, tant en impressió com en PDF. Una indicació breu recorda seleccionar doble cara al diàleg d’impressió; el web no modifica les preferències de la impressora.
+- Previsualització conjunta: fulls de costat en escriptori, apilats quan la pantalla no mòbil és vertical i de costat en mòbil. En mòbil, l’ajust inicial mostra l’anvers al 86% de l’amplada útil i una part del revers per suggerir el desplaçament horitzontal. Zoom, arrossegament i fletxes de teclat actuen sobre el conjunt; Ajusta recupera l’inici i l’escala segons la disposició.
+- Espai superior extra aplicable només a l’anvers, per defecte, o a totes dues cares. Marges d’enquadernació opcionals: Interior i Exterior substitueixen Esquerre i Dret i s’intercanvien automàticament al revers, amb enquadernació a l’esquerra de l’anvers. La configuració original es conserva en alternar opcions.
+- Mòdul de resolució de cares separat de la geometria física. Es conserven les pàgines explícites de l’API i la idempotència del document. Les referències impreses a totes dues cares recreen la mateixa plantilla completa, sense confondre els marges derivats del revers amb els ajustos originals.
+- Codis P7 per a les dues cares, compatibles amb P1–P6. Les plantilles personals, els enllaços compartits, la persistència local, Restableix i desfer/refer conserven els ajustos conjunts. Els fulls d’una cara mantenen els codis i la sortida vectorial anteriors.
+- Impressió bloquejada si alguna cara no hi cap; Ajusta al full comprova el document complet. Cap nom de cara, guia o marca de la previsualització s’afegeix als fulls impresos. Capçaleres escolars i peus personalitzats es mantenen com a ampliació posterior.
+- Controls i resum del footer als deu idiomes. Comprovacions de tots els formats i orientacions, marges reflectits, espai superior, referències, persistència, exportació de dues pàgines, ajust i navegació de la previsualització. Es manté la paritat amb els fulls anteriors.
+
 ## 2.0.1 · 2026-10-19
 
 - L’historial resumit del footer comença a la 2.0.0 i mostra només les versions d’aquesta nova etapa. Es retiren del popup les entrades 1.x, però totes les versions, dates i notes detallades continuen disponibles a CHANGELOG.md des de l’enllaç de la capçalera. Les actualitzacions futures afegiran la seva entrada resumida a partir d’aquest punt.

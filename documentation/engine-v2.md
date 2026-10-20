@@ -45,7 +45,7 @@ const score = createDocument({
 });
 ```
 
-El límit és de 32 pàgines. Cada pàgina hereta les opcions comunes i aplica les seves excepcions. `normalizeDocument()` retorna còpies independents i és idempotent. Un document creat també es pot tornar a passar a `createDocument()`. La interfície actual continua configurant **un sol full**; les futures opcions de diverses pàgines poden utilitzar aquest mateix model.
+El límit és de 32 pàgines. Cada pàgina hereta les opcions comunes i aplica les seves excepcions. `normalizeDocument()` retorna còpies independents i és idempotent. Un document creat també es pot tornar a passar a `createDocument()`. La interfície actual configura **un full d’una o dues cares**. Sense pàgines explícites, `duplex.enabled` genera anvers i revers; les pàgines explícites de l’API no es dupliquen.
 
 `document.valid` indica si totes les pàgines hi caben. El SVG pot mostrar una pàgina amb desbordament perquè la interfície n’informi; impressió i PDF rebutgen el document complet si alguna pàgina no és vàlida. No s’exporten documents parcials. Les pàgines d’impressió comparteixen exactament el SVG del preview; cada secció declara el seu format físic. El PDF admet diverses pàgines i comparteix la font incrustada entre elles.
 
@@ -106,12 +106,22 @@ Només per regenerar aquests recursos, cal Python amb FontTools de `tools/requir
 
 `tests/clefs.test.mjs` cobreix la font i la seva procedència, ancoratges, coordenades SVG/PDF, marges, espai de capçalera, col·lisions, grups parcials, blocs reordenats, patrons, persistència, P6 i herència entre pàgines. Es manté l’oracle binari per als fulls sense noves opcions.
 
+## Dues cares · 2.1.0
+
+`settings.duplex` conté `{ enabled:false, firstPageOnly:true, mirrorMargins:false }`. El mòdul `sides.js` deriva dues pàgines quan s’activa: l’anvers conserva els ajustos originals i el revers pot ometre `topSpace` i intercanviar `marginLeft`/`marginRight`. Amb marges reflectits, aquests camps representen interior/exterior del llibre, enquadernat a l’esquerra de l’anvers. Cap altre ajust canvia entre cares.
+
+Les pàgines derivades conserven `referenceSettings`, una còpia de la plantilla compartida. La geometria del peu i la seva escena calculen el mateix codi de configuració per a totes dues cares; un codi imprès al revers també recupera el document complet. Les pàgines explícites continuen resolent les seves excepcions individualment.
+
+Els codis P7 afegeixen `-DF.N`, `-DF.M`, `-DA.N` o `-DA.M`: F/A indica espai superior només al front o a totes dues cares, N/M indica marges normals o reflectits. El sufix segueix els compassos i les claus opcionals. Sense dues cares s’utilitzen els codis anteriors, i els ajustos inactius es conserven només a les instantànies locals.
+
+`spreadView()` calcula la disposició de pantalla sense alterar cap dimensió impresa: fila en escriptori, columna en pantalles verticals de més de 760 px i fila parcial en mòbil. En aquesta última vista, cada pàgina ocupa inicialment el 86% de l’amplada útil i la transformació inicial mostra el principi de l’anvers. El conjunt comparteix zoom i desplaçament limitat als extrems dels fulls.
+
 ## Següents ampliacions
 
-1. Incorporar primera pàgina i doble cara a la interfície utilitzant les pàgines i excepcions del model.
-2. Revisar els casos docents de claus i compassos i la impressió real abans de preparar la versió candidata 2.0.
+1. Incorporar capçalera escolar i peu personalitzat a la geometria i l’escena comunes.
+2. Ampliar el tractament del text abans d’incorporar contingut lliure i logotips.
 3. Valorar altres tipus de barra, la línia inicial o excepcions per pentagrama només si els casos d’ús ho justifiquen. La primera configuració de compassos ja és homogènia i no incorpora edició local de cada línia.
 
 No hi ha encara dades de notes, pulsacions ni edició de partitures. Les primitives desconegudes fallen explícitament fins que cada sortida les admeti. Les futures opcions han d’actualitzar el model i la geometria compartits abans d’afegir controls; no han de dibuixar elements exclusius del preview.
 
-La [publicació experimental](deployment.md#previsualització-de-la-branca-2x) utilitza un paquet separat. Integrar la branca a `main` queda per a una revisió posterior.
+La [publicació experimental](deployment.md#previsualització-de-la-branca-2x) utilitza un paquet separat. La versió estable es publica des de `main` després de la revisió local.

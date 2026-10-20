@@ -1,5 +1,6 @@
-import { normalizeSettings } from './settings.js?v=2.0.1';
-import { clefForStaff } from './clefs.js?v=2.0.1';
+import { normalizeSettings } from './settings.js?v=2.1.0';
+import { clefForStaff } from './clefs.js?v=2.1.0';
+import { sheetSides } from './sides.js?v=2.1.0';
 
 export const DOCUMENT_SCHEMA_VERSION = 2;
 export const MAX_DOCUMENT_PAGES = 32;
@@ -39,16 +40,17 @@ function structure(settings, pageId, identities = {}) {
 export function normalizeDocument(value = {}) {
   if (value?.schemaVersion !== undefined && value.schemaVersion !== DOCUMENT_SCHEMA_VERSION) throw new Error('unsupportedDocumentSchema');
   const explicit = value && Object.hasOwn(value, 'pages');
-  const pages = explicit ? value.pages : [{ settings: value }];
+  const pages = explicit ? value.pages : sheetSides(value);
   if (!Array.isArray(pages) || !pages.length || pages.length > MAX_DOCUMENT_PAGES) throw new Error('invalidDocumentPages');
   const used = new Set();
   return { schemaVersion: DOCUMENT_SCHEMA_VERSION, pages: pages.map((page, index) => {
     if (!page || typeof page !== 'object') throw new Error('invalidDocumentPage');
     const id = identity(page.id, `page-${index + 1}`, used);
     const common = normalizeSettings(value.settings);
-    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines }, clefs: { ...common.clefs, ...page.settings?.clefs } } : page.settings);
+    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines }, clefs: { ...common.clefs, ...page.settings?.clefs }, duplex: { ...common.duplex, ...page.settings?.duplex } } : page.settings);
     const localId = node => node.id.split('/').at(-1);
     const identities = page.identities || (Array.isArray(page.systems) ? { systems: page.systems.map(system => ({ id: localId(system), blocks: system.blocks.map(block => ({ id: localId(block), staves: block.staves.map(staff => ({ id: localId(staff) })) })) })) } : undefined);
-    return { id, settings, systems: structure(settings, id, identities) };
+    return { id, settings, systems: structure(settings, id, identities),
+      ...(page.referenceSettings ? { referenceSettings: normalizeSettings(page.referenceSettings) } : {}) };
   }) };
 }

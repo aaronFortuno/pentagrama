@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=2.0.1';
+import { motionOptions } from './motion.js?v=2.1.0';
 
 export const MARGIN_AXES = Object.freeze({ horizontal: ['marginLeft', 'marginRight'], vertical: ['marginTop', 'marginBottom'] });
 export const asymmetricMargins = settings => Object.values(MARGIN_AXES).some(([first, second]) => settings[first] !== settings[second]);
@@ -12,9 +12,14 @@ export function bindMarginsControl({ read, change, t }) {
   const fields = ['horizontal', 'vertical', 'Top', 'Right', 'Bottom', 'Left'];
   function refresh() {
     const settings = read(), asymmetric = asymmetricMargins(settings);
+    const mirrored = settings.duplex.enabled && settings.duplex.mirrorMargins;
     if (asymmetric && !previousAsymmetric) individual = true;
     previousAsymmetric = asymmetric;
-    $('margin-pairs').hidden = individual; $('margin-sides').hidden = !individual;
+    $('margin-pairs').hidden = individual || mirrored; $('margin-sides').hidden = !individual && !mirrored;
+    toggle.hidden = mirrored;
+    for (const [side, key] of [['left', mirrored ? 'marginInside' : 'marginLeft'], ['right', mirrored ? 'marginOutside' : 'marginRight']]) {
+      const label = document.querySelector(`label[for="margin-${side}"]`); label.dataset.i18n = key; label.textContent = t(key);
+    }
     toggle.setAttribute('aria-expanded', String(individual));
     toggle.textContent = t(individual ? 'pairMargins' : 'adjustMargins');
     for (const field of fields) {

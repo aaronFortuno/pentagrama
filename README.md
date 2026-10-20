@@ -15,6 +15,7 @@ La versió **2.0.0** incorpora claus i compassos opcionals, una configuració m�
 - Afegir opcionalment compassos simples, dobles o discontinus, amb quantitat, gruix i unions entre pentagrames del mateix grup o bloc.
 - Partir de plantilles suggerides, desar-ne de pròpies i compartir configuracions amb un enllaç.
 - Desfer i refer els canvis de configuració amb les fletxes o les dreceres de teclat.
+- Preparar anvers i revers amb espai superior només a la primera cara i marges interiors/exteriors per enquadernar.
 - Explorar el full amb zoom i imprimir-lo o desar-lo com a PDF des del diàleg del navegador.
 
 Per defecte, el full només conté les línies dels pentagrames. Pots afegir-hi voluntàriament una referència de configuració o l’adreça del web al peu.

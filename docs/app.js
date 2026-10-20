@@ -1,28 +1,28 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.0.1';
-import { MIN_ZOOM, MAX_ZOOM, previewView } from './preview.js?v=2.0.1';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.0.1';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.0.1';
-import { iconMarkup, renderIcons } from './icons.js?v=2.0.1';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.0.1';
-import { bindTouchRange } from './touch-range.js?v=2.0.1';
-import { analytics } from './analytics.js?v=2.0.1';
-import { createLogoNote } from './logo-note.js?v=2.0.1';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.0.1';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.0.1';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.0.1';
-import { createResetBaseline } from './settings-baseline.js?v=2.0.1';
-import { enhanceNumberInputs } from './number-input.js?v=2.0.1';
-import { bindSelectControl } from './select-control.js?v=2.0.1';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.0.1';
-import { bindSiteDialogs } from './site-chrome.js?v=2.0.1';
-import { bindMarginsControl } from './margins-control.js?v=2.0.1';
-import { bindClefsControl } from './clefs-control.js?v=2.0.1';
-import { bindBarlinesControl } from './barlines-control.js?v=2.0.1';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.0.1';
-import { createDocument } from './engine/document.js?v=2.0.1';
-import { renderSvgPage } from './engine/svg.js?v=2.0.1';
-import { renderPrintDocument } from './engine/print.js?v=2.0.1';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.0.1';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.1.0';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.1.0';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.1.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.1.0';
+import { iconMarkup, renderIcons } from './icons.js?v=2.1.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.1.0';
+import { bindTouchRange } from './touch-range.js?v=2.1.0';
+import { analytics } from './analytics.js?v=2.1.0';
+import { createLogoNote } from './logo-note.js?v=2.1.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.1.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.1.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.1.0';
+import { createResetBaseline } from './settings-baseline.js?v=2.1.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.1.0';
+import { bindSelectControl } from './select-control.js?v=2.1.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.1.0';
+import { bindSiteDialogs } from './site-chrome.js?v=2.1.0';
+import { bindMarginsControl } from './margins-control.js?v=2.1.0';
+import { bindClefsControl } from './clefs-control.js?v=2.1.0';
+import { bindBarlinesControl } from './barlines-control.js?v=2.1.0';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.1.0';
+import { createDocument } from './engine/document.js?v=2.1.0';
+import { renderSvgPage } from './engine/svg.js?v=2.1.0';
+import { renderPrintDocument } from './engine/print.js?v=2.1.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.1.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -39,7 +39,7 @@ const siteRoot = new URL('./', import.meta.url);
 document.querySelector('base').href = siteRoot.href;
 const preferredLanguage = () => detectLanguage(languageChoice, navigator.languages || [navigator.language]);
 let language = languageFromURL(location.href, siteRoot) || preferredLanguage();
-let templatesOpen = false, languageOpen = false, toastTimer, layout;
+let templatesOpen = false, languageOpen = false, toastTimer, layout, score;
 let melodyDiscovery, mobileWorkspace;
 let settingsHistory, historyGroup;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
@@ -91,24 +91,29 @@ function bindNumber(id, key) {
 }
 function updateRange(element) { element.style.setProperty('--progress', `${(Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min)) * 100}%`); }
 function fitPreview() {
-  if (!layout) return;
-  const size = `${layout.width}x${layout.height}`;
+  if (!score) return;
+  const mode = spreadMode({ width: window.innerWidth, height: window.innerHeight });
+  const size = score.pages.map(page => page.frame.width + 'x' + page.frame.height).join(':') + ':' + mode;
   if (previewSize !== size) { previewZoom = MIN_ZOOM; previewPan = { x: 0, y: 0 }; previewSize = size; }
   const stage = $('paper-stage'), style = getComputedStyle(stage);
-  const availableWidth = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-  const availableHeight = stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-  const fitWidth = window.matchMedia('(max-width:760px)').matches;
-  const view = previewView(layout, { width: availableWidth, height: availableHeight }, previewZoom, previewPan, { fitWidth });
+  const width = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  const height = stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+  const fitWidth = mode === 'peek';
+  const view = spreadView(score.pages.map(page => page.frame), { width, height }, previewZoom, previewPan, { mode, fitWidth });
   previewPan = { x: view.x, y: view.y };
-  const paper = $('preview-paper');
-  paper.style.width = `${view.width}px`; paper.style.height = `${view.height}px`;
-  paper.style.left = `${parseFloat(style.paddingLeft) + Math.max(0, availableWidth) / 2}px`;
-  paper.style.top = `${parseFloat(style.paddingTop) + (fitWidth ? view.height : Math.max(0, availableHeight)) / 2}px`;
-  paper.style.transform = `translate(-50%, -50%) translate(${view.x}px, ${view.y}px)`;
-  stage.dataset.zoomed = String(view.canPan);
-  const resetKey = fitWidth ? 'previewFitWidth' : 'previewReset';
-  $('zoom-reset').dataset.aria = resetKey; $('zoom-reset').setAttribute('aria-label', t(resetKey));
-  $('zoom-value').textContent = `${number(Math.round(previewZoom * 100))}%`;
+  const spread = $('preview-spread');
+  spread.style.width = view.width + 'px'; spread.style.height = view.height + 'px';
+  spread.style.left = parseFloat(style.paddingLeft) + view.left + 'px';
+  spread.style.top = parseFloat(style.paddingTop) + view.top + 'px';
+  view.pages.forEach((frame, index) => {
+    const paper = $(index ? 'preview-back' : 'preview-paper');
+    for (const key of ['left', 'top', 'width', 'height']) paper.style[key] = frame[key] + 'px';
+  });
+  stage.dataset.zoomed = String(view.canPan); stage.dataset.spread = score.pages.length > 1 ? mode : 'single';
+  const resetKey = fitWidth ? score.pages.length > 1 ? 'previewFitSides' : 'previewFitWidth' : 'previewReset';
+  $('zoom-reset').dataset.aria = resetKey; $('zoom-reset').dataset.title = resetKey;
+  $('zoom-reset').setAttribute('aria-label', t(resetKey)); $('zoom-reset').dataset.tooltip = t(resetKey);
+  $('zoom-value').textContent = number(Math.round(previewZoom * 100)) + '%';
   document.querySelector('.zoom-controls').dataset.orientation = settings.orientation;
   $('zoom-out').disabled = previewZoom <= MIN_ZOOM; $('zoom-in').disabled = previewZoom >= MAX_ZOOM;
 }
@@ -193,8 +198,8 @@ function renderLibrary(animate = true) { const change = () => {
 }; if (animate && templatesOpen) animateReflow($('templates-library'), change); else change(); }
 
 function render({ blocks = false, templates = false, record = true } = {}) {
-  const score = createDocument(settings), page = score.pages[0];
-  settings = page.settings; layout = page.layout;
+  settings = normalizeSettings(settings); score = createDocument(settings);
+  const page = score.pages[0]; layout = page.layout;
   if (record) settingsHistory?.record(settings, { group: historyGroup });
   $('undo-button').disabled = !settingsHistory?.canUndo; $('redo-button').disabled = !settingsHistory?.canRedo;
   setValue('paper-size', settings.paper); setValue('staff-count', settings.count);
@@ -214,18 +219,28 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('group-size').value = settings.group; $('group-size').disabled = settings.count < 3;
   $('group-spacing-control').hidden = !settings.group; $('system-gap').disabled = settings.systems === 1; $('system-gap-field').hidden = settings.systems === 1;
   $('show-reference').checked = settings.reference; $('show-source').checked = settings.source; $('current-reference').value = encodeReference(settings);
-  const sheet = renderSvgPage(page); $('preview-paper').innerHTML = sheet; $('print-root').innerHTML = score.valid ? renderPrintDocument(score) : '';
-  $('preview-paper').setAttribute('aria-label', `${paperName(settings.paper)} · ${staffCount(layout.count)} · ${t('lineSpacing')}: ${number(settings.lineSpacing)} mm${settings.topSpace ? ` · ${t('topSpace')}: ${number(settings.topSpace)} mm` : ''}${settings.barlines.enabled ? ` · ${t('measuresPerStaff')}: ${number(settings.barlines.measures)}` : ''}${settings.clefs.enabled ? ` · ${t('clefs')}: ${settings.clefs.mode === 'uniform' ? t(`clef_${settings.clefs.type}`) : t('clefPattern')}` : ''}`);
+  $('one-side').setAttribute('aria-pressed', String(!settings.duplex.enabled));
+  $('two-sides').setAttribute('aria-pressed', String(settings.duplex.enabled));
+  $('duplex-hint').hidden = !settings.duplex.enabled; $('binding-option').hidden = !settings.duplex.enabled;
+  $('mirror-margins').checked = settings.duplex.mirrorMargins;
+  $('first-page-option').hidden = !settings.duplex.enabled || !settings.topSpace;
+  $('first-page-only').checked = settings.duplex.firstPageOnly;
+  for (let index = 0; index < 2; index++) {
+    const paper = $(index ? 'preview-back' : 'preview-paper'), face = score.pages[index];
+    paper.hidden = !face; paper.innerHTML = face ? renderSvgPage(face) : '';
+    if (face) paper.setAttribute('aria-label', (settings.duplex.enabled ? t(index ? 'backSide' : 'frontSide') + ' · ' : '') + paperName(settings.paper) + ' · ' + staffCount(layout.count) + ' · ' + t('lineSpacing') + ': ' + number(settings.lineSpacing) + ' mm' + (face.settings.topSpace ? ' · ' + t('topSpace') + ': ' + number(face.settings.topSpace) + ' mm' : '') + (settings.barlines.enabled ? ' · ' + t('measuresPerStaff') + ': ' + number(settings.barlines.measures) : '') + (settings.clefs.enabled ? ' · ' + t('clefs') + ': ' + (settings.clefs.mode === 'uniform' ? t('clef_' + settings.clefs.type) : t('clefPattern')) : ''));
+  }
+  $('print-root').innerHTML = score.valid ? renderPrintDocument(score) : '';
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
   $('layout-summary').textContent = `${staffCount(layout.count)} · ${grouping} · ${number(settings.thickness)} mm`;
   $('layout-summary').dataset.tooltip = $('layout-summary').textContent;
-  $('paper-dimensions').textContent = `${paperName(settings.paper)} · ${number(layout.width)} × ${number(layout.height)} mm`;
-  $('page-settings-value').textContent = `${paperName(settings.paper)} · ${t(settings.orientation)}`;
+  $('paper-dimensions').textContent = `${paperName(settings.paper)} · ${number(layout.width)} × ${number(layout.height)} mm${settings.duplex.enabled ? ' · ' + t('twoSides') : ''}`;
+  $('page-settings-value').textContent = `${paperName(settings.paper)} · ${t(settings.orientation)}${settings.duplex.enabled ? ' · 2' : ''}`;
   $('staves-settings-value').textContent = number(layout.count);
   $('staves-settings-value').dataset.tooltip = `${staffCount(layout.count)} · ${grouping}`;
   $('notation-settings-value').textContent = t(settings.clefs.enabled || settings.barlines.enabled ? 'settingsNotationOn' : 'settingsNotationOff');
-  $('layout-warning').hidden = layout.valid; $('print-button').disabled = !layout.valid;
-  $('fit-button').disabled = !createLayout(fitSettings(settings)).valid;
+  $('layout-warning').hidden = score.valid; $('print-button').disabled = !score.valid;
+  $('fit-button').disabled = !createDocument(fitSettings(settings)).valid;
   document.documentElement.style.setProperty('--page-width', `${layout.width}mm`); document.documentElement.style.setProperty('--page-height', `${layout.height}mm`);
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
@@ -336,6 +351,8 @@ const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('pa
 const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); } });
 const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); } });
 const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
+for (const [id, key, value] of [['one-side', 'enabled', false], ['two-sides', 'enabled', true]]) $(id).addEventListener('click', () => update('duplex', { ...settings.duplex, [key]: value }));
+for (const [id, key] of [['first-page-only', 'firstPageOnly'], ['mirror-margins', 'mirrorMargins']]) $(id).addEventListener('change', event => update('duplex', { ...settings.duplex, [key]: event.target.checked }));
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
 $('portrait-button').addEventListener('click', () => update('orientation', 'portrait'));
 $('landscape-button').addEventListener('click', () => update('orientation', 'landscape'));
@@ -463,7 +480,7 @@ $('paper-stage').addEventListener('keydown', event => {
   const move = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[event.key];
   if (move) { event.preventDefault(); previewPan.x += move[0]; previewPan.y += move[1]; fitPreview(); }
 });
-$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!layout.valid) return; await document.fonts.ready; if (layout.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
+$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!score.valid) return; await document.fonts.ready; if (score.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('hashchange', restoreLocation);
 window.addEventListener('popstate', restoreLocation);

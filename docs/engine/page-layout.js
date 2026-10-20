@@ -1,13 +1,13 @@
-import { FOOTER_SIZE } from './constants.js?v=2.0.1';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.1';
-import { footerLines } from './footers.js?v=2.0.1';
-import { barlinesFit } from './barlines.js?v=2.0.1';
-import { clefMetrics, clefsFit } from './clefs.js?v=2.0.1';
+import { FOOTER_SIZE } from './constants.js?v=2.1.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.1.0';
+import { footerLines } from './footers.js?v=2.1.0';
+import { barlinesFit } from './barlines.js?v=2.1.0';
+import { clefMetrics, clefsFit } from './clefs.js?v=2.1.0';
 
-export function layoutPage(value) {
+export function layoutPage(value, { referenceSettings } = {}) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
   const clefs = clefMetrics(s);
-  const footer = footerLines(s), footerTop = footer.length ? Math.min(...footer.map(line => line.y)) - FOOTER_SIZE - 3 : height;
+  const footer = footerLines(s, referenceSettings), footerTop = footer.length ? Math.min(...footer.map(line => line.y)) - FOOTER_SIZE - 3 : height;
   const top = s.marginTop + s.topSpace + clefs.above, bottom = Math.min(height - s.marginBottom, footerTop) - clefs.below, available = bottom - top, staffHeight = s.lineSpacing * 4;
   const left = s.marginLeft, right = width - s.marginRight;
   const count = s.mode === 'blocks' ? s.systems * s.blocks.reduce((n, b) => n + b.count, 0) : s.count;

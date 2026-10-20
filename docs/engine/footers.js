@@ -1,9 +1,9 @@
-import { SERVICE_ADDRESS } from './constants.js?v=2.0.1';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.0.1';
-import { encodeReference } from './references.js?v=2.0.1';
-import { footerTextWidth } from './typography.js?v=2.0.1';
+import { SERVICE_ADDRESS } from './constants.js?v=2.1.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.1.0';
+import { encodeReference } from './references.js?v=2.1.0';
+import { footerTextWidth } from './typography.js?v=2.1.0';
 
-export function footerLines(value) {
+export function footerLines(value, referenceSettings) {
   const s = normalizeSettings(value), { width, height } = pageDimensions(s);
   const left = Math.max(2, s.marginLeft), right = width - Math.max(2, s.marginRight);
   const baseline = height - Math.min(9, Math.max(2, s.marginBottom / 2));
@@ -13,7 +13,7 @@ export function footerLines(value) {
   const stacked = right - left - reserved < 12;
   const available = Math.max(1, right - left - (stacked ? 0 : reserved));
   const chunks = []; let line = '';
-  for (const character of encodeReference(s)) {
+  for (const character of encodeReference(referenceSettings || s)) {
     if (line && footerTextWidth(line + character) > available) { chunks.push(line); line = ''; }
     line += character;
   }

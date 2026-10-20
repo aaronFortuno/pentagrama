@@ -1,5 +1,5 @@
-import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.0.1';
-import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.0.1';
+import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.1.0';
+import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.1.0';
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;
@@ -17,6 +17,7 @@ export function normalizeSettings(value = {}) {
   })) : [];
   const bars = value.barlines && typeof value.barlines === 'object' ? value.barlines : {};
   const clefs = value.clefs && typeof value.clefs === 'object' ? value.clefs : {};
+  const duplex = value.duplex && typeof value.duplex === 'object' ? value.duplex : {};
   return {
     count, group, spacing: round(numeric(value.spacing, 2.2, 1.2, 4)), thickness: Math.round(numeric(value.thickness, 0.12, 0.05, 0.5) * 100) / 100,
     reference: value.reference === true, source: value.source === true, paper: Object.hasOwn(PAPER_SIZES, value.paper) ? value.paper : 'A4', orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -31,6 +32,7 @@ export function normalizeSettings(value = {}) {
       connect: ['none', 'solid', 'dashed'].includes(bars.connect) ? bars.connect : DEFAULT_BARLINES.connect,
     },
     clefs: { enabled: clefs.enabled === true, type: CLEF_TYPES.includes(clefs.type) ? clefs.type : 'treble', mode: clefs.mode === 'pattern' ? 'pattern' : 'uniform', pattern: normalizeClefPattern(clefs.pattern, 64) },
+    duplex: { enabled: duplex.enabled === true, firstPageOnly: duplex.firstPageOnly !== false, mirrorMargins: duplex.mirrorMargins === true },
   };
 }
 
