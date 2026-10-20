@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.3.0 · 2026-10-20
+
+- Full híbrid amb una zona de notes configurable a dalt o a baix, a baix per defecte. Reserva del 10% al 70% de la zona útil, sense ocupar marges, capçalera o peu, amb 6 mm de separació respecte de la música. Les opcions comencen desactivades.
+- Pauta de notes en blanc, amb línies fines (8–12 mm), quadrícula o punts lleugers (6–10 mm). Punts i 40% de reserva com a proposta inicial, amb separació regulable. El nou apartat participa en el mateix acordió excloent i conserva la navegació compacta.
+- Mòdul físic de notes compartit pels renderitzadors: mateixes coordenades en previsualització, impressió i PDF vectorial. Compatible amb marges reflectits, doble cara, espai superior, capçaleres, claus i compassos. Es manté l’avís de falta d’espai i l’ajust automàtic de distribució.
+- Referències de geometria sense contingut ni opcions de capçalera o peu. Es conserven els paràmetres necessaris per reconstruir el layout, inclosos nombre i agrupació de pentagrames. La zona de notes afegeix només un sufix acotat de 8–9 caràcters (posició, percentatge, pauta i separació), sense hashes ni text codificat.
+- Els codis antics P1–P8 continuen sent llegibles, també els P8 amb text. Aplicar un nou codi de geometria manté els textos actuals. Les plantilles, els enllaços compartits, desfer/refer i el punt de restabliment conserven la personalització completa i el full híbrid. Els enllaços anteriors amb noms de blocs continuen funcionant.
+- Camps de títol, instruccions i peu amb suggeriments interiors i etiquetes accessibles. Alineació esquerra, centrada o dreta independent per al títol i les instruccions, amb icones oficials de Lucide. Títols de secció destacats i labels d’opció amb pes normal per millorar la jerarquia.
+- Textos i resum del footer als deu idiomes, historial anterior preservat i verificació de compatibilitat, serialització, alineacions, patrons i exportació.
+
+
 ## 2.2.0 · 2026-10-20
 
 - Apartat Capçalera i peu de pàgina: títol, instruccions amb salts de línia, fila opcional per escriure nom i data, i peu de text personalitzat. Tots els camps són opcionals i buits per defecte. Els controls d’adreça del web i referència continuen disponibles.

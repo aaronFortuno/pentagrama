@@ -1,9 +1,9 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.2.0';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.2.0';
-import { footerTextWidth } from './typography.js?v=2.2.0';
-import { validatePath } from './path-data.js?v=2.2.0';
-import { pageTextWidth } from './page-font.js?v=2.2.0';
-import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.2.0';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.3.0';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.3.0';
+import { footerTextWidth } from './typography.js?v=2.3.0';
+import { validatePath } from './path-data.js?v=2.3.0';
+import { pageTextWidth } from './page-font.js?v=2.3.0';
+import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.3.0';
 
 let fontProgram;
 function embeddedFont() {
@@ -20,13 +20,22 @@ const escapedText = text => text.replaceAll('\\', '\\\\').replaceAll('(', '\\(')
 
 function pageCommands(page) {
   let commands = `0 G ${points(page.layout.thickness)} w\n`;
-  let strokeWidth = page.layout.thickness, dash = '';
+  let strokeWidth = page.layout.thickness, dash = '', strokeGray = 0;
   for (const element of page.scene) {
     if (element.kind === 'line') {
+      const gray = element.gray ?? 0;
+      if (gray !== strokeGray) { strokeGray = gray; commands += `${(gray / 255).toFixed(5)} G\n`; }
       if (element.strokeWidth !== strokeWidth) { strokeWidth = element.strokeWidth; commands += `${points(strokeWidth)} w\n`; }
       const nextDash = (element.dash || []).map(points).join(' ');
       if (nextDash !== dash) { dash = nextDash; commands += `[${dash}] 0 d\n`; }
       commands += `${points(element.x1)} ${points(page.frame.height - element.y1)} m ${points(element.x2)} ${points(page.frame.height - element.y2)} l S\n`;
+    } else if (element.kind === 'circle') {
+      const { x, y, radius: r } = element, k = r * .552284749831;
+      commands += `${(element.gray / 255).toFixed(5)} g\n${points(x + r)} ${points(page.frame.height - y)} m\n`;
+      for (const values of [[x+r,y+k,x+k,y+r,x,y+r], [x-k,y+r,x-r,y+k,x-r,y], [x-r,y-k,x-k,y-r,x,y-r], [x+k,y-r,x+r,y-k,x+r,y]]) {
+        commands += values.map((value, index) => points(index % 2 ? page.frame.height - value : value)).join(' ') + ' c\n';
+      }
+      commands += 'h f\n';
     } else if (element.kind === 'path') {
       commands += '0 g\n';
       for (const [operation, ...values] of validatePath(element.commands)) {

@@ -1,29 +1,30 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.2.0';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.2.0';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.2.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.2.0';
-import { iconMarkup, renderIcons } from './icons.js?v=2.2.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.2.0';
-import { bindTouchRange } from './touch-range.js?v=2.2.0';
-import { analytics } from './analytics.js?v=2.2.0';
-import { createLogoNote } from './logo-note.js?v=2.2.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.2.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.2.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.2.0';
-import { createResetBaseline } from './settings-baseline.js?v=2.2.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.2.0';
-import { bindSelectControl } from './select-control.js?v=2.2.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.2.0';
-import { bindSiteDialogs } from './site-chrome.js?v=2.2.0';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.2.0';
-import { bindPageTextControl } from './page-text-control.js?v=2.2.0';
-import { bindClefsControl } from './clefs-control.js?v=2.2.0';
-import { bindBarlinesControl } from './barlines-control.js?v=2.2.0';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.2.0';
-import { createDocument } from './engine/document.js?v=2.2.0';
-import { renderSvgPage } from './engine/svg.js?v=2.2.0';
-import { renderPrintDocument } from './engine/print.js?v=2.2.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.2.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.3.0';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.3.0';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.3.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.3.0';
+import { iconMarkup, renderIcons } from './icons.js?v=2.3.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.3.0';
+import { bindTouchRange } from './touch-range.js?v=2.3.0';
+import { analytics } from './analytics.js?v=2.3.0';
+import { createLogoNote } from './logo-note.js?v=2.3.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.3.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.3.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.3.0';
+import { createResetBaseline } from './settings-baseline.js?v=2.3.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.3.0';
+import { bindSelectControl } from './select-control.js?v=2.3.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.3.0';
+import { bindSiteDialogs } from './site-chrome.js?v=2.3.0';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.3.0';
+import { bindNotesControl } from './notes-control.js?v=2.3.0';
+import { bindPageTextControl } from './page-text-control.js?v=2.3.0';
+import { bindClefsControl } from './clefs-control.js?v=2.3.0';
+import { bindBarlinesControl } from './barlines-control.js?v=2.3.0';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.3.0';
+import { createDocument } from './engine/document.js?v=2.3.0';
+import { renderSvgPage } from './engine/svg.js?v=2.3.0';
+import { renderPrintDocument } from './engine/print.js?v=2.3.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.3.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -262,7 +263,7 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
-  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); pageTextControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
+  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); pageTextControl.refresh(); notesControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
   write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
 }
 
@@ -273,7 +274,7 @@ function setTemplatesOpen(value) {
 }
 function setLanguageOpen(value, focus = 'selected') {
   if (value === languageOpen) return;
-  if (value) { paperControl.close(); barlinesControl.close(); clefsControl.close(); }
+  if (value) { paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); }
   languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
   if (value) {
     const buttons = [...$('language-menu').querySelectorAll('[data-language]')];
@@ -364,10 +365,11 @@ document.addEventListener('keydown', event => {
   const direction = historyShortcut(event);
   if (direction && !document.querySelector('dialog[open]')) { event.preventDefault(); travelHistory(direction); }
 });
-const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => { closeLanguageMenu(); barlinesControl.close(); clefsControl.close(); } });
-const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); } });
-const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); } });
+const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => { closeLanguageMenu(); barlinesControl.close(); clefsControl.close(); notesControl.close(); } });
+const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); notesControl.close(); } });
+const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); notesControl.close(); } });
 const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
+const notesControl = bindNotesControl({ read: () => settings, change: patch => update('notes', { ...settings.notes, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); } });
 const pageTextControl = bindPageTextControl({ read: () => settings, change: patch => update('pageText', { ...settings.pageText, ...patch, language }) });
 $('toggle-duplex').addEventListener('click', () => update('duplex', { ...settings.duplex, enabled: !settings.duplex.enabled }));
 $('first-page-only').addEventListener('change', event => update('duplex', { ...settings.duplex, firstPageOnly: event.target.checked }));
@@ -413,7 +415,7 @@ $('reset-button').addEventListener('click', () => {
 });
 $('restore-form').addEventListener('submit', event => {
   event.preventDefault();
-  try { const restored = decodeReference($('reference-input').value); selectStartingLayout({ ...restored, reference: settings.reference, source: settings.source }); render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
+  try { const restored = decodeReference($('reference-input').value); selectStartingLayout({ ...restored, ...(!/^P8-/i.test($('reference-input').value.trim()) ? { pageText: settings.pageText } : {}), reference: settings.reference, source: settings.source }); render({ blocks: true }); $('restore-message').textContent = t('restored'); $('restore-message').classList.remove('error'); $('reference-input').removeAttribute('aria-invalid'); }
   catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
 $('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
@@ -456,7 +458,7 @@ for (const details of settingsAccordion.children) {
   details.open = details.id === activeSection;
   settingsDetails.set(details, bindAnimatedDetails(details, { onOpen() {
     for (const [other, controller] of settingsDetails) if (other !== details) controller.setOpen(false);
-    closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close();
+    closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close();
   }, onChange(opening) { write(SIDEBAR_KEY, opening ? details.id : null); } }));
 }
 // Reserve every heading before giving the open section the remaining height.
@@ -505,8 +507,8 @@ window.addEventListener('popstate', restoreLocation);
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 mobileWorkspace = bindMobileWorkspace({ t, onOpen() {
   if (templatesOpen) setTemplatesOpen(false);
-  closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close();
-}, onClose() { paperControl.close(); barlinesControl.close(); clefsControl.close(); } });
+  closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close();
+}, onClose() { paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
 restoreFromHash({ initial: true });
 if (settings.pageText.nameDate) settings.pageText.language = language;

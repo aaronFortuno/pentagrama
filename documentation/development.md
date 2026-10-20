@@ -35,6 +35,7 @@ Les proves cobreixen la geometria dels fulls, els desbordaments, les referèncie
 | `docs/settings-baseline.js` | Punt de partida independent per restablir una plantilla sense perdre’n la configuració original |
 | `docs/number-input.js`, `docs/select-control.js` | Controls numèrics amb unitats i selector de paper accessible, amb el temps d’animació compartit |
 | `docs/clefs-control.js` | Claus comunes i excepcions per posició, amb patrons associats als blocs |
+| `docs/notes-control.js`, `docs/page-text-control.js` | Adaptadors de la zona híbrida de notes i de la capçalera/peu amb alineació independent |
 | `docs/barlines-control.js` | Controls opcionals i homogenis dels compassos, sense lògica geomètrica |
 | `docs/layout.js`, `docs/pdf.js` | Adaptadors compatibles amb els punts d’entrada de la versió 1 |
 | `docs/engine/` | Motor modular: configuració, document, geometria, escena vectorial, SVG, impressió i PDF |
@@ -60,7 +61,7 @@ La branca 2.x es descriu a [engine-v2.md](engine-v2.md). `docs/app.js` obté un 
 
 Les mides del full es calculen en mil·límetres. En mode blocs, la separació entre pentagrames es mesura de l’última línia d’un pentagrama a la primera del següent. En mode senzill, la separació entre grups és un multiplicador respecte de l’espai normal entre pentagrames. El zoom només modifica la vista en pantalla.
 
-Les referències impreses codifiquen la geometria; els enllaços compartits també conserven els noms dels blocs dins del fragment de l’adreça (`#`). Aquests noms no s’envien al servidor. Mostrar l’adreça del web o la referència al peu és una preferència local, independent de recuperar una configuració.
+Les referències impreses codifiquen la geometria; els enllaços compartits també conserven els textos de capçalera i peu, les seves opcions i els noms dels blocs dins del fragment de l’adreça (`#`). Aquest contingut no s’envia al servidor. Els codis de geometria no inclouen cap camp de capçalera ni peu; aplicar-ne un conserva els textos actuals. Els P8 antics amb textos continuen sent llegibles. Mostrar l’adreça del web o la referència al peu és una preferència local, independent de recuperar una configuració.
 
 El primer accés inicia un A4 amb 9 pentagrames sense agrupar; les sessions posteriors recuperen els ajustos locals. «Restableix» torna al punt de partida de la plantilla activa, separat de les edicions i de l’historial de desfer/refer. Aplicar una plantilla suggerida o personal, desar-ne una de nova, recuperar un codi o obrir un enllaç compartit estableix aquest punt de partida. Les edicions ordinàries i desfer/refer no el modifiquen.
 

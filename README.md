@@ -17,6 +17,7 @@ La versió **2.0.0** incorpora claus i compassos opcionals, una configuració m�
 - Desfer i refer els canvis de configuració amb les fletxes o les dreceres de teclat.
 - Preparar anvers i revers amb espai superior només a la primera cara i marges interiors/exteriors per enquadernar.
 - Crear activitats amb títol, instruccions i espais per al nom i la data, traduïts a l’idioma del web i amb més espai per al nom.
+- Combinar pentagrames amb una zona de notes, a dalt o a baix: en blanc, amb línies, quadrícula o punts suaus.
 - Escriure un peu personalitzat, per exemple amb el nom d’una escola de música; repetir la capçalera o mostrar-la només a l’anvers.
 - Explorar el full amb zoom i imprimir-lo o desar-lo com a PDF des del diàleg del navegador.
 

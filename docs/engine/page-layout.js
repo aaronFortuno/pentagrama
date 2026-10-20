@@ -1,16 +1,23 @@
-import { FOOTER_SIZE } from './constants.js?v=2.2.0';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.2.0';
-import { footerLines } from './footers.js?v=2.2.0';
-import { barlinesFit } from './barlines.js?v=2.2.0';
-import { clefMetrics, clefsFit } from './clefs.js?v=2.2.0';
-import { headerContent } from './page-text.js?v=2.2.0';
+import { FOOTER_SIZE } from './constants.js?v=2.3.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.3.0';
+import { footerLines } from './footers.js?v=2.3.0';
+import { barlinesFit } from './barlines.js?v=2.3.0';
+import { clefMetrics, clefsFit } from './clefs.js?v=2.3.0';
+import { headerContent } from './page-text.js?v=2.3.0';
 
 export function layoutPage(value, { referenceSettings } = {}) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
   const clefs = clefMetrics(s);
   const header = headerContent(s);
   const footer = footerLines(s, referenceSettings), footerTop = footer.length ? Math.min(...footer.map(line => line.y - (line.fontSize ?? FOOTER_SIZE))) - 3 : height;
-  const top = s.marginTop + Math.max(s.topSpace, header.height) + clefs.above, bottom = Math.min(height - s.marginBottom, footerTop) - clefs.below, available = bottom - top, staffHeight = s.lineSpacing * 4;
+  const contentTop = s.marginTop + Math.max(s.topSpace, header.height), contentBottom = Math.min(height - s.marginBottom, footerTop);
+  const notesHeight = s.notes.enabled ? Math.max(0, contentBottom - contentTop) * s.notes.percent / 100 : 0;
+  const notesArea = s.notes.enabled ? { left: s.marginLeft, right: width - s.marginRight,
+    top: s.notes.position === 'top' ? contentTop : contentBottom - notesHeight,
+    bottom: s.notes.position === 'top' ? contentTop + notesHeight : contentBottom } : undefined;
+  const top = (notesArea && s.notes.position === 'top' ? notesArea.bottom + 6 : contentTop) + clefs.above;
+  const bottom = (notesArea && s.notes.position === 'bottom' ? notesArea.top - 6 : contentBottom) - clefs.below;
+  const available = bottom - top, staffHeight = s.lineSpacing * 4;
   const left = s.marginLeft, right = width - s.marginRight;
   const count = s.mode === 'blocks' ? s.systems * s.blocks.reduce((n, b) => n + b.count, 0) : s.count;
   let needed, gap = 0, positions = [];
@@ -34,5 +41,5 @@ export function layoutPage(value, { referenceSettings } = {}) {
     }
   }
   const staves = positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing));
-  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves, ...(clefs.header ? { musicLeft: left + clefs.header } : {}), valid: header.valid && needed <= available + 1e-6 && right - left > clefs.header && count <= 256 && barlinesFit(s, right - left - clefs.header) && clefsFit(s, staves, clefs), overflow: Math.max(0, needed - available) };
+  return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves, ...(notesArea ? { notesArea } : {}), ...(clefs.header ? { musicLeft: left + clefs.header } : {}), valid: header.valid && needed <= available + 1e-6 && right - left > clefs.header && count <= 256 && barlinesFit(s, right - left - clefs.header) && clefsFit(s, staves, clefs), overflow: Math.max(0, needed - available) };
 }

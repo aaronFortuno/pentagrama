@@ -61,18 +61,51 @@ test('header-only front, extra top space and footer placement are independent ac
   }
 });
 
-test('P8 retains Unicode text, case, paragraphs and header options with legacy notation and named shared blocks', () => {
+test('geometry codes exclude all page text while full shares retain Unicode, alignment and named blocks', () => {
   for (const mode of ['simple', 'blocks']) for (const enabled of [true, false]) {
     const s = normalizeSettings({ mode, count: 9, group: 3, blocks: [{ label: 'Veus i piano', count: 4, inside: 10, after: 14 }], pageText: sample,
       duplex: { enabled, mirrorMargins: true }, clefs: { enabled: true }, barlines: { enabled: true, connect: 'dashed' } });
-    const code = encodeReference(s); assert.match(code, /^P8-/);
-    assert.equal(encodeReference(decodeReference(code)), code); assert.deepEqual(decodeReference(code).pageText, s.pageText);
+    const code = encodeReference(s); assert.doesNotMatch(code, /^P8-/);
+    assert.equal(encodeReference(decodeReference(code)), code); assert.equal(decodeReference(code).pageText.title, '');
+    assert.equal(encodeReference({ ...s, pageText: {} }), code);
+    assert.equal(encodeReference({ ...s, pageText: { nameDate: true, titleAlign: 'right', firstPageOnly: false, language: 'eu', footer: 'Different' }, source: true, reference: true }), code);
     assert.deepEqual(decodeShareHash(encodeShareHash(s)).pageText, s.pageText);
     if (mode === 'blocks') assert.equal(decodeShareHash(encodeShareHash(s)).blocks[0].label, 'Veus i piano');
     assert.equal(encodeReference(decodeReference(code.match(/.{1,70}/g).join('\n'))), code);
-    for (const malformed of [code.replace(/-Q.*/, ''), code + '-Qabc', code.replace(/-Q.*/, '-Q%%%%'), code.replace(/^P8/, 'P7')]) assert.throws(() => decodeReference(malformed), /invalidRef/);
+    for (const malformed of [code + '-Qabc', code + '-Q%%%%']) assert.throws(() => decodeReference(malformed), /invalidRef/);
   }
   for (const code of ['P1-N9-G3-E22-T12', 'P2-A4-P-I20-T12-N9-G0-E22', 'P7-A4-P-I20-T12-N9-G0-E22-DF.M']) assert.equal(decodeReference(code).pageText.title, '');
+  const blank = normalizeSettings({ pageText: { titleAlign: 'center', firstPageOnly: false, language: 'eu' } });
+  assert.deepEqual(decodeShareHash(encodeShareHash(blank)).pageText, blank.pageText);
+});
+
+test('historical P8 text references remain importable without being generated or printed again', () => {
+  const tuple = [sample.title, sample.instructions, true, true, 'ca', sample.footer];
+  const payload = Buffer.from(JSON.stringify(tuple), 'utf8').toString('base64url');
+  const code = 'P8-A4-P-I20-T12-N9-G0-E22-Q' + payload;
+  const restored = decodeReference(code);
+  assert.equal(restored.pageText.title, sample.title); assert.equal(restored.pageText.footer, sample.footer);
+  assert.equal(encodeReference(restored), 'P2-A4-P-I20-T12-N9-G0-E22');
+  assert.deepEqual(decodeShareHash(code).pageText, restored.pageText);
+  for (const malformed of [code.replace(/-Q.*/, ''), code + '-Qabc', code.replace(/-Q.*/, '-Q%%%%'), code.replace(/^P8/, 'P7')]) assert.throws(() => decodeReference(malformed), /invalidRef/);
+});
+
+test('title and instructions have independent physical alignment in SVG, PDF and full shares', () => {
+  for (const titleAlign of ['left', 'center', 'right']) for (const instructionsAlign of ['left', 'center', 'right']) {
+    const s = normalizeSettings({ marginLeft: 25, marginRight: 13, pageText: { ...sample, titleAlign, instructionsAlign } });
+    assert.deepEqual(decodeShareHash(encodeShareHash(s)).pageText, s.pageText);
+    const doc = createDocument(s), page = doc.pages[0], pdf = new TextDecoder().decode(createPdfDocument(doc));
+    const commands = [...pdf.matchAll(/\/F2 ([\d.]+) Tf 1 0 0 1 ([\d.]+) ([\d.]+) Tm <([0-9a-f]+)>/g)];
+    const text = page.scene.filter(element => element.font === 'page');
+    for (const [role, align] of [['header-title', titleAlign], ['header-instructions', instructionsAlign]]) {
+      const item = text.find(element => element.role === role), index = text.indexOf(item);
+      assert.equal(item.anchor, { left: 'start', center: 'middle', right: 'end' }[align]);
+      assert.equal(item.x, align === 'left' ? 25 : align === 'right' ? 197 : 111);
+      const x = item.x - pageTextWidth(item.text, item.fontSize) * (align === 'center' ? .5 : align === 'right' ? 1 : 0);
+      near(Number(commands[index][2]), x * 72 / 25.4);
+      assert.ok(renderSvgPage(page).includes(`text-anchor="${item.anchor}"`));
+    }
+  }
 });
 
 test('personal footers coexist with source and complete references without overlapping staves', () => {
@@ -81,7 +114,7 @@ test('personal footers coexist with source and complete references without overl
   for (const page of doc.pages) {
     const footers = footerLines(page.settings, page.referenceSettings);
     assert.equal(footers.filter(line => line.anchor === 'end').map(line => line.text).join(''), reference);
-    assert.equal(decodeReference(reference).pageText.title, sample.title);
+    assert.equal(decodeReference(reference).pageText.title, '');
     for (const line of footers) { assert.ok(line.y < page.frame.height); assert.ok(line.y - (line.fontSize || 2.2) > page.layout.staves.at(-1).at(-1)); }
   }
 });

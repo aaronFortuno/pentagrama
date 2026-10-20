@@ -536,3 +536,20 @@ h1{font-size:23px}
 body>*{display:none!important}
 body>#print-root{display:block!important;width:auto;height:auto;overflow:visible;margin:0;padding:0;print-color-adjust:exact;-webkit-print-color-adjust:exact}
 #print-root .print-page{display:block;overflow:hidden;margin:0;padding:0;break-inside:avoid;break-after:page}#print-root .print-page:last-child{break-after:auto}#print-root svg{display:block;width:100%;height:100%;margin:0;padding:0}}
+
+/* Compact text editors keep their accessible labels while the placeholder guides an empty field. */
+.footer-options label{font-weight:400}
+.footer-options .settings-subheading{font-weight:600}
+.page-text-fields .sr-only{margin:0}
+.page-text-editor{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start}
+.page-text-field::placeholder{color:var(--muted);opacity:1;font-weight:400}
+.text-alignment{align-self:start}
+.text-alignment button{width:26px;min-width:26px;height:34px;padding:0;display:grid;place-items:center}
+.text-alignment .lucide{width:15px;height:15px}
+.notes-fields{border:0;margin:0;padding:0;min-width:0;display:grid;gap:14px}
+.notes-controls label{font-weight:400}
+.notes-fields .segmented{display:flex;width:100%}
+.notes-fields .segmented button{flex:1}
+.notes-controls>.details-content>.switch-row{margin:4px 0 0}
+.notes-pattern-row{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+@media(max-width:760px){.text-alignment button{width:32px;min-width:32px;height:40px}.page-text-field{min-height:42px}}

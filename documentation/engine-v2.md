@@ -11,11 +11,12 @@ La geometria es calcula en mil·límetres. Els renderitzadors consumeixen una es
 | Mòdul a `docs/engine/` | Responsabilitat |
 |---|---|
 | `constants.js`, `settings.js` | Formats, valors inicials i normalització de les opcions existents |
-| `references.js` | Codis P1–P8 i fragments d’enllaços compartits |
+| `references.js` | Codis P1–P9 i fragments d’enllaços compartits |
 | `model.js` | Pàgines, conjunts, blocs i pentagrames amb identitats |
 | `page-layout.js`, `fit.js` | Distribució física i ajust explícit quan el contingut no hi cap |
 | `footers.js`, `typography.js` | Peus opcionals i mesures tipogràfiques |
 | `page-text-settings.js`, `page-text.js` | Textos normalitzats, idiomes de nom/data, composició de capçalera i reserva física |
+| `notes.js` | Reserva de notes, normalització i patrons físics de línies, quadrícula i punts |
 | `page-font.js`, `page-font-pdf.js` | Mètriques Unicode, salts de línia i recursos PDF amb text recuperable |
 | `document.js`, `scene.js` | Composició del document i escena comuna en mm |
 | `clefs.js`, `path-data.js` | Resolució dels patrons, límits dels glifs, traçats vectorials i validació compartida |
@@ -122,9 +123,8 @@ Els codis P7 afegeixen `-DF.N`, `-DF.M`, `-DA.N` o `-DA.M`: F/A indica espai sup
 
 ## Següents ampliacions
 
-1. Incorporar capçalera escolar i peu personalitzat a la geometria i l’escena comunes.
-2. Ampliar el tractament del text abans d’incorporar contingut lliure i logotips.
-3. Valorar altres tipus de barra, la línia inicial o excepcions per pentagrama només si els casos d’ús ho justifiquen. La primera configuració de compassos ja és homogènia i no incorpora edició local de cada línia.
+1. Valorar la inclusió de logotips propis sense perdre la sortida vectorial de la música.
+2. Valorar altres tipus de barra, la línia inicial o excepcions per pentagrama només si els casos d’ús ho justifiquen. La primera configuració de compassos ja és homogènia i no incorpora edició local de cada línia.
 
 No hi ha encara dades de notes, pulsacions ni edició de partitures. Les primitives desconegudes fallen explícitament fins que cada sortida les admeti. Les futures opcions han d’actualitzar el model i la geometria compartits abans d’afegir controls; no han de dibuixar elements exclusius del preview.
 
@@ -132,12 +132,26 @@ La [publicació experimental](deployment.md#previsualització-de-la-branca-2x) u
 
 ## Capçalera i peu personalitzats · 2.2.0
 
-`settings.pageText` conté `{ title:'', instructions:'', nameDate:false, firstPageOnly:true, language:'ca', footer:'' }`. Títol, instruccions i peu admeten 100, 500 i 160 caràcters, respectivament. Es normalitzen a Unicode NFC, sense controls; els espais finals es mantenen per no interrompre l’edició i els salts de paràgraf d’instruccions es conserven. Els camps buits no afegeixen primitives ni canvien el full anterior.
+`settings.pageText` conté `{ title:'', instructions:'', nameDate:false, firstPageOnly:true, language:'ca', footer:'', titleAlign:'left', instructionsAlign:'left' }`. Títol, instruccions i peu admeten 100, 500 i 160 caràcters, respectivament. Es normalitzen a Unicode NFC, sense controls; els espais finals es mantenen per no interrompre l’edició i els salts de paràgraf d’instruccions es conserven. Els camps buits no afegeixen primitives ni canvien el full anterior.
 
 `headerContent()` reparteix títol, paràgrafs i fila de nom/data dins dels marges. Un 74% de l’amplada disponible entre camps es reserva al nom i un 26% a la data, separats per 8 mm. Les etiquetes impreses es resolen als deu idiomes, amb l’idioma actual de la interfície durant l’edició i l’idioma desat per a consumidors del motor. El contingut de l’usuari no es tradueix. La reserva superior és el màxim entre l’altura real de capçalera i l’espai superior extra; s’hi afegeix l’extensió de les claus.
 
 La capçalera es pot ometre al revers, sense afectar el peu compartit ni l’opció independent de limitar l’espai superior extra a l’anvers. Les pàgines explícites hereten i poden sobreescriure parcialment `pageText`. El peu de text propi es reparteix en files independents de l’adreça i la referència; la seva altura es reserva abans dels pentagrames. Si no hi cap, impressió i PDF es bloquegen per a tot el document.
 
-P8 incorpora al final un bloc `-Q` amb una tupla JSON UTF-8 codificada en base64url (sensible a majúscules/minúscules). Conserva textos, paràgrafs, opcions i idioma. La resta de la geometria continua amb les regles P2–P7. El descodificador valida estructura, tipus, límits i representació canònica abans d’acceptar-la. Els codis sense textos nous mantenen el seu format antic. Compartir conserva també els noms dels blocs; els dos peus d’un document de dues cares codifiquen els ajustos comuns.
+A la 2.2.0, P8 incorporava al final un bloc `-Q` amb una tupla JSON UTF-8 codificada en base64url (sensible a majúscules/minúscules). Conserva textos, paràgrafs, opcions i idioma. La resta de la geometria continua amb les regles P2–P7. El descodificador valida estructura, tipus, límits i representació canònica abans d’acceptar-la. Des de la 2.3.0 només es descodifica per compatibilitat: els nous codis exclouen qualsevol camp de capçalera o peu. Els dos peus d’un document de dues cares codifiquen els ajustos geomètrics comuns.
 
 Els textos nous utilitzen Noto Serif ExtraLight 200, generada amb el mateix origen fixat que la font antiga. SVG i PDF comparteixen amplades, mides i salts de línia. El PDF incrusta un únic recurs Unicode Type0 amb el TrueType, `CIDToGIDMap` i `ToUnicode`; els accents i els textos són seleccionables i recuperables. La font ASCII Thin dels peus antics es manté sense canvis. Els programes binaris del PDF no formen part de les dependències inicials de la interfície. Els textos romanen al navegador i als enllaços creats expressament; l’analítica continua excloent fragments, noms i continguts.
+
+## Full híbrid i codis de geometria · 2.3.0
+
+`settings.notes` conté `{ enabled:false, position:'bottom', percent:40, pattern:'dots', spacing:8 }`. El percentatge es normalitza en passos del 5%, entre 10 i 70. La pauta és `blank`, `ruled`, `grid` o `dots`; separació de 8–12 mm per a línies i 6–10 mm per a quadrícula/punts. Les línies són de 0,08 mm i grises; els punts tenen radi de 0,16 mm. No hi ha contorn de la zona ni etiquetes impreses.
+
+La reserva es calcula sobre l’altura útil després de marges, capçalera/espai superior i peu. El costat musical conserva 6 mm de separació i les extensions de les claus. El recompte de pentagrames no es modifica automàticament: si no hi cap, l’avís i Ajusta al full continuen actius. La configuració és comuna a les dues cares, però cada cara calcula el seu espai útil. Les excepcions parcials de pàgina hereten els altres camps de notes.
+
+`createNotes()` genera primitives `line` amb gris de traç i `circle` amb gris de farciment. SVG i PDF consumeixen les mateixes coordenades; el PDF dibuixa cada cercle amb quatre corbes cúbiques i restaura el negre quan hi ha línies musicals després de la pauta. Sense notes actives, la sortida antiga es manté byte a byte.
+
+`encodeReference()` ignora tot `pageText`, `source` i `reference`. Es conserven nombre/agrupament perquè el codi permeti reconstruir el full sense deduir res de la imatge. Amb notes actives, P9 afegeix `-WB40.D8`: T/B per a posició, percentatge de dues xifres, B/R/G/D per a pauta i separació en mm. El sufix ocupa 8–9 caràcters. Els formats P1–P8 continuen sent llegibles i es valida la representació canònica després de normalitzar.
+
+`encodeShareHash()` afegeix dades al fragment només quan cal. Sense textos manté el format anterior de noms de blocs. Amb textos utilitza un objecte JSON amb `b` (noms, si escau) i `t` (tupla UTF-8 base64url de `pageText`). La tupla antiga de sis camps es conserva per als textos sense alineació especial; dos camps finals opcionals guarden alineació de títol i instruccions. El descodificador accepta els enllaços anteriors. Això no és un codi imprès: la longitud del text lliure només afecta l’enllaç complet.
+
+Aplicar un codi nou des del sidebar conserva `pageText` actual; importar un P8 antic amb textos recupera el contingut antic. Plantilles locals, historial i punt de restabliment continuen desant objectes complets. `tests/notes.test.mjs` cobreix reserva, marges, formats, doble cara, primitives, PDF, límits, codis, persistència i ajust; `tests/page-text.test.mjs` comprova també alineacions i compatibilitat P8.
