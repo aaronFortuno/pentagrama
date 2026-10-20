@@ -1,5 +1,15 @@
 # Canvis
 
+## 2.3.1 · 2026-10-20
+
+- La reserva de notes retalla la distribució original del full: oculta automàticament els pentagrames que hi col·lideixen, començant per baix o per dalt segons la posició de les notes. Es conserven les coordenades, el gruix, la mida, l’espaiat intern, les separacions entre pentagrames, grups i blocs i el centrat original. No es comprimeix ni es redistribueix el contingut restant.
+- Separació entre la música i la zona de notes equivalent al menor dels marges superior i inferior, incloent espai per als contorns de les claus i el gruix del traç. Substitueix la separació fixa de 6 mm de la 2.3.0.
+- El recompte original es conserva com a configuració de base en plantilles, referències, historial i enllaços. En desactivar la reserva reapareixen tots els pentagrames. El resum del preview i les etiquetes accessibles mostren el nombre visible; l’apartat Pentagrames indica visibles / originals quan difereixen i el camp s’identifica com a Pentagrames de base.
+- Ocultació sense renumerar les identitats: claus, patrons, agrupaments i unions de compàs romanen associats a les seves files originals, també quan es retalla per dalt o queda un grup parcial. No es dibuixen claus, compassos o unions dels pentagrames ocults. Cada cara calcula la seva reserva i recompte de forma independent.
+- Espai addicional entre l’interruptor de reserva i els botons A dalt / A baix, sense afegir una fila. Es manté la transició de desplegat de 220 ms.
+- Es conserva l’avís per a distribucions originals invàlides o si no queda cap pentagrama complet, evitant exportar un full sense música. Proves de retall progressiu, recuperació, marges asimètrics, identitats, patrons, blocs, doble cara, referències i sortides vectorials. Resum del footer als deu idiomes i historial complet preservat.
+
+
 ## 2.3.0 · 2026-10-20
 
 - Full híbrid amb una zona de notes configurable a dalt o a baix, a baix per defecte. Reserva del 10% al 70% de la zona útil, sense ocupar marges, capçalera o peu, amb 6 mm de separació respecte de la música. Les opcions comencen desactivades.

@@ -551,5 +551,6 @@ body>#print-root{display:block!important;width:auto;height:auto;overflow:visible
 .notes-fields .segmented{display:flex;width:100%}
 .notes-fields .segmented button{flex:1}
 .notes-controls>.details-content>.switch-row{margin:4px 0 0}
+.notes-controls #notes-options>div>fieldset{padding-top:12px}
 .notes-pattern-row{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 @media(max-width:760px){.text-alignment button{width:32px;min-width:32px;height:40px}.page-text-field{min-height:42px}}

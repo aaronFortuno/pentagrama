@@ -1,4 +1,4 @@
-import { PAGE_FONT } from '../vendor/page-font-metrics.js?v=2.3.0';
+import { PAGE_FONT } from '../vendor/page-font-metrics.js?v=2.3.1';
 
 const characters = new Map(PAGE_FONT.characters.map((code, index) => [String.fromCodePoint(code), { cid: index + 1, width: PAGE_FONT.widths[index] }]));
 export const pageFontCharacter = character => characters.get(character) || characters.get('?');
