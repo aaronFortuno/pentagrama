@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, fitSettings, footerLines } from '../docs/layout.js';
+import { normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, fitSettings, footerLines, footerTextWidth, FOOTER_SIZE, SERVICE_ADDRESS } from '../docs/layout.js';
 import { createDocument, renderSvgPage, renderPrintDocument, createPdfDocument } from '../docs/engine/index.js';
 import { normalizePageText, PAGE_TEXT_LIMITS } from '../docs/engine/page-text-settings.js';
 import { headerContent, PRINTED_FIELD_LABELS } from '../docs/engine/page-text.js';
@@ -55,7 +55,8 @@ test('header-only front, extra top space and footer placement are independent ac
     assert.equal(back.settings.topSpace, extraFrontOnly ? 0 : 50);
     assert.equal(front.scene.find(element => element.role === 'custom-footer').text, sample.footer);
     assert.equal(back.scene.find(element => element.role === 'custom-footer').text, sample.footer);
-    assert.equal(back.scene.find(element => element.role === 'custom-footer').x, 12);
+    assert.equal(back.scene.find(element => element.role === 'custom-footer').anchor, 'middle');
+    near(back.scene.find(element => element.role === 'custom-footer').x, (back.layout.left + back.layout.right) / 2);
     assert.equal(s.pageText.title, sample.title);
     assert.deepEqual(createDocument(doc), doc);
   }
@@ -116,6 +117,41 @@ test('personal footers coexist with source and complete references without overl
     assert.equal(footers.filter(line => line.anchor === 'end').map(line => line.text).join(''), reference);
     assert.equal(decodeReference(reference).pageText.title, '');
     for (const line of footers) { assert.ok(line.y < page.frame.height); assert.ok(line.y - (line.fontSize || 2.2) > page.layout.staves.at(-1).at(-1)); }
+  }
+});
+
+test('custom text, source and reference share one fixed baseline without wrapping or overlap in every format', () => {
+  for (const paper of ['A4','A3','LETTER']) for (const orientation of ['portrait','landscape']) for (const source of [false,true]) for (const reference of [false,true]) {
+    for (const [marginLeft,marginRight] of [[18,18],[31,12],[80,85]]) for (const text of ['Escola de Música', 'Música · '.repeat(20)]) {
+      const s=normalizeSettings({paper,orientation,source,reference,marginLeft,marginRight,pageText:{footer:text},duplex:{enabled:true,mirrorMargins:true}});
+      const doc=createDocument(s);
+      for(const page of doc.pages){
+        const rows=footerLines(page.settings,page.referenceSettings),baseline=page.frame.height-Math.min(9,Math.max(2,s.marginBottom/2));
+        assert.equal(rows.length,1+Number(source)+Number(reference));assert.ok(rows.every(row=>row.y===baseline));
+        const custom=rows.find(row=>row.role==='custom-footer');assert.equal(custom.text,s.pageText.footer.trim());assert.equal(custom.anchor,'middle');
+        if(!source&&!reference)near(custom.x,(page.layout.left+page.layout.right)/2);
+        if(source)assert.equal(rows.find(row=>row.text===SERVICE_ADDRESS).x,page.layout.left);
+        if(reference)assert.equal(rows.find(row=>row.anchor==='end').text,encodeReference(s));
+        const bounds=rows.map(row=>{
+          const size=row.fontSize??FOOTER_SIZE,width=row.font==='page'?pageTextWidth(row.text,size):footerTextWidth(row.text,size);
+          assert.ok(Number.isFinite(size)&&size>0&&size<=2.4);assert.ok(!row.text.includes('\n'));
+          const left=row.x-width*(row.anchor==='middle'?.5:row.anchor==='end'?1:0);return{left,right:left+width};
+        }).sort((a,b)=>a.left-b.left);
+        for(let i=0;i<bounds.length;i++){assert.ok(bounds[i].left>=page.layout.left-1e-6);assert.ok(bounds[i].right<=page.layout.right+1e-6);if(i)assert.ok(bounds[i-1].right<=bounds[i].left+1e-6)}
+      }
+    }
+  }
+});
+
+test('scaled footer references use their effective font size in both SVG and PDF anchoring', () => {
+  const doc=createDocument({count:4,marginLeft:70,marginRight:80,source:true,reference:true,pageText:{footer:'Escola de Música · '.repeat(8)},duplex:{enabled:true,mirrorMargins:true}});
+  assert.ok(doc.valid);
+  const pdf=new TextDecoder().decode(createPdfDocument(doc)),points=v=>(v*72/25.4).toFixed(5);
+  for(const page of doc.pages){
+    const svg=renderSvgPage(page),reference=page.scene.find(e=>e.kind==='text'&&e.anchor==='end');assert.ok(reference.fontSize<FOOTER_SIZE);
+    const x=reference.x-footerTextWidth(reference.text,reference.fontSize);
+    assert.ok(svg.includes(`text-anchor="end" font-family="'Pentagrama Footer',serif" font-size="${reference.fontSize}"`));
+    assert.ok(pdf.includes(`/F1 ${points(reference.fontSize)} Tf 1 0 0 1 ${points(x)} ${points(page.frame.height-reference.y)} Tm (${reference.text}) Tj`));
   }
 });
 

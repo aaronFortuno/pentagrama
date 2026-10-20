@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.3.3 · 2026-10-20
+
+- El ressalt de focus dels botons segmentats es dibuixa dins del seu contorn, amb la mateixa aparença a Senzilla / Per blocs, A dalt / A baix i Mateixa clau / Per posició. Els contenidors animats ja no en retallen els laterals. El focus de teclat continua visible.
+- Amb peu personalitzat, els tres continguts comparteixen una línia de base estable: adreça del web a l’esquerra, text propi centrat i referència a la dreta. Activar un text ja no desplaça verticalment l’adreça ni genera files afegides.
+- Càlcul físic d’amplades i espais entre continguts abans de renderitzar. El text propi es centra al full sempre que hi cap i s’ajusta dins de l’espai lliure si els altres peus són llargs. Els continguts que excedeixen l’espai redueixen la mida sense truncar-se, superposar-se ni passar a una altra fila. Els marges reflectits de doble cara s’apliquen a cada peu.
+- El PDF respecta la mida efectiva també en mesurar i alinear la font antiga de les referències. SVG, impressió i PDF comparteixen coordenades i mides. Els fulls sense text de peu propi mantenen la sortida anterior.
+- Cada grup de tres botons d’alineació de Títol i Instruccions es substitueix per un botó quadrat al costat del camp, de 36 px o 42 px en mòbil. Alterna esquerra, centre, dreta i torna a esquerra, amb les icones oficials de Lucide ja disponibles. El camp recupera amplada i manté tota l’àrea editable.
+- El nom accessible i la indicació emergent del botó indiquen el camp, l’alineació actual i la següent, als deu idiomes. Teclat, desfer/refer, plantilles i enllaços mantenen els estats independents de títol i instruccions.
+- Resum del footer als deu idiomes, historial anterior preservat i proves de peus en una fila, opcions combinades, contingut llarg, marges, doble cara i coordenades del PDF. Revisió local de ressalt i controls en escriptori i mòbil.
+
+
 ## 2.3.2 · 2026-10-20
 
 - Apartat Espai per a anotacions, amb denominacions equivalents als idiomes on notes es podia confondre amb notes musicals. Etiquetes accessibles i indicacions de posició adaptades; les dades desades i els codis continuen sent compatibles.

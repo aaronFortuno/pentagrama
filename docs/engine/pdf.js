@@ -1,9 +1,9 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.3.2';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.3.2';
-import { footerTextWidth } from './typography.js?v=2.3.2';
-import { validatePath } from './path-data.js?v=2.3.2';
-import { pageTextWidth } from './page-font.js?v=2.3.2';
-import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.3.2';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.3.3';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.3.3';
+import { footerTextWidth } from './typography.js?v=2.3.3';
+import { validatePath } from './path-data.js?v=2.3.3';
+import { pageTextWidth } from './page-font.js?v=2.3.3';
+import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.3.3';
 
 let fontProgram;
 function embeddedFont() {
@@ -46,7 +46,7 @@ function pageCommands(page) {
       }
       commands += 'f\n';
     } else if (element.kind === 'text') {
-      const width = element.font === 'page' ? pageTextWidth(element.text, element.fontSize) : footerTextWidth(element.text);
+      const width = element.font === 'page' ? pageTextWidth(element.text, element.fontSize) : footerTextWidth(element.text, element.fontSize);
       const x = element.anchor === 'start' ? element.x : element.x - width * (element.anchor === 'middle' ? .5 : 1);
       const text = element.font === 'page' ? `<${pageTextHex(element.text)}>` : `(${escapedText(element.text)})`;
       commands += `${(element.gray / 255).toFixed(5)} g BT /${element.font === 'page' ? 'F2' : 'F1'} ${points(element.fontSize)} Tf 1 0 0 1 ${points(x)} ${points(page.frame.height - element.y)} Tm ${text} Tj ET\n`;

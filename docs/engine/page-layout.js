@@ -1,9 +1,9 @@
-import { FOOTER_SIZE } from './constants.js?v=2.3.2';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.3.2';
-import { footerLines } from './footers.js?v=2.3.2';
-import { barlinesFit } from './barlines.js?v=2.3.2';
-import { clefMetrics, clefsFit } from './clefs.js?v=2.3.2';
-import { headerContent } from './page-text.js?v=2.3.2';
+import { FOOTER_SIZE } from './constants.js?v=2.3.3';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.3.3';
+import { footerLines } from './footers.js?v=2.3.3';
+import { barlinesFit } from './barlines.js?v=2.3.3';
+import { clefMetrics, clefsFit } from './clefs.js?v=2.3.3';
+import { headerContent } from './page-text.js?v=2.3.3';
 
 export function layoutPage(value, { referenceSettings } = {}) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
