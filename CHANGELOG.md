@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.3.2 · 2026-10-20
+
+- Apartat Espai per a anotacions, amb denominacions equivalents als idiomes on notes es podia confondre amb notes musicals. Etiquetes accessibles i indicacions de posició adaptades; les dades desades i els codis continuen sent compatibles.
+- Vocabulari visual compartit per als sis apartats del sidebar: etiquetes en pes normal, subtítols en seminegreta, colors de text i ajuda homogenis, mides de lletra i espai entre etiqueta i camp unificats. Es conserven els títols principals destacats i el terracota de la secció oberta.
+- Controls de 36 px en escriptori/tauleta i 42 px en mòbil, inclosos selectors de paper, agrupació, claus, compassos i pauta d’anotacions; reguladors numèrics, unitats, botons segmentats, orientació, doble cara i camps de text alineats. Les icones internes d’alineació segueixen la mateixa alçada exterior.
+- Camps opcionals de claus, compassos i anotacions amb una classe comuna, 12 px de separació respecte de l’interruptor i el mateix ritme entre files. S’eliminen excepcions antigues que reduïen les mides dels selectors de notació o dels camps dels blocs.
+- Selector d’agrupació amb el mateix desplegable accessible que la resta: transició de 220 ms, fletxes de teclat, Inici/Fi, cerca per inicial i Escape. Obrir-ne un tanca els altres; plantilles, recompte de base i desfer/refer mantenen la selecció sincronitzada.
+- Colors neutres compartits en targetes de blocs i codi de configuració; pesos, unitats i fletxes incrementals consistents. Es manté la tipografia monoespai només als codis, per facilitar-ne la lectura i còpia. Els canvis afecten la interfície: no modifiquen la geometria ni la impressió del full.
+- Resum del footer als deu idiomes, historial anterior preservat i revisió local dels sis apartats en escriptori i mòbil.
+
+
 ## 2.3.1 · 2026-10-20
 
 - La reserva de notes retalla la distribució original del full: oculta automàticament els pentagrames que hi col·lideixen, començant per baix o per dalt segons la posició de les notes. Es conserven les coordenades, el gruix, la mida, l’espaiat intern, les separacions entre pentagrames, grups i blocs i el centrat original. No es comprimeix ni es redistribueix el contingut restant.

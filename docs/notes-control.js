@@ -1,5 +1,5 @@
-import { bindSelectControl } from './select-control.js?v=2.3.1';
-import { bindTouchRange } from './touch-range.js?v=2.3.1';
+import { bindSelectControl } from './select-control.js?v=2.3.2';
+import { bindTouchRange } from './touch-range.js?v=2.3.2';
 
 export function bindNotesControl({ read, change, onOpen }) {
   const $ = id => document.getElementById(id);

@@ -1,4 +1,4 @@
-import { GLOCK_SAMPLES, TRANSPOSE } from './vendor/glock/bank.js?v=2.3.1';
+import { GLOCK_SAMPLES, TRANSPOSE } from './vendor/glock/bank.js?v=2.3.2';
 
 export function glockSample(midi) {
   if (!Number.isFinite(midi) || midi < 0 || midi > 127) throw new RangeError('Invalid MIDI note');
