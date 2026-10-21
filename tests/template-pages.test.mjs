@@ -4,7 +4,8 @@ import { readFile, access } from 'node:fs/promises';
 import { LANGUAGES, translate } from '../docs/i18n.js';
 import { DEFAULT_TEMPLATES, suggestedTemplateSettings } from '../docs/library.js';
 import { decodeShareHash, createLayout, renderSheet } from '../docs/layout.js';
-import { TEMPLATE_GUIDES, templatePath, templateEditorURL } from '../tools/build-template-pages.mjs';
+import { PRINTED_FIELD_LABELS } from '../docs/engine/page-text.js';
+import { TEMPLATE_GUIDES, templatePath, templateEditorURL, templatePreviewPath, renderTemplatePreview } from '../tools/build-template-pages.mjs';
 import { RELEASE } from '../tools/site-data.mjs';
 
 const root = new URL('../docs/', import.meta.url), site = 'https://pentagrama.page/';
@@ -26,18 +27,24 @@ test('template pages have real localized HTML, reciprocal alternates and working
   }
 });
 
-test('all seven catalogue previews and editor links reuse the sidebar presets exactly', async () => {
+test('all catalogue previews and editor links reuse the sidebar presets and printed language exactly', async () => {
   for (const template of DEFAULT_TEMPLATES) {
-    const svg = await readFile(new URL(`assets/templates/${template.id}.svg`, root), 'utf8');
-    assert.equal(svg, renderSheet({ ...template.settings, source: false, reference: false }));
-    assert.ok(!svg.includes('<text')); assert.ok(createLayout(template.settings).valid);
+    assert.ok(createLayout(template.settings).valid);
     for (const locale of Object.keys(LANGUAGES)) {
-      const expected = suggestedTemplateSettings(template, (key, values) => translate(locale, key, values));
+      const expected = suggestedTemplateSettings(template, (key, values) => translate(locale, key, values), locale);
+      const previewPath = templatePreviewPath(locale, template), svg = await readFile(new URL(previewPath, root), 'utf8');
+      assert.equal(svg, renderTemplatePreview(template, locale));
+      assert.equal(svg.replace(/<style>[\s\S]*?<\/style>/, ''), renderSheet({ ...expected, source: false, reference: false }));
+      if (expected.pageText.nameDate) {
+        assert.equal(expected.pageText.language, locale);
+        assert.ok(svg.includes('data:font/woff2;base64,'));
+        for (const label of PRINTED_FIELD_LABELS[locale]) assert.ok(svg.includes(`>${label}:</text>`));
+      } else assert.ok(!svg.includes('<text'));
       const url = templateEditorURL(locale, template, 'https://example.org/repository/');
       assert.equal(url.pathname, `/repository/${locale}/`);
       assert.deepEqual(decodeShareHash(url.hash.slice(1)), expected);
       const catalogue = await readFile(new URL(`${locale}/templates/index.html`, root), 'utf8');
-      assert.ok(catalogue.includes(`assets/templates/${template.id}.svg`));
+      assert.ok(catalogue.includes(previewPath));
       if (!TEMPLATE_GUIDES.some(guide => guide.id === template.id)) assert.ok(catalogue.includes(`href="./${locale}/${url.hash}"`));
     }
   }
@@ -75,4 +82,31 @@ test('template content retains vocal spacing and the six orchestral groups with 
   const orchestra = DEFAULT_TEMPLATES.find(item => item.id === 'orchestra');
   assert.equal(orchestra.settings.paper, 'A3'); assert.equal(orchestra.settings.blocks.length, 6);
   assert.equal(createLayout(orchestra.settings).count, 23);
+  const layout = createLayout(orchestra.settings);
+  assert.equal(layout.lineSpacing, 2);
+  assert.ok(layout.needed / layout.available > .98);
+  assert.ok(layout.staves[0][0] - layout.top < 3);
+  assert.ok(layout.bottom - layout.staves.at(-1)[4] < 3);
+});
+
+test('educational presets have name and date, while writing space keeps five uncrowded staves', async () => {
+  const large = DEFAULT_TEMPLATES.find(item => item.id === 'large'), notes = DEFAULT_TEMPLATES.find(item => item.id === 'annotations');
+  assert.equal(large.settings.pageText.nameDate, true);
+  assert.equal(large.settings.lineSpacing, 3); assert.equal(createLayout(large.settings).count, 6);
+  const layout = createLayout(notes.settings);
+  assert.equal(layout.pageText.nameDate, true); assert.equal(layout.notes.percent, 35);
+  assert.equal(layout.notes.pattern, 'dots'); assert.equal(layout.notes.spacing, 8);
+  assert.equal(layout.count, 9); assert.equal(layout.visibleCount, 5); assert.ok(layout.valid);
+  assert.ok(layout.notesArea.top - layout.staves.at(-1)[4] >= layout.notesGap);
+  assert.ok(!layout.source && !layout.reference && !layout.clefs.enabled && !layout.barlines.enabled);
+  for (const locale of Object.keys(LANGUAGES)) {
+    const html = await readFile(new URL(`${locale}/templates/index.html`, root), 'utf8');
+    const card = html.match(/<article class="guide-card">[\s\S]*?id="template-annotations"[\s\S]*?<\/article>/)[0];
+    assert.ok(card.includes(translate(locale, 'staffCount', { n: 5 })));
+    const guide = TEMPLATE_GUIDES.find(item => item.id === notes.id);
+    const detail = await readFile(new URL(`${templatePath(locale, guide)}index.html`, root), 'utf8');
+    assert.ok(detail.includes(templateEditorURL(locale, notes, site).hash));
+    assert.ok(detail.includes(translate(locale, 'guideWorksheet')));
+    assert.ok(!detail.includes(translate(locale, 'guideBlank')));
+  }
 });

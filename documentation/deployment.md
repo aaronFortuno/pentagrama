@@ -2,7 +2,7 @@
 
 El contingut publicable és a `docs/`, incloses les pàgines traduïdes ja generades. Es pot servir directament com a fitxers estàtics, sense executar cap eina al servidor.
 
-La generació també prepara el catàleg de plantilles i les dues guies per idioma, les miniatures de `docs/assets/templates/` i les seves entrades al sitemap. Es reutilitzen els mateixos ajustos que al sidebar de l’editor.
+La generació també prepara el catàleg de plantilles i les quatre fitxes detallades per idioma, les miniatures de `docs/assets/templates/` i les seves entrades al sitemap. Es reutilitzen els mateixos ajustos que al sidebar de l’editor.
 
 La capçalera i el peu es defineixen una sola vegada a `src/components/site-header.html` i `src/components/site-footer.html`. `tools/site-shell.mjs` els incorpora a `src/index.html` durant la generació i adapta la navegació de la guia. Aquesta també reutilitza els diàlegs localitzats i carrega els estils comuns de `docs/style.css`. `docs/template-pages.css` només defineix la disposició pròpia del catàleg i les fitxes. El comportament de V4V, privadesa i versions es comparteix a `docs/site-chrome.js`: els canvis en aquests elements s’han de comprovar tant al generador com a la guia.
 

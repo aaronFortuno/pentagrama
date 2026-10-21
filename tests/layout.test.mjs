@@ -77,7 +77,8 @@ test('SATB and piano retain different millimetre gaps and repeat in the requeste
 test('all suggested templates fit and orchestra includes 23 staves on A3', () => {
   for (const template of DEFAULT_TEMPLATES) {
     const l = createLayout(template.settings); assert.ok(l.valid, template.id);
-    assert.deepEqual(createLayout(decodeReference(encodeReference(template.settings))).staves, l.staves);
+    assert.deepEqual(createLayout(decodeReference(encodeReference(template.settings))).staves, createLayout({ ...template.settings, pageText: DEFAULTS.pageText }).staves);
+    assert.deepEqual(createLayout(decodeShareHash(encodeShareHash(template.settings))).staves, l.staves);
   }
   const orchestra = createLayout(DEFAULT_TEMPLATES.find(t => t.id === 'orchestra').settings);
   assert.equal(orchestra.count, 23); assert.equal(orchestra.width, 297); assert.equal(orchestra.height, 420);
@@ -192,7 +193,7 @@ test('website footer is opt-in, shares space with long references and leaves the
 test('thin serif footers embed their font and use identical advances in SVG and PDF', () => {
   assert.equal(FOOTER_FONT.weight, 100);
   assert.notEqual(footerTextWidth('iiii'), footerTextWidth('WWWW'));
-  const s = { ...DEFAULT_TEMPLATES.at(-1).settings, source: true, reference: true, topSpace: 30 };
+  const s = { ...DEFAULT_TEMPLATES.at(-1).settings, lineSpacing: 1.6, source: true, reference: true, topSpace: 30 };
   const svg = renderSheet(s), pdf = new TextDecoder().decode(createPdf(s)), footer = footerLines(s);
   assert.match(svg, /font-weight="100"/); assert.match(svg, /Pentagrama Footer/);
   assert.match(pdf, /\/Subtype \/TrueType/); assert.match(pdf, /\/FontFile2 7 0 R/);

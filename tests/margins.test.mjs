@@ -18,7 +18,7 @@ test('old settings, references and presets retain their original margins and ref
     assert.equal(layout.left, 18); assert.equal(layout.right, 192);
     assert.equal(layout.top, 21 + layout.topSpace); assert.equal(layout.bottom, 276);
   }
-  for (const template of DEFAULT_TEMPLATES) assert.ok(encodeReference(template.settings).startsWith('P2-'));
+  for (const template of DEFAULT_TEMPLATES) assert.ok(encodeReference(template.settings).startsWith(template.settings.notes.enabled ? 'P9-' : 'P2-'));
   assert.equal(normalizeSettings({ marginTop: -1 }).marginTop, 0);
   assert.equal(normalizeSettings({ marginLeft: 101 }).marginLeft, 100);
   assert.equal(normalizeSettings({ marginBottom: 22.7 }).marginBottom, 23);

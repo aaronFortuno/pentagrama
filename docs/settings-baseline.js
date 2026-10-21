@@ -1,4 +1,4 @@
-import { DEFAULTS, normalizeSettings, decodeShareHash } from './layout.js?v=2.3.3';
+import { DEFAULTS, normalizeSettings, decodeShareHash } from './layout.js?v=2.3.4';
 
 // A template is a stable starting point, separate from the editable draft and undo history.
 export function createResetBaseline(initial = DEFAULTS) {

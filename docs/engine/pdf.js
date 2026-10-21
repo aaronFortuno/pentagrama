@@ -1,9 +1,9 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.3.3';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.3.3';
-import { footerTextWidth } from './typography.js?v=2.3.3';
-import { validatePath } from './path-data.js?v=2.3.3';
-import { pageTextWidth } from './page-font.js?v=2.3.3';
-import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.3.3';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.3.4';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.3.4';
+import { footerTextWidth } from './typography.js?v=2.3.4';
+import { validatePath } from './path-data.js?v=2.3.4';
+import { pageTextWidth } from './page-font.js?v=2.3.4';
+import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.3.4';
 
 let fontProgram;
 function embeddedFont() {

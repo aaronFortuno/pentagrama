@@ -1,19 +1,21 @@
-import { DEFAULTS, normalizeSettings } from './layout.js?v=2.3.3';
+import { DEFAULTS, normalizeSettings } from './layout.js?v=2.3.4';
 
 export const DEFAULT_TEMPLATES = [
   { id: 'blank', key: 'presetBlank', settings: { ...DEFAULTS, group: 0 } },
   { id: 'piano', key: 'presetPiano', settings: { ...DEFAULTS, count: 12, group: 2 } },
   { id: 'choir', key: 'presetChoir', settings: { ...DEFAULTS, count: 12, group: 4, spacing: 2.6 } },
-  { id: 'large', key: 'presetLarge', settings: { ...DEFAULTS, count: 6, group: 0, lineSpacing: 3 } },
+  { id: 'large', key: 'presetLarge', settings: { ...DEFAULTS, count: 6, group: 0, lineSpacing: 3, pageText: { ...DEFAULTS.pageText, nameDate: true } } },
+  { id: 'annotations', key: 'presetAnnotations', settings: { ...DEFAULTS, pageText: { ...DEFAULTS.pageText, nameDate: true }, notes: { ...DEFAULTS.notes, enabled: true, percent: 35 } } },
   { id: 'trio', key: 'presetTrio', settings: { ...DEFAULTS, count: 9, group: 3 } },
   { id: 'choir-piano', key: 'presetChoirPiano', settings: { ...DEFAULTS, mode: 'blocks', systems: 2, systemGap: 18, blocks: [{ label: 'SATB', count: 4, inside: 12, after: 14 }, { label: 'Piano', count: 2, inside: 6, after: 14 }] } },
-  { id: 'orchestra', key: 'presetOrchestra', settings: { ...DEFAULTS, paper: 'A3', mode: 'blocks', lineSpacing: 1.6, blocks: [{ label: '', count: 6, inside: 7, after: 12 }, { label: '', count: 5, inside: 8, after: 14 }, { label: '', count: 3, inside: 10, after: 10 }, { label: 'Harp', count: 2, inside: 5, after: 10 }, { label: 'Piano', count: 2, inside: 5, after: 14 }, { label: '', count: 5, inside: 8, after: 14 }] } },
+  { id: 'orchestra', key: 'presetOrchestra', settings: { ...DEFAULTS, paper: 'A3', mode: 'blocks', lineSpacing: 2, blocks: [{ label: '', count: 6, inside: 7, after: 12 }, { label: '', count: 5, inside: 8, after: 14 }, { label: '', count: 3, inside: 10, after: 10 }, { label: 'Harp', count: 2, inside: 5, after: 10 }, { label: 'Piano', count: 2, inside: 5, after: 14 }, { label: '', count: 5, inside: 8, after: 14 }] } },
 ];
 
 // Shared by the editor and public template pages: geometry always comes from
 // DEFAULT_TEMPLATES, while instrument labels follow the selected language.
-export function suggestedTemplateSettings(template, t) {
+export function suggestedTemplateSettings(template, t, locale = 'ca') {
   const value = normalizeSettings(template.settings);
+  if (value.pageText.nameDate) value.pageText.language = locale;
   if (template.id === 'orchestra') ['woodwinds', 'brass', 'percussion', 'harp', 'presetPiano', 'strings'].forEach((key, i) => { value.blocks[i].label = t(key); });
   if (template.id === 'choir-piano') value.blocks[1].label = t('presetPiano');
   return value;

@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.3.4 · 2026-10-21
+
+- Nova plantilla «Fitxa amb espai per a anotacions»: A4 amb nom i data, cinc pentagrames visibles sobre una base de nou i reserva inferior del 35% amb punts cada 8 mm. Manté els espais originals, el marge de separació i totes les opcions editables. No incorpora textos inventats, claus, compassos ni peus activats.
+- La plantilla d’iniciació conserva sis pentagrames amb línies a 3 mm i incorpora nom i data en l’idioma triat, tant al sidebar com als enllaços compartits i les pàgines públiques.
+- Orquestra A3 amb línies a 2 mm en lloc d’1,6 mm: manté 23 pentagrames i sis famílies, amb les separacions existents. La música ocupa 373 dels 378 mm útils, amb més llegibilitat i menys espai buit. Les altres plantilles i les còpies personals desades es conserven.
+- «Guia de plantilles» passa a «Catàleg de plantilles», mantenint les adreces. Noves fitxes detallades d’iniciació i anotacions als deu idiomes, amb descripcions, paràmetres, enllaços d’edició i entrades al sitemap.
+- Una sola font d’ajustos per a l’editor, el catàleg i les miniatures. Les miniatures amb nom i data es localitzen i incorporen la font local perquè l’SVG independent mantingui la tipografia correcta. Les adreces anteriors de miniatures es conserven.
+- Els recomptes de targetes mostren els pentagrames visibles, també en plantilles personals amb reserva d’anotacions, en lloc del recompte original retallat.
+- Resum del footer als deu idiomes, historial anterior preservat i proves de correspondència entre miniatures, idiomes, catàleg i configuracions d’edició, espai d’anotacions i ocupació del full orquestral. L’analítica no canvia en aquesta versió.
+
+
 ## 2.3.3 · 2026-10-20
 
 - El ressalt de focus dels botons segmentats es dibuixa dins del seu contorn, amb la mateixa aparença a Senzilla / Per blocs, A dalt / A baix i Mateixa clau / Per posició. Els contenidors animats ja no en retallen els laterals. El focus de teclat continua visible.

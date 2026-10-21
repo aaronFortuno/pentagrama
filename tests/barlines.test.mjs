@@ -59,7 +59,7 @@ test('every style and connection shares physical geometry, stroke widths and das
     assert.equal(pdf.length, expected.length); assert.equal(serialized.length, expected.length);
     assert.ok(renderPrintDocument(document).includes(svg)); assert.equal(svg, renderSheet(value));
     const staffStrokes = bars(page).filter(line => line.part === 'staff');
-    assert.equal(staffStrokes.length, page.layout.count * 5 * (style === 'double' ? 2 : 1));
+    assert.equal(staffStrokes.length, (page.layout.visibleCount ?? page.layout.count) * 5 * (style === 'double' ? 2 : 1));
     expected.forEach((line, index) => {
       const attrs = Object.fromEntries([...serialized[index][1].matchAll(/([\w-]+)="([^"]*)"/g)].map(match => match.slice(1)));
       for (const key of ['x1', 'y1', 'x2', 'y2']) { near(pdf[index][key], line[key]); near(Number(attrs[key]), line[key]); }
@@ -90,8 +90,8 @@ test('connections stay within blocks and systems, including partial groups and r
 test('P5 references and Unicode shared templates round-trip every barline style and reject ambiguous or out-of-range codes', () => {
   for (const template of DEFAULT_TEMPLATES) for (const style of ['single', 'double', 'dashed']) for (const connect of ['none', 'solid', 'dashed']) for (const margins of [{}, { marginTop: 5, marginRight: 29, marginLeft: 10, topSpace: 30 }]) {
     const settings = normalizeSettings({ ...template.settings, ...margins, barlines: enabled({ style, connect, measures: 7, thickness: .21 }) });
-    const code = encodeReference(settings); assert.match(code, /^P5-/);
-    assert.deepEqual(decodeReference(code), { ...settings, blocks: settings.blocks.map(block => ({ ...block, label: '' })) });
+    const code = encodeReference(settings); assert.match(code, settings.notes.enabled ? /^P9-/ : /^P5-/);
+    assert.deepEqual(decodeReference(code), { ...settings, pageText: DEFAULTS.pageText, blocks: settings.blocks.map(block => ({ ...block, label: '' })) });
     assert.deepEqual(decodeShareHash(encodeShareHash(settings)), settings);
   }
   const valid = encodeReference({ barlines: enabled() });

@@ -1,30 +1,30 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.3.3';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.3.3';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.3.3';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.3.3';
-import { iconMarkup, renderIcons } from './icons.js?v=2.3.3';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.3.3';
-import { bindTouchRange } from './touch-range.js?v=2.3.3';
-import { analytics } from './analytics.js?v=2.3.3';
-import { createLogoNote } from './logo-note.js?v=2.3.3';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.3.3';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.3.3';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.3.3';
-import { createResetBaseline } from './settings-baseline.js?v=2.3.3';
-import { enhanceNumberInputs } from './number-input.js?v=2.3.3';
-import { bindSelectControl } from './select-control.js?v=2.3.3';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.3.3';
-import { bindSiteDialogs } from './site-chrome.js?v=2.3.3';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.3.3';
-import { bindNotesControl } from './notes-control.js?v=2.3.3';
-import { bindPageTextControl } from './page-text-control.js?v=2.3.3';
-import { bindClefsControl } from './clefs-control.js?v=2.3.3';
-import { bindBarlinesControl } from './barlines-control.js?v=2.3.3';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.3.3';
-import { createDocument } from './engine/document.js?v=2.3.3';
-import { renderSvgPage } from './engine/svg.js?v=2.3.3';
-import { renderPrintDocument } from './engine/print.js?v=2.3.3';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.3.3';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.3.4';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.3.4';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.3.4';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.3.4';
+import { iconMarkup, renderIcons } from './icons.js?v=2.3.4';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.3.4';
+import { bindTouchRange } from './touch-range.js?v=2.3.4';
+import { analytics } from './analytics.js?v=2.3.4';
+import { createLogoNote } from './logo-note.js?v=2.3.4';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.3.4';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.3.4';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.3.4';
+import { createResetBaseline } from './settings-baseline.js?v=2.3.4';
+import { enhanceNumberInputs } from './number-input.js?v=2.3.4';
+import { bindSelectControl } from './select-control.js?v=2.3.4';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.3.4';
+import { bindSiteDialogs } from './site-chrome.js?v=2.3.4';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.3.4';
+import { bindNotesControl } from './notes-control.js?v=2.3.4';
+import { bindPageTextControl } from './page-text-control.js?v=2.3.4';
+import { bindClefsControl } from './clefs-control.js?v=2.3.4';
+import { bindBarlinesControl } from './barlines-control.js?v=2.3.4';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.3.4';
+import { createDocument } from './engine/document.js?v=2.3.4';
+import { renderSvgPage } from './engine/svg.js?v=2.3.4';
+import { renderPrintDocument } from './engine/print.js?v=2.3.4';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.3.4';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -188,7 +188,7 @@ function updateBlockFields() {
 }
 
 function templateSettings(template, suggested) {
-  return suggested ? suggestedTemplateSettings(template, t) : normalizeSettings(template.settings);
+  return suggested ? suggestedTemplateSettings(template, t, language) : normalizeSettings(template.settings);
 }
 function renderLibrary(animate = true) { const change = () => {
   const saved = $('saved-templates'), suggested = $('suggested-templates'); saved.replaceChildren(); suggested.replaceChildren();
@@ -202,7 +202,8 @@ function renderLibrary(animate = true) { const change = () => {
     const wrapper = node('div', 'template-card'), load = node('button', 'template-load'); load.type = 'button'; load.dataset.action = 'load'; load.dataset.id = template.id; load.dataset.suggested = String(isSuggested); load.setAttribute('aria-label', name);
     wrapper.dataset.motionKey = `${isSuggested ? 'suggested' : 'saved'}-${template.id}`;
     const thumbnail = node('span', 'template-thumb'); thumbnail.setAttribute('aria-hidden', 'true'); thumbnail.innerHTML = renderSheet({ ...s, reference: false, source: false }).replace('aria-hidden="true">', 'aria-hidden="true"><rect width="100%" height="100%" fill="#fff"/>');
-    const copy = node('span', 'template-copy'), detail = node('span', 'template-description', `${paperName(s.paper)} · ${staffCount(l.count)} · ${number(s.lineSpacing)} mm`);
+    if (s.notes.enabled) thumbnail.classList.add('template-thumb--whole');
+    const copy = node('span', 'template-copy'), detail = node('span', 'template-description', `${paperName(s.paper)} · ${staffCount(l.visibleCount ?? l.count)} · ${number(s.lineSpacing)} mm`);
     detail.id = `template-details-${detailIndex++}`; load.setAttribute('aria-describedby', detail.id); copy.append(node('span', 'template-name', name), detail);
     load.append(thumbnail, copy);
     const actions = node('div', 'template-actions'), share = icon('share-2', `${t('share')}: ${name}`, 'share', 0), remove = icon('trash', `${t('remove')}: ${name}`, 'delete', 0);

@@ -7,6 +7,7 @@ import * as current from '../docs/layout.js';
 import { createPdf } from '../docs/pdf.js';
 import { createDocument, normalizeDocument, renderSvgPage, renderPrintDocument, createPdfDocument } from '../docs/engine/index.js';
 import { DEFAULT_TEMPLATES } from '../docs/library.js';
+import { DEFAULT_TEMPLATES as LEGACY_TEMPLATES } from './fixtures/v1-presets.mjs';
 import { parseVersion, compareVersions } from '../tools/release-version.mjs';
 import { RELEASE } from '../tools/site-data.mjs';
 import { buildPreview } from '../tools/build-preview.mjs';
@@ -14,12 +15,12 @@ import { buildPreview } from '../tools/build-preview.mjs';
 test('the modular engine exactly matches frozen 1.17.2 settings, geometry, references, SVG and PDF', () => {
   const legacyFields = ({ barlines, clefs, duplex, pageText, notes, ...settings }) => settings;
   const variants = [];
-  for (const template of DEFAULT_TEMPLATES) for (const paper of ['A3', 'A4', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
+  for (const template of LEGACY_TEMPLATES) for (const paper of ['A3', 'A4', 'LETTER']) for (const orientation of ['portrait', 'landscape']) {
     for (const options of [{}, { topSpace: 30, reference: true, source: true }, { marginLeft: 11, marginRight: 29, marginTop: 17, marginBottom: 8 }]) variants.push({ ...template.settings, paper, orientation, ...options });
   }
   let seed = 172;
   const random = max => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed % max; };
-  for (let i = 0; i < 150; i++) variants.push({ ...DEFAULT_TEMPLATES[random(DEFAULT_TEMPLATES.length)].settings,
+  for (let i = 0; i < 150; i++) variants.push({ ...LEGACY_TEMPLATES[random(LEGACY_TEMPLATES.length)].settings,
     count: random(66), group: random(12), topSpace: random(101), lineSpacing: 1 + random(31) / 10,
     thickness: .05 + random(46) / 100, marginLeft: random(70), marginRight: random(70), marginTop: random(70), marginBottom: random(70),
     systems: 1 + random(4), reference: Boolean(random(2)), source: Boolean(random(2)) });
@@ -136,7 +137,9 @@ test('the publishable preview retains local resources and licenses without produ
     return (await Promise.all(entries.map(entry => entry.isDirectory() ? visit(path.join(directory, entry.name)) : path.join(directory, entry.name)))).flat();
   };
   const files = await visit(target), htmlFiles = files.filter(file => file.endsWith('.html'));
-  assert.equal(htmlFiles.length, 41);
+  const { TEMPLATE_GUIDES } = await import('../tools/build-template-pages.mjs');
+  const { LANGUAGES } = await import('../docs/i18n.js');
+  assert.equal(htmlFiles.length, 1 + Object.keys(LANGUAGES).length * (2 + TEMPLATE_GUIDES.length));
   assert.ok(!files.includes(path.join(target, 'CNAME')));
   assert.ok(!files.includes(path.join(target, 'sitemap.xml')));
   assert.equal(await fs.readFile(path.join(target, 'robots.txt'), 'utf8'), 'User-agent: *\nDisallow: /\n');
