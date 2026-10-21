@@ -1,4 +1,4 @@
-import { DEFAULTS, normalizeSettings } from './layout.js?v=2.3.4';
+import { DEFAULTS, normalizeSettings } from './layout.js?v=2.3.5';
 
 export const DEFAULT_TEMPLATES = [
   { id: 'blank', key: 'presetBlank', settings: { ...DEFAULTS, group: 0 } },
@@ -30,6 +30,12 @@ export function normalizeLibrary(value) {
       ids.add(t.id); return true;
     }).map(t => ({ id: t.id, name: t.name.trim().slice(0, 80), settings: normalizeSettings(t.settings) })) : [],
   };
+}
+// A blocked or unreadable store is unknown, not evidence of an empty library.
+// Read the persisted library so a failed save cannot report a successful one.
+export function storedTemplatePresence(read) {
+  try { return normalizeLibrary(JSON.parse(read() || '{}')).saved.length > 0; }
+  catch { return undefined; }
 }
 export function addTemplate(library, template) {
   const clean = normalizeLibrary(library); if (clean.saved.length >= 50) throw new Error('libraryFull');

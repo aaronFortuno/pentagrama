@@ -1,22 +1,35 @@
-import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=2.3.4';
+import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=2.3.5';
 
 const DOMAIN = 'pentagrama.page';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const EVENTS = new Set(['print_requested', 'template_applied', 'template_saved', 'share_requested', 'logo_clicked', 'melody_started', 'melody_info_opened']);
 const MELODY_IDS = new Set(['joy', 'elise', 'minuet', 'mountain', 'star', 'canon', 'fifth', 'serenade', 'turkish', 'bourree', 'spring', 'ave']);
+const TEMPLATE_IDS = new Set(['blank', 'piano', 'choir', 'large', 'annotations', 'trio', 'choir-piano', 'orchestra']);
+const CONFIGURATION_FLAGS = ['annotations', 'duplex', 'clefs', 'barlines', 'name_date', 'has_saved_templates'];
 const LANGUAGES = new Set(Object.keys(SUPPORTED_LANGUAGES));
 const CAMPAIGN_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'];
+
+// Summarize enabled features, never serialize a layout or a user-written field.
+export function configurationMetrics(settings, language, hasSavedTemplates) {
+  return { paper: settings.paper, mode: settings.mode, language,
+    annotations: settings.notes?.enabled === true, duplex: settings.duplex?.enabled === true,
+    clefs: settings.clefs?.enabled === true, barlines: settings.barlines?.enabled === true,
+    name_date: settings.pageText?.nameDate === true,
+    ...(typeof hasSavedTemplates === 'boolean' ? { has_saved_templates: hasSavedTemplates } : {}) };
+}
 
 function eventData(name, source = {}) {
   source = source && typeof source === 'object' ? source : {};
   const data = {};
-  if (name === 'print_requested') {
+  if (['print_requested', 'template_saved'].includes(name)) {
     if (['A3', 'A4', 'LETTER'].includes(source.paper)) data.paper = source.paper;
     if (['simple', 'blocks'].includes(source.mode)) data.mode = source.mode;
     if (LANGUAGES.has(source.language)) data.language = source.language;
+    for (const flag of CONFIGURATION_FLAGS) if (typeof source[flag] === 'boolean') data[flag] = source[flag];
   }
   if (['template_applied', 'template_saved', 'share_requested'].includes(name)
     && ['current', 'suggested', 'personal'].includes(source.kind)) data.kind = source.kind;
+  if (name === 'template_applied' && source.kind === 'suggested' && TEMPLATE_IDS.has(source.template)) data.template = source.template;
   if (['melody_started', 'melody_info_opened'].includes(name) && MELODY_IDS.has(source.melody)) data.melody = source.melody;
   if (name === 'melody_started' && ['discovery', 'replay', 'next'].includes(source.source)) data.source = source.source;
   return data;

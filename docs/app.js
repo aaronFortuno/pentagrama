@@ -1,30 +1,30 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.3.4';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.3.4';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.3.4';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.3.4';
-import { iconMarkup, renderIcons } from './icons.js?v=2.3.4';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.3.4';
-import { bindTouchRange } from './touch-range.js?v=2.3.4';
-import { analytics } from './analytics.js?v=2.3.4';
-import { createLogoNote } from './logo-note.js?v=2.3.4';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.3.4';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.3.4';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.3.4';
-import { createResetBaseline } from './settings-baseline.js?v=2.3.4';
-import { enhanceNumberInputs } from './number-input.js?v=2.3.4';
-import { bindSelectControl } from './select-control.js?v=2.3.4';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.3.4';
-import { bindSiteDialogs } from './site-chrome.js?v=2.3.4';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.3.4';
-import { bindNotesControl } from './notes-control.js?v=2.3.4';
-import { bindPageTextControl } from './page-text-control.js?v=2.3.4';
-import { bindClefsControl } from './clefs-control.js?v=2.3.4';
-import { bindBarlinesControl } from './barlines-control.js?v=2.3.4';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.3.4';
-import { createDocument } from './engine/document.js?v=2.3.4';
-import { renderSvgPage } from './engine/svg.js?v=2.3.4';
-import { renderPrintDocument } from './engine/print.js?v=2.3.4';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.3.4';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.3.5';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.3.5';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.3.5';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.3.5';
+import { iconMarkup, renderIcons } from './icons.js?v=2.3.5';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.3.5';
+import { bindTouchRange } from './touch-range.js?v=2.3.5';
+import { analytics, configurationMetrics } from './analytics.js?v=2.3.5';
+import { createLogoNote } from './logo-note.js?v=2.3.5';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.3.5';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.3.5';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.3.5';
+import { createResetBaseline } from './settings-baseline.js?v=2.3.5';
+import { enhanceNumberInputs } from './number-input.js?v=2.3.5';
+import { bindSelectControl } from './select-control.js?v=2.3.5';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.3.5';
+import { bindSiteDialogs } from './site-chrome.js?v=2.3.5';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.3.5';
+import { bindNotesControl } from './notes-control.js?v=2.3.5';
+import { bindPageTextControl } from './page-text-control.js?v=2.3.5';
+import { bindClefsControl } from './clefs-control.js?v=2.3.5';
+import { bindBarlinesControl } from './barlines-control.js?v=2.3.5';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.3.5';
+import { createDocument } from './engine/document.js?v=2.3.5';
+import { renderSvgPage } from './engine/svg.js?v=2.3.5';
+import { renderPrintDocument } from './engine/print.js?v=2.3.5';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.3.5';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -436,7 +436,7 @@ document.addEventListener('keydown', event => {
 $('save-template').addEventListener('click', () => { $('template-name').value = ''; $('save-message').textContent = ''; openDialog($('save-dialog')); $('template-name').focus(); });
 $('save-form').addEventListener('submit', async event => {
   event.preventDefault(); const name = $('template-name').value.trim(); if (!name) return;
-  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); if (persistLibrary('templateSaved')) { selectStartingLayout(settings); analytics.track('template_saved', { kind: 'personal' }); } await closeDialog($('save-dialog')); setTemplatesOpen(true); }
+  try { library = addTemplate(library, { id: crypto.randomUUID(), name, settings }); if (persistLibrary('templateSaved')) { selectStartingLayout(settings); analytics.track('template_saved', { kind: 'personal', ...configurationMetrics(settings, language, true) }); } await closeDialog($('save-dialog')); setTemplatesOpen(true); }
   catch (error) { $('save-message').textContent = t(error.message); $('save-message').classList.add('error'); }
 });
 $('templates-panel').addEventListener('click', event => {
@@ -452,7 +452,7 @@ $('templates-panel').addEventListener('click', event => {
   if (button.dataset.action === 'share') { shareLayout(value, suggested ? 'suggested' : 'personal'); return; }
   selectStartingLayout(value);
   render({ blocks: true });
-  analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal' });
+  analytics.track('template_applied', { kind: suggested ? 'suggested' : 'personal', ...(suggested ? { template: id } : {}) });
 });
 $('restore-defaults').addEventListener('click', () => { library = restoreDefaults(library); persistLibrary('defaultsRestored'); });
 bindSiteDialogs({ t, copy, toast });
@@ -505,7 +505,7 @@ $('paper-stage').addEventListener('keydown', event => {
   const move = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[event.key];
   if (move) { event.preventDefault(); previewPan.x += move[0]; previewPan.y += move[1]; fitPreview(); }
 });
-$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!score.valid) return; await document.fonts.ready; if (score.valid) { analytics.track('print_requested', { paper: settings.paper, mode: settings.mode, language }); window.print(); } });
+$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!score.valid) return; await document.fonts.ready; if (score.valid) { analytics.track('print_requested', configurationMetrics(settings, language, storedTemplatePresence(() => localStorage.getItem(LIBRARY_KEY)))); window.print(); } });
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('hashchange', restoreLocation);
 window.addEventListener('popstate', restoreLocation);

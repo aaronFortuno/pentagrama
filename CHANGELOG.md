@@ -1,5 +1,16 @@
 # Canvis
 
+## 2.3.5 · 2026-10-21
+
+- Analítica de configuracions mitjançant propietats dels esdeveniments existents, sense nous disparadors ni peticions per cada canvi de control. Les peticions d’impressió i els desaments personals inclouen format, mode, idioma i booleans per anotacions, doble cara, claus, compassos i nom/data.
+- Les aplicacions de plantilles suggerides des del sidebar incorporen un identificador públic fix del catàleg. Les aplicacions de plantilles personals continuen indicant només la categoria personal, cosa que permet observar-ne la reutilització sense transmetre noms ni identificadors propis.
+- El desament personal es continua comptant exclusivament després que l’emmagatzematge confirmi l’operació. Cancel·lar el diàleg, deixar el nom buit o un error de persistència no genera cap desament. El mateix esdeveniment incorpora el perfil de la configuració desada.
+- A les peticions d’impressió s’indica si el navegador té alguna plantilla personal desada. La comprovació llegeix la biblioteca persistent localment; una lectura bloquejada o invàlida omet el valor, sense interpretar-la com una biblioteca buida ni interrompre la impressió. Un canvi en memòria sense persistir no es considera una plantilla desada.
+- Filtre de sortida amb llista tancada d’identificadors suggerits i propietats booleanes estrictes, preservant explícitament tant true com false. Els textos de capçalera i peu, noms, codis, marges, quantitats i contingut de plantilles no s’envien. Es mantenen les exclusions, DNT/GPC, el filtratge d’URL i la desactivació en local i al web auxiliar.
+- Textos de privadesa i resum de versió actualitzats als deu idiomes. La documentació d’analítica explica les propietats, com consultar-les a Umami, les limitacions dels recomptes d’accions i la distinció entre visites al catàleg i aplicacions des del sidebar. L’historial anterior del footer es conserva.
+- Proves de totes les combinacions d’opcions, valors desactivats, rebuig de dades arbitràries, identificadors suggerits i personals, presència persistent, errors d’emmagatzematge i exclusions de privadesa.
+
+
 ## 2.3.4 · 2026-10-21
 
 - Nova plantilla «Fitxa amb espai per a anotacions»: A4 amb nom i data, cinc pentagrames visibles sobre una base de nou i reserva inferior del 35% amb punts cada 8 mm. Manté els espais originals, el marge de separació i totes les opcions editables. No incorpora textos inventats, claus, compassos ni peus activats.

@@ -1,10 +1,75 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createAnalytics, sanitizePayload } from '../docs/analytics.js';
+import { createAnalytics, sanitizePayload, configurationMetrics } from '../docs/analytics.js';
+import { DEFAULT_TEMPLATES, storedTemplatePresence } from '../docs/library.js';
+import { normalizeSettings } from '../docs/layout.js';
 import { MELODIES } from '../docs/melodies.js';
 import { LANGUAGES } from '../docs/i18n.js';
 
 const website = '00000000-0000-4000-8000-000000000001';
+
+test('print and save profiles preserve true and false feature flags without exposing layout content', () => {
+  for (let mask = 0; mask < 32; mask++) for (const name of ['print_requested', 'template_saved']) {
+    const flags = Array.from({ length: 5 }, (_, bit) => Boolean(mask & (1 << bit)));
+    const settings = normalizeSettings({ paper: 'A3', mode: 'blocks', blocks: [{ label: 'PRIVATE', count: 2 }],
+      notes: { enabled: flags[0] }, duplex: { enabled: flags[1] }, clefs: { enabled: flags[2] }, barlines: { enabled: flags[3] },
+      pageText: { nameDate: flags[4], title: 'PRIVATE', instructions: 'PRIVATE', footer: 'PRIVATE' } });
+    const data = configurationMetrics(settings, 'eu', mask % 2 === 0);
+    assert.deepEqual(data, { paper: 'A3', mode: 'blocks', language: 'eu', annotations: flags[0], duplex: flags[1],
+      clefs: flags[2], barlines: flags[3], name_date: flags[4], has_saved_templates: mask % 2 === 0 });
+    const payload = sanitizePayload('event', { website, name, data: { ...data, title: 'PRIVATE', reference: 'PRIVATE', template: 'PRIVATE', count: 42, margins: [1, 2], notes: settings.notes, kind: 'personal' } });
+    assert.deepEqual(payload.data, name === 'template_saved' ? { ...data, kind: 'personal' } : data);
+    assert.equal(JSON.stringify(payload).includes('PRIVATE'), false);
+  }
+  for (const name of ['print_requested', 'template_saved']) {
+    assert.deepEqual(sanitizePayload('event', { website, name, data: { annotations: 'true', duplex: 1, clefs: null, barlines: {}, name_date: [], has_saved_templates: 'PRIVATE' } }).data, {});
+  }
+});
+
+test('only suggested-template application accepts fixed catalogue IDs; personal IDs and names never leave', () => {
+  for (const template of DEFAULT_TEMPLATES) {
+    const data = { kind: 'suggested', template: template.id };
+    assert.deepEqual(sanitizePayload('event', { website, name: 'template_applied', data }).data, data);
+    assert.deepEqual(sanitizePayload('event', { website, name: 'template_applied', data: { ...data, kind: 'personal', id: 'PRIVATE', name: 'PRIVATE' } }).data, { kind: 'personal' });
+  }
+  for (const template of ['PRIVATE', 'Annotations', '<script>', '00000000-0000-4000-8000-000000000001']) {
+    assert.deepEqual(sanitizePayload('event', { website, name: 'template_applied', data: { kind: 'suggested', template } }).data, { kind: 'suggested' });
+  }
+  assert.deepEqual(sanitizePayload('event', { website, name: 'share_requested', data: { kind: 'suggested', template: 'annotations' } }).data, { kind: 'suggested' });
+});
+
+test('saved-template presence describes persistent records and omits unreadable storage', () => {
+  const saved = JSON.stringify({ saved: [{ id: 'PRIVATE', name: 'PRIVATE', settings: { pageText: { title: 'PRIVATE' } } }] });
+  assert.equal(storedTemplatePresence(() => saved), true);
+  for (const value of [null, '{}', '{"saved":[]}', '{"saved":[null]}']) assert.equal(storedTemplatePresence(() => value), false);
+  for (const read of [() => '{invalid', () => { throw new Error('storage blocked'); }]) {
+    const presence = storedTemplatePresence(read); assert.equal(presence, undefined);
+    assert.ok(!Object.hasOwn(configurationMetrics(normalizeSettings({}), 'ca', presence), 'has_saved_templates'));
+  }
+  let stored = '{}';
+  const pendingInMemory = JSON.parse(saved);
+  assert.ok(pendingInMemory.saved.length);
+  assert.equal(storedTemplatePresence(() => stored), false);
+  stored = saved; assert.equal(storedTemplatePresence(() => stored), true);
+});
+
+test('profiled events reuse existing triggers and remain blocked by every privacy exclusion', () => {
+  const data = configurationMetrics(normalizeSettings({ notes: { enabled: true } }), 'ca', true);
+  const env = environment(), analytics = createAnalytics(env); analytics.init(website);
+  analytics.track('print_requested', data); analytics.track('template_saved', { kind: 'personal', ...data });
+  assert.deepEqual(env.calls, [['print_requested', data], ['template_saved', { ...data, kind: 'personal' }]]);
+  for (const exclusion of ['manual', 'dnt', 'gpc']) {
+    const excludedEnv = environment(), excluded = createAnalytics(excludedEnv); excluded.init(website);
+    if (exclusion === 'manual') excluded.setExcluded(true);
+    if (exclusion === 'dnt') excludedEnv.navigator.doNotTrack = '1';
+    if (exclusion === 'gpc') excludedEnv.navigator.globalPrivacyControl = true;
+    for (const name of ['print_requested', 'template_saved', 'template_applied']) {
+      assert.equal(excluded.track(name, { ...data, kind: 'suggested', template: 'annotations' }), false);
+      assert.equal(excludedEnv.pentagramaBeforeSend('event', { website, name, data }), false);
+    }
+    assert.equal(excludedEnv.calls.length, 0);
+  }
+});
 
 test('print statistics accept every supported language and reject unknown language values', () => {
   for (const language of Object.keys(LANGUAGES)) {

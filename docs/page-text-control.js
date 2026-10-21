@@ -1,4 +1,4 @@
-import { iconMarkup } from './icons.js?v=2.3.4';
+import { iconMarkup } from './icons.js?v=2.3.5';
 
 const alignments = ['left', 'center', 'right'], icons = ['text-align-start', 'text-align-center', 'text-align-end'];
 

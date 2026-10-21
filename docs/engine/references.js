@@ -1,6 +1,6 @@
-import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.3.4';
-import { normalizeSettings } from './settings.js?v=2.3.4';
-import { hasPageText, hasPageTextSettings, encodePageText, decodePageText } from './page-text-settings.js?v=2.3.4';
+import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.3.5';
+import { normalizeSettings } from './settings.js?v=2.3.5';
+import { hasPageText, hasPageTextSettings, encodePageText, decodePageText } from './page-text-settings.js?v=2.3.5';
 
 const styles = { single: 'S', double: 'D', dashed: 'H' }, connections = { none: 'N', solid: 'S', dashed: 'D' };
 const clefCodes = { none: 'N', treble: 'G', bass: 'F', alto: 'A', tenor: 'T' };
