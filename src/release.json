@@ -1,9 +1,16 @@
 {
-  "date": "2026-10-21",
+  "date": "2026-10-22",
   "changes": [
-    "release235Summary"
+    "release240Summary"
   ],
   "history": [
+    {
+      "version": "2.3.5",
+      "date": "2026-10-21",
+      "changes": [
+        "release235Summary"
+      ]
+    },
     {
       "version": "2.3.4",
       "date": "2026-10-21",
@@ -81,11 +88,5 @@
         "release20Summary"
       ]
     }
-  ],
-  "announcement": [
-    "release20NoticeNotation",
-    "release20NoticeWorkspace"
-  ],
-  "announcementVersion": "2.0.0",
-  "announcementUntil": "2026-10-22T00:00:00+02:00"
+  ]
 }

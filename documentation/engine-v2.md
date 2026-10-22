@@ -161,3 +161,14 @@ A partir de la 2.3.1, `layout.count` conserva el nombre original, `visibleCount`
 ## Peu horitzontal · 2.3.3
 
 Amb `pageText.footer`, `footerLines()` distribueix adreça a l’esquerra, text propi al centre i codi a la dreta sobre la mateixa línia de base. L’adreça pot ocupar fins al 20% de l’amplada útil i la referència fins al 45%, amb 4 mm de separació màxima entre continguts. El text propi utilitza l’espai restant i es manté al centre del full quan hi cap; si cal, es desplaça dins del seu espai. Les mides s’ajusten a l’amplada mesurada, sense retallar textos ni afegir files. `footerTextWidth(text, size)` admet la mida efectiva; el PDF la utilitza també en l’ancoratge de referències reduïdes. Sense peu personalitzat, es conserva l’algoritme anterior per compatibilitat.
+
+
+## Format de capçalera · 2.4.0
+
+`pageText.titleStyle` i `instructionsStyle` contenen `{ family, size, bold, italic, underline }`. Famílies tancades `serif`, `sans`, `lora`; mida física en mm, de 2,12 a 16,93 (aprox. 6–48 pt), mostrada en punts al panell. Per compatibilitat, els valors inicials continuen sent exactament 6 mm per al títol i 3,2 mm per a les instruccions. Els estils són independents i la normalització sempre crea còpies. Les pàgines explícites hereten parcialment també els camps interns dels estils.
+
+`page-font.js` resol la variant real i mesura amb els seus avanços sense kerning ni lligadures. La mateixa variant consta a la primitiva de text (`fontFace` només quan no és la font original). SVG aplica família/pes/cursiva locals; PDF incrusta només les variants utilitzades amb mapes Unicode i recursos diferents. El subratllat és una línia de la mateixa escena, ancorada segons la llargada física mesurada. La reserva de capçalera, els salts de línia i la validació de desbordament segueixen al motor.
+
+La tupla compartida afegeix a les vuit posicions prèvies dues tuples opcionals `[family,size,bold,italic,underline]`. Només s’emeten si hi ha format diferent de l’original, i el descodificador continua acceptant sis i vuit camps sense modificar-ne la codificació. `encodeReference` continua ignorant tot `pageText`.
+
+Les fonts són locals, amb mètriques separades dels programes PDF. Consulteu `docs/vendor/header-fonts-SOURCE.md` i `tools/vendor-header-fonts.py` per reproducció, revisió fixada i verificació de fonts i llicències.

@@ -1,7 +1,7 @@
-import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.3.5';
-import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.3.5';
-import { normalizePageText } from './page-text-settings.js?v=2.3.5';
-import { normalizeNotes } from './notes.js?v=2.3.5';
+import { PAPER_SIZES, DEFAULT_MARGINS, DEFAULT_BARLINES } from './constants.js?v=2.4.0';
+import { CLEF_TYPES, normalizeClefPattern } from './clefs.js?v=2.4.0';
+import { normalizePageText } from './page-text-settings.js?v=2.4.0';
+import { normalizeNotes } from './notes.js?v=2.4.0';
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const round = v => Math.round(v * 10) / 10;

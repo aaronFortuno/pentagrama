@@ -1,5 +1,5 @@
-import { bindSelectControl } from './select-control.js?v=2.3.5';
-import { barlineThickness } from './engine/barlines.js?v=2.3.5';
+import { bindSelectControl } from './select-control.js?v=2.4.0';
+import { barlineThickness } from './engine/barlines.js?v=2.4.0';
 
 // UI adapter only: normalization, placement and export stay in the engine.
 export function bindBarlinesControl({ read, change, onOpen, root = document }) {

@@ -1,5 +1,19 @@
 # Canvis
 
+## 2.4.0 · 2026-10-22
+
+- Format independent de títol i instruccions: mida en punts entre 6 i 48 pt, Noto Serif, Noto Sans o Editorial (basada en Lora), negreta, cursiva i subratllat. L’alineació esquerra/centre/dreta es mou al mateix panell per mantenir un sol botó discret de configuració al costat de cada camp. Els controls no apareixen en passar el ratolí ni mentre s’escriu.
+- Panell flotant fora dels contenidors amb scroll per evitar retalls. Es posiciona dins de la pantalla en escriptori i mòbil, amb el mateix temps de transició de 220 ms i respecte per moviment reduït. Clic exterior, Escape, canvi de secció, altres menús, scroll exterior i canvi de mida el tanquen. Escape retorna el focus al botó.
+- Opcions amb noms accessibles, estats actius i indicacions emergents localitzades als deu idiomes. Mostres tipogràfiques Aa, mida editable amb unitat pt i increments, icones oficials de Lucide per configuració i estils i botons d’alineació agrupats. No es canvia la mida dels camps d’edició segons la mida impresa.
+- Preferències independents per navegador amb clau pentagrama.text-preferences.v1: només format i alineació, sense copiar els textos ni la fila de nom/data. S’apliquen a fulls nous i plantilles suggerides. Obrir un enllaç o una plantilla personal conserva el seu format propi i no modifica les preferències; canviar explícitament un format actualitza només la preferència corresponent.
+- El motor mesura amplades i salt de línia amb les mètriques de la variant escollida. La capçalera reserva l’altura resultant, sense retallar títol o instruccions; si el full no hi cap, es manté la validació que bloqueja impressió i PDF. El subratllat és un traç vectorial amb la mateixa longitud i posició als tres renderitzats.
+- Fonts servides localment: es conserva Noto Serif ExtraLight original i s’afegeixen onze variants reals de les tres famílies, incloses negreta i cursiva combinades. No hi ha peticions a serveis tipogràfics externs. El subconjunt modificat de Lora utilitza el nom propi Pentagrama Editorial, amb els crèdits originals conservats. Els subconjunts s’obtenen d’una revisió fixada de Google Fonts, amb hashes verificats, mètriques, llicències SIL OFL i una eina reproduïble. Noto Sans i Lora es referencien també al diàleg del projecte.
+- PDF amb múltiples fonts Unicode incrustades segons les variants realment presents a cada document. Els ancoratges i les amplades coincideixen amb SVG i impressió; els estils no depenen de fonts instal·lades al sistema ni de simulacions de negreta o cursiva. Les dades de les fonts per al PDF no es carreguen al generador habitual.
+- Restaurar una plantilla o un enllaç actualitza també el camp que tenia el focus, evitant que el text visible al sidebar quedi desfasat respecte del full.
+- Plantilles, desfer/refer, punt de restabliment, doble cara i herència de pàgines explícites conserven estils independents. Els enllaços complets afegeixen dues tuples de format només quan cal; continuen acceptant els formats antics de sis i vuit camps. El codi de referència imprès continua excloent capçalera, peu i tot el format tipogràfic.
+- Resum del footer als deu idiomes i historial anterior conservat. S’elimina la configuració de l’avís temporal de llançament 2.0.0, ja caducat. Proves de fonts, mides, variants, subratllats, alineacions, salts, desbordament, preferències, compatibilitat, persistència i coordenades compartides.
+
+
 ## 2.3.5 · 2026-10-21
 
 - Analítica de configuracions mitjançant propietats dels esdeveniments existents, sense nous disparadors ni peticions per cada canvi de control. Les peticions d’impressió i els desaments personals inclouen format, mode, idioma i booleans per anotacions, doble cara, claus, compassos i nom/data.

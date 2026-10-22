@@ -1,6 +1,10 @@
 // Lucide static SVG subset. ISC / MIT; see lucide-LICENSE.txt.
 // Source: https://github.com/lucide-icons/lucide/tree/1ef60af944de207e0d5176905a0759ba12e6ee8d/icons
 export const icons = Object.freeze({
+"settings-2": "<path d=\"M14 17H5\" />\n  <path d=\"M19 7h-9\" />\n  <circle cx=\"17\" cy=\"17\" r=\"3\" />\n  <circle cx=\"7\" cy=\"7\" r=\"3\" />",
+"bold": "<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\" />",
+"italic": "<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\" />\n  <line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\" />\n  <line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\" />",
+"underline": "<path d=\"M6 4v6a6 6 0 0 0 12 0V4\" />\n  <line x1=\"4\" x2=\"20\" y1=\"20\" y2=\"20\" />",
   "text-align-start": "<path d=\"M21 5H3\" />\n  <path d=\"M15 12H3\" />\n  <path d=\"M17 19H3\" />",
   "text-align-center": "<path d=\"M21 5H3\" />\n  <path d=\"M17 12H7\" />\n  <path d=\"M19 19H5\" />",
   "text-align-end": "<path d=\"M21 5H3\" />\n  <path d=\"M21 12H9\" />\n  <path d=\"M21 19H7\" />",

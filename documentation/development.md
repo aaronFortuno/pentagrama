@@ -173,3 +173,10 @@ La classe `settings-fields` comparteix estructura i espaiat dels camps opcionals
 Des de la 2.3.3, el focus dels grups `.segmented` és interior (`outline-offset:-2px`), de manera que no depèn del padding dels contenidors animats amb overflow ocult. L’alineació de títol i instruccions utilitza `.alignment-cycle`: un botó quadrat independent per camp, amb estat guardat als mateixos paràmetres `pageText`. `bindPageTextControl()` en renova la icona i el text accessible localitzat després d’editar, desfer, recuperar una plantilla o canviar d’idioma.
 
 Les plantilles suggerides amb nom i data reben l’idioma explícit a `suggestedTemplateSettings`; els enllaços i les miniatures han de conservar aquests camps impresos localitzats. `templatePreviewPath` tria l’SVG localitzat només quan cal, i `renderTemplatePreview` hi incorpora la font local (les imatges SVG no hereten les fonts del document). Els recomptes públics i del sidebar utilitzen `visibleCount` quan hi ha retall per reserva d’anotacions.
+
+
+## Format de text i preferències
+
+`page-text-control.js` gestiona un panell no modal compartit pels dos camps, afegit al body per evitar retalls. Obre només amb el botó explícit, es coordina amb els altres menús i usa `showPopover` amb la transició comuna. Els camps continuen amb tipografia de la interfície; només la previsualització representa la mida impresa.
+
+`pentagrama.text-preferences.v1` recorda només `titleStyle`, `instructionsStyle`, `titleAlign` i `instructionsAlign`. Els canvis explícits actualitzen únicament les claus afectades. Full nou i plantilla suggerida apliquen aquestes preferències; una plantilla personal o un enllaç complet conserva els seus valors, i no canvia les preferències automàticament. La configuració activa, l’historial i la base de restabliment continuen sent snapshots complets.

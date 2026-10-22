@@ -1,6 +1,6 @@
-import { normalizeSettings } from './settings.js?v=2.3.5';
-import { clefForStaff } from './clefs.js?v=2.3.5';
-import { sheetSides } from './sides.js?v=2.3.5';
+import { normalizeSettings } from './settings.js?v=2.4.0';
+import { clefForStaff } from './clefs.js?v=2.4.0';
+import { sheetSides } from './sides.js?v=2.4.0';
 
 export const DOCUMENT_SCHEMA_VERSION = 2;
 export const MAX_DOCUMENT_PAGES = 32;
@@ -47,7 +47,7 @@ export function normalizeDocument(value = {}) {
     if (!page || typeof page !== 'object') throw new Error('invalidDocumentPage');
     const id = identity(page.id, `page-${index + 1}`, used);
     const common = normalizeSettings(value.settings);
-    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines }, clefs: { ...common.clefs, ...page.settings?.clefs }, duplex: { ...common.duplex, ...page.settings?.duplex }, pageText: { ...common.pageText, ...page.settings?.pageText }, notes: { ...common.notes, ...page.settings?.notes } } : page.settings);
+    const settings = normalizeSettings(explicit ? { ...common, ...page.settings, barlines: { ...common.barlines, ...page.settings?.barlines }, clefs: { ...common.clefs, ...page.settings?.clefs }, duplex: { ...common.duplex, ...page.settings?.duplex }, pageText: { ...common.pageText, ...page.settings?.pageText, titleStyle: { ...common.pageText.titleStyle, ...page.settings?.pageText?.titleStyle }, instructionsStyle: { ...common.pageText.instructionsStyle, ...page.settings?.pageText?.instructionsStyle } }, notes: { ...common.notes, ...page.settings?.notes } } : page.settings);
     const localId = node => node.id.split('/').at(-1);
     const identities = page.identities || (Array.isArray(page.systems) ? { systems: page.systems.map(system => ({ id: localId(system), blocks: system.blocks.map(block => ({ id: localId(block), staves: block.staves.map(staff => ({ id: localId(staff) })) })) })) } : undefined);
     return { id, settings, systems: structure(settings, id, identities),
