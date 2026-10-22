@@ -1,6 +1,6 @@
-import { normalizeSettings } from './settings.js?v=2.4.1';
-import { clefForStaff } from './clefs.js?v=2.4.1';
-import { sheetSides } from './sides.js?v=2.4.1';
+import { normalizeSettings } from './settings.js?v=2.5.0';
+import { clefForStaff } from './clefs.js?v=2.5.0';
+import { sheetSides } from './sides.js?v=2.5.0';
 
 export const DOCUMENT_SCHEMA_VERSION = 2;
 export const MAX_DOCUMENT_PAGES = 32;

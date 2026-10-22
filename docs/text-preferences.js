@@ -1,4 +1,4 @@
-import { normalizePageText } from './engine/page-text-settings.js?v=2.4.1';
+import { normalizePageText } from './engine/page-text-settings.js?v=2.5.0';
 
 // Only presentation choices are defaults. Never copy title/instruction content.
 export function textPreferences(value) {

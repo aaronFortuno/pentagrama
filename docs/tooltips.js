@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=2.4.1';
+import { motionOptions } from './motion.js?v=2.5.0';
 
 // Keep the label inside the viewport, including the last controls in a sidebar or dialog.
 export function tooltipPosition(anchor, size, viewport) {

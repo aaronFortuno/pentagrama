@@ -1,6 +1,6 @@
-import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.4.1';
-import { normalizeSettings } from './settings.js?v=2.4.1';
-import { hasPageText, hasPageTextSettings, encodePageText, decodePageText } from './page-text-settings.js?v=2.4.1';
+import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.5.0';
+import { normalizeSettings } from './settings.js?v=2.5.0';
+import { hasPageText, hasPageTextSettings, encodePageText, decodePageText } from './page-text-settings.js?v=2.5.0';
 
 const styles = { single: 'S', double: 'D', dashed: 'H' }, connections = { none: 'N', solid: 'S', dashed: 'D' };
 const clefCodes = { none: 'N', treble: 'G', bass: 'F', alto: 'A', tenor: 'T' };
@@ -86,7 +86,9 @@ export function decodeReference(text) {
 }
 
 export function encodeShareHash(value) {
-  const s = normalizeSettings(value), reference = encodeReference(s);
+  // Uploaded images stay in the browser and personal templates, never in URLs.
+  const s = normalizeSettings(value); s.pageText.footerImage = null;
+  const reference = encodeReference(s);
   if (hasPageTextSettings(s.pageText)) return `${reference}~${encodeURIComponent(JSON.stringify({ ...(s.mode === 'blocks' ? { b: s.blocks.map(b => b.label) } : {}), t: encodePageText(s.pageText) }))}`;
   return s.mode === 'blocks' ? `${reference}~${encodeURIComponent(JSON.stringify(s.blocks.map(b => b.label)))}` : reference;
 }

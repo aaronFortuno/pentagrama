@@ -1,31 +1,33 @@
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.4.1';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.4.1';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.4.1';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.4.1';
-import { iconMarkup, renderIcons } from './icons.js?v=2.4.1';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.4.1';
-import { bindTouchRange } from './touch-range.js?v=2.4.1';
-import { analytics, configurationMetrics } from './analytics.js?v=2.4.1';
-import { createLogoNote } from './logo-note.js?v=2.4.1';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.4.1';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.4.1';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.4.1';
-import { createResetBaseline } from './settings-baseline.js?v=2.4.1';
-import { enhanceNumberInputs } from './number-input.js?v=2.4.1';
-import { bindSelectControl } from './select-control.js?v=2.4.1';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.4.1';
-import { bindSiteDialogs } from './site-chrome.js?v=2.4.1';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.4.1';
-import { bindNotesControl } from './notes-control.js?v=2.4.1';
-import { bindPageTextControl } from './page-text-control.js?v=2.4.1';
-import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.4.1';
-import { bindClefsControl } from './clefs-control.js?v=2.4.1';
-import { bindBarlinesControl } from './barlines-control.js?v=2.4.1';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.4.1';
-import { createDocument } from './engine/document.js?v=2.4.1';
-import { renderSvgPage } from './engine/svg.js?v=2.4.1';
-import { renderPrintDocument } from './engine/print.js?v=2.4.1';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.4.1';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.5.0';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.5.0';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.5.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.5.0';
+import { iconMarkup, renderIcons } from './icons.js?v=2.5.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.5.0';
+import { bindTouchRange } from './touch-range.js?v=2.5.0';
+import { analytics, configurationMetrics } from './analytics.js?v=2.5.0';
+import { createLogoNote } from './logo-note.js?v=2.5.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.5.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.5.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.5.0';
+import { createResetBaseline } from './settings-baseline.js?v=2.5.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.5.0';
+import { bindSelectControl } from './select-control.js?v=2.5.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.5.0';
+import { bindSiteDialogs } from './site-chrome.js?v=2.5.0';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.5.0';
+import { bindNotesControl } from './notes-control.js?v=2.5.0';
+import { bindPageTextControl } from './page-text-control.js?v=2.5.0';
+import { bindFooterControl } from './footer-control.js?v=2.5.0';
+import { footerSnapshot } from './footer-library.js?v=2.5.0';
+import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.5.0';
+import { bindClefsControl } from './clefs-control.js?v=2.5.0';
+import { bindBarlinesControl } from './barlines-control.js?v=2.5.0';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.5.0';
+import { createDocument } from './engine/document.js?v=2.5.0';
+import { renderSvgPage } from './engine/svg.js?v=2.5.0';
+import { renderPrintDocument } from './engine/print.js?v=2.5.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.5.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -47,7 +49,7 @@ const preferredLanguage = () => detectLanguage(languageChoice, navigator.languag
 let language = languageFromURL(location.href, siteRoot) || preferredLanguage();
 let templatesOpen = false, languageOpen = false, toastTimer, layout, score;
 let melodyDiscovery, mobileWorkspace;
-let settingsHistory, historyGroup;
+let settingsHistory, historyGroup, imageStorageWarned = false;
 let previewZoom = MIN_ZOOM, previewPan = { x: 0, y: 0 }, previewSize = '', drag;
 const noticeTimers = new Map();
 const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
@@ -269,18 +271,25 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   $('print-page-style').textContent = `@page{size:${layout.width}mm ${layout.height}mm;margin:0}`;
   $('workspace').dataset.templatesOpen = String(templatesOpen); $('templates-panel').inert = !templatesOpen; $('templates-panel').setAttribute('aria-hidden', String(!templatesOpen)); $('toggle-templates').setAttribute('aria-expanded', String(templatesOpen));
   if (blocks) renderBlocks(); updateBlockFields(); if (templates) renderLibrary(false);
-  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); pageTextControl.refresh({ force: blocks }); notesControl.refresh(); groupControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
-  write(SETTINGS_KEY, settings); write(BASELINE_KEY, resetBaseline.restore()); fitPreview();
+  marginsControl.refresh(); barlinesControl.refresh(); clefsControl.refresh(); pageTextControl.refresh({ force: blocks }); footerControl.refresh(); notesControl.refresh(); groupControl.refresh(); enhanceNumberInputs(document.querySelector('.settings'), t); paperControl.refresh();
+  const settingsStored = write(SETTINGS_KEY, settings), baselineStored = write(BASELINE_KEY, resetBaseline.restore());
+  if ((!settingsStored || !baselineStored) && settings.pageText.footerImage && !imageStorageWarned) { imageStorageWarned = true; toast(t('noStorage')); }
+  if (settingsStored && baselineStored) imageStorageWarned = false;
+  const footerState = { current: footerSnapshot(settings.pageText), baseline: footerSnapshot(resetBaseline.restore().pageText) };
+  if (JSON.stringify(history.state?.pentagramaFooter ?? null) !== JSON.stringify(footerState)) {
+    try { history.replaceState({ ...history.state, pentagramaFooter: footerState }, '', location.href); } catch {}
+  }
+  fitPreview();
 }
 
 function setTemplatesOpen(value) {
-  if (value) { setLanguageOpen(false); pageTextControl.close(); mobileWorkspace?.close(); }
+  if (value) { setLanguageOpen(false); pageTextControl.close(); footerControl.close(); mobileWorkspace?.close(); }
   templatesOpen = value; render({ templates: value });
   if (value) $('close-templates').focus({ preventScroll: true });
 }
 function setLanguageOpen(value, focus = 'selected') {
   if (value === languageOpen) return;
-  if (value) { paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); }
+  if (value) { paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); }
   languageOpen = value; $('language-button').setAttribute('aria-expanded', String(value)); showPopover($('language-menu'), value);
   if (value) {
     const buttons = [...$('language-menu').querySelectorAll('[data-language]')];
@@ -311,7 +320,7 @@ function selectStartingLayout(value) {
   finishHistoryGroup();
   settings = resetBaseline.capture(editorSettings(value));
   const url = new URL(location.href); url.hash = encodeShareHash(settings);
-  if (url.href !== location.href) history.replaceState(history.state, '', url);
+  history.replaceState({ ...history.state, pentagramaFooter: { current: footerSnapshot(settings.pageText), baseline: footerSnapshot(settings.pageText) } }, '', url);
   handledHash = location.hash;
 }
 function restoreFromHash({ initial = false } = {}) {
@@ -320,6 +329,12 @@ function restoreFromHash({ initial = false } = {}) {
   finishHistoryGroup();
   try {
     settings = handledHash ? resetBaseline.capture(editorSettings(resetBaseline.fromHash(handledHash, settings))) : resetBaseline.capture(withTextPreferences(DEFAULTS, preferredTextStyle));
+    const localFooter = history.state?.pentagramaFooter;
+    if (localFooter && typeof localFooter === 'object' && localFooter.current && localFooter.baseline) {
+      const baseline = resetBaseline.restore();
+      resetBaseline.capture({ ...baseline, pageText: { ...baseline.pageText, ...footerSnapshot(localFooter.baseline) } });
+      settings = { ...settings, pageText: { ...settings.pageText, ...footerSnapshot(localFooter.current) } };
+    }
     return true;
   } catch { return false; }
 }
@@ -371,20 +386,23 @@ document.addEventListener('keydown', event => {
   const direction = historyShortcut(event);
   if (direction && !document.querySelector('dialog[open]')) { event.preventDefault(); travelHistory(direction); }
 });
-const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => { closeLanguageMenu(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); } });
-const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); } });
-const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); } });
-const groupControl = bindSelectControl($('group-size'), $('group-button'), $('group-menu'), { onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); pageTextControl.close(); } });
+const paperControl = bindSelectControl($('paper-size'), $('paper-button'), $('paper-menu'), { onOpen: () => { closeLanguageMenu(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); } });
+const barlinesControl = bindBarlinesControl({ read: () => settings, change: patch => update('barlines', { ...settings.barlines, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); } });
+const clefsControl = bindClefsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); } });
+const groupControl = bindSelectControl($('group-size'), $('group-button'), $('group-menu'), { onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); pageTextControl.close(); footerControl.close(); } });
 const marginsControl = bindMarginsControl({ read: () => settings, change: patch => { settings = { ...settings, ...patch }; render(); }, t });
-const notesControl = bindNotesControl({ read: () => settings, change: patch => update('notes', { ...settings.notes, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); groupControl.close(); pageTextControl.close(); } });
+const notesControl = bindNotesControl({ read: () => settings, change: patch => update('notes', { ...settings.notes, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); } });
 const pageTextControl = bindPageTextControl({ read: () => settings, change: patch => {
   update('pageText', { ...settings.pageText, ...patch, language });
   if (Object.keys(patch).some(key => ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign'].includes(key))) {
     preferredTextStyle = textPreferences({ ...preferredTextStyle, ...Object.fromEntries(Object.entries(patch).filter(([key]) => ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign'].includes(key))) });
     if (!write(TEXT_PREFERENCES_KEY, preferredTextStyle)) toast(t('noStorage'));
   }
-}, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); },
+}, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); footerControl.close(); },
 beginEdit: element => { historyGroup = element; }, finishEdit: finishHistoryGroup });
+const footerControl = bindFooterControl({ read: () => settings, change: patch => update('pageText', { ...settings.pageText, ...patch }), t, notify: toast,
+  onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); },
+  beginEdit: element => { historyGroup = element; }, finishEdit: finishHistoryGroup });
 $('toggle-duplex').addEventListener('click', () => update('duplex', { ...settings.duplex, enabled: !settings.duplex.enabled }));
 $('first-page-only').addEventListener('change', event => update('duplex', { ...settings.duplex, firstPageOnly: event.target.checked }));
 $('paper-size').addEventListener('change', event => update('paper', event.target.value));
@@ -433,7 +451,7 @@ $('restore-form').addEventListener('submit', event => {
   catch { $('restore-message').textContent = t('invalidRef'); $('restore-message').classList.add('error'); $('reference-input').setAttribute('aria-invalid', 'true'); }
 });
 $('copy-reference').addEventListener('click', () => copy(encodeReference(settings)));
-function shareLayout(value, kind = 'current') { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(value); analytics.track('share_requested', { kind }); copy(url.href); }
+async function shareLayout(value, kind = 'current') { const url = new URL(location.href); url.search = ''; url.hash = encodeShareHash(value); analytics.track('share_requested', { kind }); if (await copy(url.href) && value.pageText.footerImage) toast(t('footerShareNoImage')); }
 $('share-template').addEventListener('click', () => shareLayout(settings));
 $('toggle-templates').addEventListener('click', () => setTemplatesOpen(!templatesOpen));
 $('close-templates').addEventListener('click', () => { setTemplatesOpen(false); $('toggle-templates').focus({ preventScroll: true }); });
@@ -472,7 +490,7 @@ for (const details of settingsAccordion.children) {
   details.open = details.id === activeSection;
   settingsDetails.set(details, bindAnimatedDetails(details, { onOpen() {
     for (const [other, controller] of settingsDetails) if (other !== details) controller.setOpen(false);
-    closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close();
+    closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close();
   }, onChange(opening) { write(SIDEBAR_KEY, opening ? details.id : null); } }));
 }
 // Reserve every heading before giving the open section the remaining height.
@@ -514,15 +532,15 @@ $('paper-stage').addEventListener('keydown', event => {
   const move = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[event.key];
   if (move) { event.preventDefault(); previewPan.x += move[0]; previewPan.y += move[1]; fitPreview(); }
 });
-$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!score.valid) return; await document.fonts.ready; if (score.valid) { analytics.track('print_requested', configurationMetrics(settings, language, storedTemplatePresence(() => localStorage.getItem(LIBRARY_KEY)))); window.print(); } });
+$('print-button').addEventListener('click', async () => { document.activeElement?.blur(); render(); if (!score.valid) return; try { await Promise.all([document.fonts.ready, footerControl.ready()]); } catch { toast(t('footerImageInvalid')); return; } if (score.valid) { analytics.track('print_requested', configurationMetrics(settings, language, storedTemplatePresence(() => localStorage.getItem(LIBRARY_KEY)))); window.print(); } });
 window.addEventListener('beforeprint', () => render());
 window.addEventListener('hashchange', restoreLocation);
 window.addEventListener('popstate', restoreLocation);
 window.addEventListener('storage', event => { if (event.key === LIBRARY_KEY) { library = normalizeLibrary(read(LIBRARY_KEY, {})); renderLibrary(); } });
 mobileWorkspace = bindMobileWorkspace({ t, onOpen() {
   if (templatesOpen) setTemplatesOpen(false);
-  closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close();
-}, onClose() { paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); } });
+  closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close();
+}, onClose() { paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); } });
 new ResizeObserver(fitPreview).observe($('paper-stage'));
 restoreFromHash({ initial: true });
 if (settings.pageText.nameDate) settings.pageText.language = language;

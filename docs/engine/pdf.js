@@ -1,9 +1,11 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.4.1';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.4.1';
-import { footerTextWidth } from './typography.js?v=2.4.1';
-import { validatePath } from './path-data.js?v=2.4.1';
-import { pageTextWidth, DEFAULT_PAGE_FACE } from './page-font.js?v=2.4.1';
-import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.4.1';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.5.0';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.5.0';
+import { footerTextWidth } from './typography.js?v=2.5.0';
+import { validatePath } from './path-data.js?v=2.5.0';
+import { pageTextWidth, DEFAULT_PAGE_FACE } from './page-font.js?v=2.5.0';
+import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.5.0';
+import { rasterPixels } from './raster-image.js?v=2.5.0';
+import { zlibSync } from '../vendor/fflate.js?v=2.5.0';
 
 let fontProgram;
 function embeddedFont() {
@@ -18,7 +20,7 @@ function embeddedFont() {
 const points = mm => (mm * 72 / 25.4).toFixed(5);
 const escapedText = text => text.replaceAll('\\', '\\\\').replaceAll('(', '\\(').replaceAll(')', '\\)');
 
-function pageCommands(page, fontNames) {
+function pageCommands(page, fontNames, imageNames) {
   let commands = `0 G ${points(page.layout.thickness)} w\n`;
   let strokeWidth = page.layout.thickness, dash = '', strokeGray = 0;
   for (const element of page.scene) {
@@ -45,6 +47,8 @@ function pageCommands(page, fontNames) {
         commands += coordinates.join(' ') + ` ${operation === 'M' ? 'm' : operation === 'L' ? 'l' : 'c'}\n`;
       }
       commands += 'f\n';
+    } else if (element.kind === 'image') {
+      commands += `q ${points(element.width)} 0 0 ${points(element.height)} ${points(element.x)} ${points(page.frame.height - element.y - element.height)} cm /${imageNames.get(element.image.data)} Do Q\n`;
     } else if (element.kind === 'text') {
       const key = element.fontFace || DEFAULT_PAGE_FACE;
       const width = element.font === 'page' ? pageTextWidth(element.text, element.fontSize, key) : footerTextWidth(element.text, element.fontSize);
@@ -61,15 +65,20 @@ export function createPdfDocument(value) {
   const usesFont = value.pages.some(page => page.scene.some(element => element.kind === 'text' && element.font !== 'page'));
   const faces = [...new Set(value.pages.flatMap(page => page.scene.filter(e => e.kind === 'text' && e.font === 'page').map(e => e.fontFace || DEFAULT_PAGE_FACE)))];
   const fontNames = new Map(faces.map((face, index) => [face, 'F' + (index + 2)]));
+  const images = [...new Map(value.pages.flatMap(page => page.scene.filter(e => e.kind === 'image').map(e => [e.image.data, e.image]))).values()];
+  const imageNames = new Map(images.map((image, index) => [image.data, 'Im' + (index + 1)]));
   const fontId = 3 + value.pages.length * 2;
   const pageFontId = fontId + (usesFont ? 3 : 0);
+  const imageId = pageFontId + faces.length * 6;
   const kids = value.pages.map((_, index) => `${3 + index * 2} 0 R`).join(' ');
   const objects = ['<< /Type /Catalog /Pages 2 0 R >>', `<< /Type /Pages /Kids [${kids}] /Count ${value.pages.length} >>`];
   value.pages.forEach((page, index) => {
-    const commands = pageCommands(page, fontNames), contentId = 4 + index * 2;
+    const commands = pageCommands(page, fontNames, imageNames), contentId = 4 + index * 2;
     const usedFaces = new Set(page.scene.filter(e => e.kind === 'text' && e.font === 'page').map(e => e.fontFace || DEFAULT_PAGE_FACE));
     const fonts = [page.scene.some(element => element.kind === 'text' && element.font !== 'page') ? '/F1 ' + fontId + ' 0 R' : '', ...faces.flatMap((face, i) => usedFaces.has(face) ? `/${fontNames.get(face)} ${pageFontId + i * 6} 0 R` : [])].filter(Boolean).join(' ');
-    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${points(page.frame.width)} ${points(page.frame.height)}] /Resources << ${fonts ? '/Font << ' + fonts + ' >>' : ''} >> /Contents ${contentId} 0 R >>`,
+    const usedImages = new Set(page.scene.filter(e => e.kind === 'image').map(e => e.image.data));
+    const xobjects = images.flatMap((image, i) => usedImages.has(image.data) ? `/${imageNames.get(image.data)} ${imageId + i * 2} 0 R` : []).join(' ');
+    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${points(page.frame.width)} ${points(page.frame.height)}] /Resources << ${fonts ? '/Font << ' + fonts + ' >>' : ''}${xobjects ? ' /XObject << ' + xobjects + ' >>' : ''} >> /Contents ${contentId} 0 R >>`,
       `<< /Length ${commands.length} >>\nstream\n${commands}endstream`);
   });
   if (usesFont) {
@@ -79,6 +88,13 @@ export function createPdfDocument(value) {
       `<< /Length ${font.hex.length} /Length1 ${font.length} /Filter /ASCIIHexDecode >>\nstream\n${font.hex}\nendstream`);
   }
   faces.forEach((face, index) => objects.push(...pageFontObjects(pageFontId + index * 6, face)));
+  for (let index = 0; index < images.length; index++) {
+    const image = images[index], { rgb, alpha } = rasterPixels(image);
+    for (const [channel, bytes] of [['rgb', rgb], ['alpha', alpha]]) {
+      const hex = Array.from(zlibSync(bytes), byte => byte.toString(16).padStart(2, '0')).join('') + '>';
+      objects.push(`<< /Type /XObject /Subtype /Image /Width ${image.width} /Height ${image.height} /ColorSpace /${channel === 'rgb' ? 'DeviceRGB' : 'DeviceGray'} /BitsPerComponent 8 /Filter [/ASCIIHexDecode /FlateDecode]${channel === 'rgb' ? ` /SMask ${imageId + index * 2 + 1} 0 R` : ''} /Length ${hex.length} >>\nstream\n${hex}\nendstream`);
+    }
+  }
   let document = '%PDF-1.4\n'; const offsets = [0];
   objects.forEach((object, i) => { offsets.push(document.length); document += `${i + 1} 0 obj\n${object}\nendobj\n`; });
   const crossReference = document.length;

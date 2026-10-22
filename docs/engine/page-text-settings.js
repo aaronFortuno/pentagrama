@@ -1,7 +1,8 @@
-import { DEFAULT_TITLE_STYLE, DEFAULT_INSTRUCTIONS_STYLE, normalizeTextStyle, sameTextStyle, textStyleTuple, textStyleFromTuple } from './text-style.js?v=2.4.1';
+import { DEFAULT_TITLE_STYLE, DEFAULT_INSTRUCTIONS_STYLE, normalizeTextStyle, sameTextStyle, textStyleTuple, textStyleFromTuple } from './text-style.js?v=2.5.0';
+import { normalizeFooterImage } from './raster-image.js?v=2.5.0';
 export const PAGE_TEXT_LIMITS = Object.freeze({ title: 100, instructions: 500, footer: 160 });
 export const PAGE_TEXT_LANGUAGES = Object.freeze(['ca', 'en', 'es', 'de', 'fr', 'it', 'pt', 'nl', 'eu', 'gl']);
-export const DEFAULT_PAGE_TEXT = Object.freeze({ title: '', instructions: '', nameDate: false, firstPageOnly: true, language: 'ca', footer: '', titleAlign: 'left', instructionsAlign: 'left', titleStyle: DEFAULT_TITLE_STYLE, instructionsStyle: DEFAULT_INSTRUCTIONS_STYLE });
+export const DEFAULT_PAGE_TEXT = Object.freeze({ title: '', instructions: '', nameDate: false, firstPageOnly: true, language: 'ca', footer: '', titleAlign: 'left', instructionsAlign: 'left', titleStyle: DEFAULT_TITLE_STYLE, instructionsStyle: DEFAULT_INSTRUCTIONS_STYLE, footerImage: null });
 const alignment = value => ['left', 'center', 'right'].includes(value) ? value : 'left';
 
 function clean(value, maximum, multiline = false) {
@@ -15,7 +16,7 @@ export function normalizePageText(value = {}) {
     nameDate: value.nameDate === true, firstPageOnly: value.firstPageOnly !== false,
     language: PAGE_TEXT_LANGUAGES.includes(value.language) ? value.language : 'ca', footer: clean(value.footer, PAGE_TEXT_LIMITS.footer),
     titleAlign: alignment(value.titleAlign), instructionsAlign: alignment(value.instructionsAlign),
-    titleStyle: normalizeTextStyle(value.titleStyle, DEFAULT_TITLE_STYLE), instructionsStyle: normalizeTextStyle(value.instructionsStyle, DEFAULT_INSTRUCTIONS_STYLE) };
+    titleStyle: normalizeTextStyle(value.titleStyle, DEFAULT_TITLE_STYLE), instructionsStyle: normalizeTextStyle(value.instructionsStyle, DEFAULT_INSTRUCTIONS_STYLE), footerImage: normalizeFooterImage(value.footerImage) };
 }
 export const hasPageText = value => Boolean(value.title.trim() || value.instructions.trim() || value.nameDate || value.footer.trim());
 export function hasPageTextSettings(value) {

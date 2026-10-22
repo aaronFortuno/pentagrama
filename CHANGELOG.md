@@ -1,5 +1,17 @@
 # Canvis
 
+## 2.5.0 · 2026-10-22
+
+- Imatge opcional al peu personalitzat, sola o amb text. Càrrega local de PNG, JPEG i WebP, inclosos PNG transparents, conservant color i proporcions. SVG queda fora d’aquesta primera versió. No es transmeten imatges ni noms de fitxer.
+- Controls discrets dins de Peu de pàgina: afegir o canviar imatge, miniatura, configuració i eliminació. Panell flotant de 220 ms amb alçada de 3 a 18 mm, imatge davant, darrere, damunt o sota del text i alineació vertical superior, central o inferior en una fila compartida. Tancament exterior, Escape, canvi de secció o menú, scroll exterior i canvi de mida; focus de retorn accessible i moviment reduït.
+- Amplada màxima de 65 mm i alçada màxima de 18 mm, amb reducció proporcional segons l’espai útil. L’adreça del servei i el codi mantenen les seves bandes i línies de base; el bloc personalitzat s’ajusta entre elles sense superposicions. El motor reserva espai per sobre del peu abans de distribuir pentagrames o anotacions, també amb marges petits, reflectits i doble cara.
+- Una sola escena física per a SVG, impressió i PDF. El PDF incrusta color RGB i màscara de transparència, comprimits sense pèrdua i reutilitzats entre pàgines. No depèn de connexions, fonts o imatges remotes; la impressió espera que la imatge estigui descodificada. Els fulls sense imatge mantenen la sortida anterior.
+- Biblioteca local de fins a vuit peus: desa text, imatge, mida i disposició, sense copiar la capçalera ni el layout. Aplicació a una altra plantilla, deduplicació, eliminació individual o de tota la biblioteca i sincronització entre pestanyes. Els errors d’emmagatzematge s’indiquen sense donar per confirmat un desament.
+- Les plantilles personals, desfer/refer i restabliment conserven les imatges. L’estat local de navegació les manté en recarregar una plantilla personal, sense introduir-les a l’URL. Els enllaços compartits i el codi imprès exclouen la imatge; l’editor ho explica i la còpia de l’enllaç també ho recorda.
+- Importació limitada a fitxers de 12 MB i 40 megapíxels: reescalat a un màxim de 1.024 píxels de costat i 524.288 píxels totals, nova codificació PNG sense metadades i reducció fins a 96 KiB. El motor valida signatura, dimensions, CRC, canals, filtres, mida descomprimida i checksum abans d’acceptar el recurs. URLs externes, vectors i PNG malmesos es descarten.
+- fflate 0.8.2 servida localment, amb llicència MIT, crèdit al diàleg del projecte i eina de provisió amb SHA-512 fixat. Icona image-plus oficial de la mateixa revisió de Lucide; eina de provisió d’icones actualitzada per conservar tot el conjunt existent.
+- Controls, ajudes, errors i resum del footer als deu idiomes. Historial anterior conservat, documentació del funcionament local i proves de geometria, transparència, PDF, validació, compatibilitat, biblioteca i persistència. L’analítica no afegeix esdeveniments ni dades de la imatge.
+
 ## 2.4.1 · 2026-10-22
 
 - Miniatura de la fitxa amb espai per a anotacions a tota l’amplada disponible, amb el mateix retall vertical que les altres targetes, tant al catàleg públic com al sidebar de plantilles. S’elimina l’excepció que la reduïa per mostrar el full sencer.

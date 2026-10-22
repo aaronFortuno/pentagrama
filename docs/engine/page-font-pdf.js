@@ -1,6 +1,6 @@
-import { PAGE_FONT_DATA } from '../vendor/page-font-data.js?v=2.4.1';
-import { HEADER_FONT_DATA } from '../vendor/header-font-data.js?v=2.4.1';
-import { pageFontCharacter, pageFontMetrics, DEFAULT_PAGE_FACE } from './page-font.js?v=2.4.1';
+import { PAGE_FONT_DATA } from '../vendor/page-font-data.js?v=2.5.0';
+import { HEADER_FONT_DATA } from '../vendor/header-font-data.js?v=2.5.0';
+import { pageFontCharacter, pageFontMetrics, DEFAULT_PAGE_FACE } from './page-font.js?v=2.5.0';
 
 const hex4 = value => value.toString(16).padStart(4, '0');
 const hexBytes = bytes => [...bytes].map(byte => byte.charCodeAt(0).toString(16).padStart(2, '0')).join('') + '>';

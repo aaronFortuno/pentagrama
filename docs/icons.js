@@ -1,4 +1,4 @@
-import { icons } from './vendor/lucide.js?v=2.4.1';
+import { icons } from './vendor/lucide.js?v=2.5.0';
 
 export function iconMarkup(name) {
   if (!Object.hasOwn(icons, name)) throw new Error(`Unknown Lucide icon: ${name}`);
