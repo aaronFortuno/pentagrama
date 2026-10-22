@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, fitSettings, footerLines, footerTextWidth, FOOTER_SIZE, SERVICE_ADDRESS } from '../docs/layout.js';
 import { createDocument, renderSvgPage, renderPrintDocument, createPdfDocument } from '../docs/engine/index.js';
 import { normalizePageText, PAGE_TEXT_LIMITS } from '../docs/engine/page-text-settings.js';
@@ -39,10 +40,24 @@ test('headers reserve physical space and give the name a larger writing area tha
     const texts = header.elements.filter(element => element.kind === 'text');
     assert.ok(texts.some(element => element.text === PRINTED_FIELD_LABELS[language][0] + ':'));
     assert.ok(texts.some(element => element.text === PRINTED_FIELD_LABELS[language][1] + ':'));
+    const name = texts.find(element => element.role === 'student-name'), date = texts.find(element => element.role === 'student-date');
+    const title = texts.find(element => element.role === 'header-title'), instructions = texts.filter(element => element.role === 'header-instructions');
+    near(name.y, s.marginTop + 4); near(date.y, name.y);
+    assert.ok(fields.every(field => field.y1 < title.y - title.fontSize));
+    assert.ok(instructions.every(line => line.y > title.y));
     assert.ok(fields.every(element => element.y1 + 3 < page.layout.staves[0][0]));
     assert.equal(createDocument({ ...s, topSpace: 80 }).pages[0].layout.top, s.marginTop + 80);
     const print = renderPrintDocument(doc); assert.ok(print.includes(renderSvgPage(page)));
     assert.deepEqual(createDocument(doc), doc);
+  }
+});
+
+test('the sidebar places name and date before the title and instructions in every language', async () => {
+  for (const language of Object.keys(PRINTED_FIELD_LABELS)) {
+    const html = await readFile(new URL(`../docs/${language}/index.html`, import.meta.url), 'utf8');
+    const section = html.match(/<section class="settings-subsection header-options">[\s\S]*?<\/section>/)[0];
+    assert.ok(section.indexOf('id="show-name-date"') < section.indexOf('id="header-title"'));
+    assert.ok(section.indexOf('id="header-title"') < section.indexOf('id="header-instructions"'));
   }
 });
 

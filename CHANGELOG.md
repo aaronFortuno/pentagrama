@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.4.1 · 2026-10-22
+
+- Miniatura de la fitxa amb espai per a anotacions a tota l’amplada disponible, amb el mateix retall vertical que les altres targetes, tant al catàleg públic com al sidebar de plantilles. S’elimina l’excepció que la reduïa per mostrar el full sencer.
+- Totes les targetes del catàleg obren directament el configurador amb el preset i l’idioma corresponents, des de la imatge i des de l’enllaç de personalització. Les fitxes detallades anteriors es conserven per als enllaços existents i la cerca.
+- Nom simplificat de la fitxa d’anotacions, sense «de música», també a les fitxes detallades i als deu idiomes.
+- La fila de nom i data precedeix el títol i les instruccions al full i al sidebar. El motor compartit aplica aquest ordre a previsualització, impressió, PDF i miniatures, mantenint l’altura total reservada, les proporcions dels camps i els espais dels pentagrames.
+- Resum del footer als deu idiomes i historial anterior conservat. Proves d’accés directe de totes les targetes, correspondència dels presets, ordre i coordenades dels camps als formats de paper i idiomes disponibles.
+
 ## 2.4.0 · 2026-10-22
 
 - Format independent de títol i instruccions: mida en punts entre 6 i 48 pt, Noto Serif, Noto Sans o Editorial (basada en Lora), negreta, cursiva i subratllat. L’alineació esquerra/centre/dreta es mou al mateix panell per mantenir un sol botó discret de configuració al costat de cada camp. Els controls no apareixen en passar el ratolí ni mentre s’escriu.

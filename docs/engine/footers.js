@@ -1,8 +1,8 @@
-import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.4.0';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.4.0';
-import { encodeReference } from './references.js?v=2.4.0';
-import { footerTextWidth } from './typography.js?v=2.4.0';
-import { pageFontText, pageTextWidth } from './page-font.js?v=2.4.0';
+import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.4.1';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.4.1';
+import { encodeReference } from './references.js?v=2.4.1';
+import { footerTextWidth } from './typography.js?v=2.4.1';
+import { pageFontText, pageTextWidth } from './page-font.js?v=2.4.1';
 
 export function footerLines(value, referenceSettings) {
   const s = normalizeSettings(value), { width, height } = pageDimensions(s);

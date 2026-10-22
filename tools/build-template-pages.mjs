@@ -44,8 +44,7 @@ export function renderTemplatePage(locale, homepage, guide, generatorHTML) {
   };
   const editorLink = template => escape(`./${locale}/${templateEditorURL(locale, template, homepage).hash}`);
   const card = template => {
-    const detail = TEMPLATE_GUIDES.find(item => item.id === template.id);
-    return `<article class="guide-card"><a class="guide-card-image${template.settings.notes.enabled ? ' guide-card-image--whole' : ''}" href="${detail ? `./${templatePath(locale, detail)}` : editorLink(template)}" aria-labelledby="template-${template.id}"><img src="./${templatePreviewPath(locale, template)}?v=${RELEASE.version}" alt="" width="420" height="594" loading="lazy"></a><div class="guide-card-copy"><h2 id="template-${template.id}">${t(template.key)}</h2><p class="guide-facts">${facts(template)}</p><a class="guide-link" href="${detail ? `./${templatePath(locale, detail)}` : editorLink(template)}">${t(detail ? 'viewTemplate' : 'openTemplate')} <span class="forward-icon" data-icon="chevron-left"></span><span class="sr-only"> · ${t(template.key)}</span></a></div></article>`;
+    return `<article class="guide-card"><a class="guide-card-image" href="${editorLink(template)}" aria-labelledby="template-${template.id}"><img src="./${templatePreviewPath(locale, template)}?v=${RELEASE.version}" alt="" width="420" height="594" loading="lazy"></a><div class="guide-card-copy"><h2 id="template-${template.id}">${t(template.key)}</h2><p class="guide-facts">${facts(template)}</p><a class="guide-link" href="${editorLink(template)}">${t('openTemplate')} <span class="forward-icon" data-icon="chevron-left"></span><span class="sr-only"> · ${t(template.key)}</span></a></div></article>`;
   };
   let content;
   if (guide) {

@@ -1,5 +1,5 @@
-import { pageTextWidth, pageFontText, wrapPageText, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.4.0';
-import { pageDimensions } from './settings.js?v=2.4.0';
+import { pageTextWidth, pageFontText, wrapPageText, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.4.1';
+import { pageDimensions } from './settings.js?v=2.4.1';
 
 export const PRINTED_FIELD_LABELS = Object.freeze({ ca: ['Nom', 'Data'], en: ['Name', 'Date'], es: ['Nombre', 'Fecha'],
   de: ['Name', 'Datum'], fr: ['Nom', 'Date'], it: ['Nome', 'Data'], pt: ['Nome', 'Data'], nl: ['Naam', 'Datum'], eu: ['Izena', 'Data'], gl: ['Nome', 'Data'] });
@@ -26,8 +26,6 @@ export function headerContent(settings) {
     }
     cursor += 1;
   }
-  paragraph(options.title, options.titleStyle, 1.4, 'header-title', options.titleAlign);
-  paragraph(options.instructions, options.instructionsStyle, 4.6 / 3.2, 'header-instructions', options.instructionsAlign);
   let fields;
   if (options.nameDate) {
     const labels = PRINTED_FIELD_LABELS[options.language], gap = 8, nameWidth = Math.max(0, available - gap) * .74;
@@ -39,6 +37,8 @@ export function headerContent(settings) {
     });
     cursor += 9;
   }
+  paragraph(options.title, options.titleStyle, 1.4, 'header-title', options.titleAlign);
+  paragraph(options.instructions, options.instructionsStyle, 4.6 / 3.2, 'header-instructions', options.instructionsAlign);
   return { elements, height: elements.length ? cursor - s.marginTop + 4 : 0,
     valid: elements.every(element => element.kind === 'line' ? element.x2 > element.x1 : pageTextWidth(element.text, element.fontSize, element.fontFace) <= available + 1e-6) };
 }

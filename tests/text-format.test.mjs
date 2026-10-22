@@ -71,10 +71,11 @@ test('every face, alignment and underline shares measured placement across SVG, 
     const face = pageFontAppearance(key);
     assert.ok(svg.includes(`font-family="'${face.family}',${face.fallback}" font-size="${style.size}" font-weight="${face.weight}"${italic ? ' font-style="italic"' : ''}`));
     assert.ok(renderPrintDocument(doc).includes(svg));
-    assert.ok(pdf.includes(`/F2 ${points(style.size)} Tf 1 0 0 1 ${points(x)} ${points(page.frame.height - line.y)} Tm <${pageTextHex(title, key)}>`));
+    const faces = new Set(page.scene.filter(e => e.font === 'page').map(e => e.fontFace || 'serif-regular'));
+    const font = 'F' + ([...faces].indexOf(key) + 2);
+    assert.ok(pdf.includes(`/${font} ${points(style.size)} Tf 1 0 0 1 ${points(x)} ${points(page.frame.height - line.y)} Tm <${pageTextHex(title, key)}>`));
     assert.ok(pdf.includes(`/BaseFont /${pageFontMetrics(key).name}`));
     assert.ok(pdf.includes(`${points(underline.x1)} ${points(page.frame.height - underline.y1)} m ${points(underline.x2)} ${points(page.frame.height - underline.y2)} l S`));
-    const faces = new Set(page.scene.filter(e => e.font === 'page').map(e => e.fontFace || 'serif-regular'));
     assert.equal((pdf.match(/\/Subtype \/Type0/g) || []).length, faces.size);
   }
 });

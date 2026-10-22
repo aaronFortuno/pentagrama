@@ -45,7 +45,12 @@ test('all catalogue previews and editor links reuse the sidebar presets and prin
       assert.deepEqual(decodeShareHash(url.hash.slice(1)), expected);
       const catalogue = await readFile(new URL(`${locale}/templates/index.html`, root), 'utf8');
       assert.ok(catalogue.includes(previewPath));
-      if (!TEMPLATE_GUIDES.some(guide => guide.id === template.id)) assert.ok(catalogue.includes(`href="./${locale}/${url.hash}"`));
+      const card = [...catalogue.matchAll(/<article class="guide-card">[\s\S]*?<\/article>/g)].map(match => match[0]).find(card => card.includes(`id="template-${template.id}"`));
+      assert.ok(card);
+      assert.equal((card.match(/href="([^"]+)"/g) || []).length, 2);
+      assert.equal((card.matchAll(/href="([^"]+)"/g).toArray()).every(match => match[1] === `./${locale}/${url.hash}`), true);
+      assert.ok(card.includes('class="guide-card-image"'));
+      assert.ok(card.includes(translate(locale, 'openTemplate')));
     }
   }
 });

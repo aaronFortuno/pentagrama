@@ -20,8 +20,6 @@ body.template-page{height:100%;overflow:hidden}
 .guide-card:focus-within,.guide-card:hover{border-color:#b9c0af;box-shadow:0 4px 16px #26371d0a}
 .guide-card-image{display:block;height:clamp(150px,21vh,210px);overflow:hidden;padding:16px 22px 0;background:#e8ecdf}
 .guide-card-image img{display:block;width:100%;height:auto;margin:0 auto;background:white;box-shadow:0 3px 16px #26371d16;transition:transform var(--motion-duration) var(--motion-ease)}
-.guide-card-image--whole{padding-bottom:10px}
-.guide-card-image--whole img{width:auto;height:100%;max-width:100%}
 .guide-card-image:hover img{transform:translateY(-3px)}
 .guide-card-image:focus-visible{outline-offset:-4px}
 .guide-card-copy{padding:14px 16px 15px}
