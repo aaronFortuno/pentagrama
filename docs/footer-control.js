@@ -1,8 +1,8 @@
-import { iconMarkup } from './icons.js?v=2.5.0';
-import { showPopover } from './motion.js?v=2.5.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.5.0';
-import { importFooterImage } from './footer-image-upload.js?v=2.5.0';
-import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter } from './footer-library.js?v=2.5.0';
+import { iconMarkup } from './icons.js?v=2.6.0';
+import { showPopover } from './motion.js?v=2.6.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.6.0';
+import { importFooterImage } from './footer-image-upload.js?v=2.6.0';
+import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter } from './footer-library.js?v=2.6.0';
 
 export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, finishEdit }) {
   const $ = id => document.getElementById(id), input = $('footer-image-file');

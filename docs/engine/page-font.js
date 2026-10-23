@@ -1,5 +1,5 @@
-import { PAGE_FONT } from '../vendor/page-font-metrics.js?v=2.5.0';
-import { HEADER_FONTS } from '../vendor/header-font-metrics.js?v=2.5.0';
+import { PAGE_FONT } from '../vendor/page-font-metrics.js?v=2.6.0';
+import { HEADER_FONTS } from '../vendor/header-font-metrics.js?v=2.6.0';
 
 export const DEFAULT_PAGE_FACE = 'serif-regular';
 export const pageFontKey = (style = {}) => `${style.family || 'serif'}-${style.bold ? 'bold' : 'regular'}${style.italic ? '-italic' : ''}`;

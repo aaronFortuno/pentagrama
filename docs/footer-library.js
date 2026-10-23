@@ -1,4 +1,4 @@
-import { normalizePageText } from './engine/page-text-settings.js?v=2.5.0';
+import { normalizePageText } from './engine/page-text-settings.js?v=2.6.0';
 
 export const FOOTER_LIBRARY_KEY = 'pentagrama.footers.v1', MAX_SAVED_FOOTERS = 8;
 export function footerSnapshot(value) {

@@ -1,9 +1,9 @@
-import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.5.0';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.5.0';
-import { encodeReference } from './references.js?v=2.5.0';
-import { footerTextWidth } from './typography.js?v=2.5.0';
-import { pageFontText, pageTextWidth } from './page-font.js?v=2.5.0';
-import { rasterImage, RASTER_LIMITS } from './raster-image.js?v=2.5.0';
+import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.6.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.6.0';
+import { encodeReference } from './references.js?v=2.6.0';
+import { footerTextWidth } from './typography.js?v=2.6.0';
+import { pageFontText, pageTextWidth } from './page-font.js?v=2.6.0';
+import { rasterImage, RASTER_LIMITS } from './raster-image.js?v=2.6.0';
 
 function illustratedFooter(s, referenceSettings, { left, right, baseline }) {
   const options = s.pageText.footerImage, image = rasterImage(options.data);

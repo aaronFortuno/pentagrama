@@ -373,6 +373,25 @@ details[data-motion=closing] .restore-chevron{transform:rotate(0deg)}
 .site-footer .text-button{grid-column:3;font-size:9px;justify-self:end}
 .version-button{grid-column:2;justify-self:center;border:0;background:none;padding:6px 3px;font-size:9px;line-height:1.5;color:#687060;font-variant-numeric:tabular-nums}
 .version-button:hover{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.footer-tools{grid-column:2;display:flex;align-items:center;justify-content:center;gap:5px}
+.site-footer .backup-button{width:24px;height:24px;padding:4px;border:0;background:none;color:#687060}
+.site-footer .backup-button .lucide{width:15px;height:15px}
+.site-footer .backup-button:hover{color:var(--accent)}
+.backup-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.backup-actions button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;font-size:12px}
+.backup-actions .lucide{width:16px;height:16px}
+.backup-review{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.backup-date{font-size:11px;color:var(--muted)}
+.backup-counts{display:flex;gap:24px;margin:14px 0}
+.backup-counts>div{display:flex;gap:8px;font-size:12px;color:var(--muted)}
+.backup-counts dd{color:var(--ink);font-variant-numeric:tabular-nums}
+.backup-review>p:not(.backup-date){font-size:12px;line-height:1.7;color:var(--muted)}
+.backup-confirm{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px}
+.backup-confirm button{font-size:12px;min-height:40px}
+.backup-confirm .button{padding-inline:14px}
+#backup-status:empty{display:none}
+.backup-dialog .dialog-heading>.icon-button{flex-shrink:0}
+@media(max-width:760px){.backup-dialog{padding:20px}.backup-dialog .dialog-heading h2{font-size:22px}.footer-tools{gap:2px}.backup-counts{gap:14px;flex-wrap:wrap}.backup-confirm{gap:10px}.backup-confirm .button{font-size:11px}}
 .release-dialog[open]{display:flex;flex-direction:column;overflow:hidden}
 .release-dialog .dialog-heading{flex-shrink:0}
 .release-heading{display:flex;align-items:baseline;flex:1;flex-wrap:wrap;gap:4px 12px;min-width:0}

@@ -1,7 +1,7 @@
-import { iconMarkup } from './icons.js?v=2.5.0';
-import { showPopover } from './motion.js?v=2.5.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.5.0';
-import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.5.0';
+import { iconMarkup } from './icons.js?v=2.6.0';
+import { showPopover } from './motion.js?v=2.6.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.6.0';
+import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.6.0';
 
 const alignments = ['left', 'center', 'right'], icons = ['text-align-start', 'text-align-center', 'text-align-end'];
 const fontNames = { serif: 'Noto Serif', sans: 'Noto Sans', lora: 'Editorial' };

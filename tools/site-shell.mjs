@@ -21,7 +21,7 @@ export function guideChrome(html, locale, links, t) {
   const footer = html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)[0]
     .replace(/<a id="template-catalog-link"[^>]*>[\s\S]*?<\/a>/,
       `<a class="template-catalog-link" href="./${locale}/">${t('guideBack')}</a>`);
-  const dialogs = ['about', 'version', 'copy'].map(id => html.match(new RegExp(`<dialog id="${id}-dialog"[\\s\\S]*?<\\/dialog>`))[0]).join('\n');
+  const dialogs = ['about', 'version', 'copy', 'backup'].map(id => html.match(new RegExp(`<dialog id="${id}-dialog"[\\s\\S]*?<\\/dialog>`))[0]).join('\n');
   return { header, footer, dialogs, favicon: html.match(/<link rel="icon"[^>]*>/)[0] };
 }
 

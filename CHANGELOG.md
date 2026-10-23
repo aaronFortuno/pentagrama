@@ -1,5 +1,15 @@
 # Canvis
 
+## 2.6.0 · 2026-10-23
+
+- Un únic accés de còpia de seguretat al centre del footer, al costat de la versió, compartit entre generador i catàleg. Diàleg amb exportació i importació de tot el perfil, sense separar plantilles i peus. Icones existents de Lucide, moviment de 220 ms, controls accessibles i disposició mòbil.
+- Fitxer JSON amb format i esquema versionats, versió del web i data. Inclou plantilles personals i suggerides ocultes, biblioteca de peus amb imatges i disposició, full actual, punt de restabliment independent, preferències tipogràfiques, idioma, secció del sidebar i exclusió voluntària de l’analítica. No exporta altres dades de l’origen, historial d’accions ni indicadors tècnics d’avisos.
+- Importació local limitada a 16 MiB amb descodificació UTF-8 estricta, comprovació de format, esquema, estructura i tots els valors normalitzats. Els logotips passen la mateixa validació PNG del motor. Camps desconeguts, plantilles duplicades, dades incompletes, límits excedits o recursos malmesos es rebutgen abans de tocar les dades actuals; no s’accepten retalls ni ajustos silenciosos.
+- Resum previ amb data, versió i recomptes de plantilles i peus. Confirmació explícita de substitució, amb exportació de les dades actuals disponible abans de restaurar. Cancel·lar o tancar el diàleg invalida la importació pendent.
+- Restauració de les claus pròpies amb comprovació prèvia d’accés i recuperació dels valors anteriors si falla un desament. Si el navegador també bloqueja la recuperació, el perfil anterior es manté en memòria per poder-lo exportar. Les claus alienes es conserven. La restauració mai reactiva l’analítica si el navegador o la còpia l’havien exclosa; DNT i GPC continuen aplicant.
+- En acabar es torna al generador en l’idioma adequat i sense el hash antic, conservant el full importat i el seu punt de restabliment. Un marcador de canvi actualitza les altres pestanyes obertes del mateix origen. Cap fitxer, imatge o dada personal s’envia a un servidor i no s’afegeixen esdeveniments d’analítica.
+- Textos i resum de novetats als deu idiomes, historial anterior conservat i documentació del format i l’ús. Proves de perfil complet, imatges, valors invàlids, compatibilitat d’esquema, límits, errors de quota, recuperació, privadesa i coherència entre pàgines.
+
 ## 2.5.0 · 2026-10-22
 
 - Imatge opcional al peu personalitzat, sola o amb text. Càrrega local de PNG, JPEG i WebP, inclosos PNG transparents, conservant color i proporcions. SVG queda fora d’aquesta primera versió. No es transmeten imatges ni noms de fitxer.

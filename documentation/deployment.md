@@ -6,7 +6,7 @@ La generació també prepara el catàleg de plantilles i les quatre fitxes detal
 
 La capçalera i el peu es defineixen una sola vegada a `src/components/site-header.html` i `src/components/site-footer.html`. `tools/site-shell.mjs` els incorpora a `src/index.html` durant la generació i adapta la navegació de la guia. Aquesta també reutilitza els diàlegs localitzats i carrega els estils comuns de `docs/style.css`. `docs/template-pages.css` només defineix la disposició pròpia del catàleg i les fitxes. El comportament de V4V, privadesa i versions es comparteix a `docs/site-chrome.js`: els canvis en aquests elements s’han de comprovar tant al generador com a la guia.
 
-Els peus amb imatge i la seva biblioteca local es documenten a [Peus personalitzats](custom-footers.md). Els logotips dels usuaris no formen part del paquet publicat.
+Els peus amb imatge i la seva biblioteca local es documenten a [Peus personalitzats](custom-footers.md). Els logotips dels usuaris no formen part del paquet publicat. La còpia única de tot el perfil es documenta a [Còpia de seguretat](user-backups.md).
 
 ## Publicació del projecte
 
