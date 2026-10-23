@@ -1,4 +1,4 @@
-import { unzlibSync } from '../vendor/fflate.js?v=2.6.0';
+import { unzlibSync } from '../vendor/fflate.js?v=2.7.0';
 
 export const RASTER_LIMITS = Object.freeze({ bytes: 98304, side: 1024, pixels: 524288, height: 18, width: 65 });
 const prefix = 'data:image/png;base64,', cache = new Map(), pixels = new WeakMap();

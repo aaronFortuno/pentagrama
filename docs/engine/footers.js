@@ -1,9 +1,19 @@
-import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.6.0';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.6.0';
-import { encodeReference } from './references.js?v=2.6.0';
-import { footerTextWidth } from './typography.js?v=2.6.0';
-import { pageFontText, pageTextWidth } from './page-font.js?v=2.6.0';
-import { rasterImage, RASTER_LIMITS } from './raster-image.js?v=2.6.0';
+import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.7.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.7.0';
+import { encodeReference } from './references.js?v=2.7.0';
+import { footerTextWidth } from './typography.js?v=2.7.0';
+import { pageFontText, pageTextWidth, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.7.0';
+import { rasterImage, RASTER_LIMITS } from './raster-image.js?v=2.7.0';
+
+function blockLeft(start, end, width, align, center) {
+  return align === 'left' ? start : align === 'right' ? end - width : Math.max(start, Math.min(end - width, center - width / 2));
+}
+function customText(text, x, y, fontSize, style) {
+  const face = pageFontKey(style), width = pageTextWidth(text, fontSize, face);
+  return [{ text, x, y, anchor: 'middle', font: 'page', fontSize, role: 'custom-footer', ...(face !== DEFAULT_PAGE_FACE ? { fontFace: face } : {}) },
+    ...(style.underline ? [{ kind: 'line', role: 'custom-footer-underline', x1: x - width / 2, x2: x + width / 2,
+      y1: y + fontSize * .14, y2: y + fontSize * .14, stroke: '#000', strokeWidth: Math.max(.1, fontSize / 24) }] : [])];
+}
 
 function illustratedFooter(s, referenceSettings, { left, right, baseline }) {
   const options = s.pageText.footerImage, image = rasterImage(options.data);
@@ -12,16 +22,17 @@ function illustratedFooter(s, referenceSettings, { left, right, baseline }) {
   const sourceNatural = s.source ? footerTextWidth(SERVICE_ADDRESS) : 0, referenceNatural = reference ? footerTextWidth(reference) : 0;
   const sourceWidth = Math.min(sourceNatural, available * .2), referenceWidth = Math.min(referenceNatural, available * .45);
   const start = left + (s.source ? sourceWidth + gap : 0), end = right - (reference ? referenceWidth + gap : 0), room = Math.max(.01, end - start);
-  const text = pageFontText(s.pageText.footer.trim()), inline = ['before', 'after'].includes(options.placement), separation = text ? Math.min(2, room / 12) : 0;
+  const style = s.pageText.footerStyle, face = pageFontKey(style);
+  const text = pageFontText(s.pageText.footer.trim(), face), inline = ['before', 'after'].includes(options.placement), separation = text ? Math.min(2, room / 12) : 0;
   const ratio = image.width / image.height;
   const imageWidth = Math.min(options.height * ratio, RASTER_LIMITS.width, text && inline ? Math.max(.01, (room - separation) * .55) : room);
   const imageHeight = imageWidth / ratio;
   const textRoom = text && inline ? room - imageWidth - separation : room;
-  const fontSize = text ? Math.min(2.4, textRoom / Math.max(.01, pageTextWidth(text, 1))) : 0, textWidth = pageTextWidth(text, fontSize);
+  const fontSize = text ? Math.min(style.size, textRoom / Math.max(.01, pageTextWidth(text, 1, face))) : 0, textWidth = pageTextWidth(text, fontSize, face);
   const textHeight = fontSize * 1.25, bottom = baseline + .6;
   const blockWidth = inline ? imageWidth + separation + textWidth : Math.max(imageWidth, textWidth);
   const blockHeight = inline || !text ? Math.max(imageHeight, textHeight) : imageHeight + separation + textHeight;
-  const x = Math.max(start, Math.min(end - blockWidth, (left + right - blockWidth) / 2)), top = bottom - blockHeight;
+  const x = blockLeft(start, end, blockWidth, s.pageText.footerAlign, (left + right) / 2), top = bottom - blockHeight;
   let imageX = x, imageY = top, textX = x + blockWidth / 2, textY = bottom - fontSize * .25;
   if (inline && text) {
     if (options.placement === 'before') textX = x + imageWidth + separation + textWidth / 2;
@@ -35,7 +46,7 @@ function illustratedFooter(s, referenceSettings, { left, right, baseline }) {
   }
   const fit = (natural, width) => natural > width ? { fontSize: FOOTER_SIZE * width / natural } : {};
   return [{ kind: 'image', role: 'footer-image', image, x: imageX, y: imageY, width: imageWidth, height: imageHeight },
-    ...(text ? [{ text, x: textX, y: textY, anchor: 'middle', font: 'page', fontSize, role: 'custom-footer' }] : []),
+    ...(text ? customText(text, textX, textY, fontSize, style) : []),
     ...(s.source ? [{ text: SERVICE_ADDRESS, x: left, y: baseline, anchor: 'start', ...fit(sourceNatural, sourceWidth) }] : []),
     ...(reference ? [{ text: reference, x: right, y: baseline, anchor: 'end', ...fit(referenceNatural, referenceWidth) }] : [])];
 }
@@ -43,7 +54,7 @@ function illustratedFooter(s, referenceSettings, { left, right, baseline }) {
 export function footerLines(value, referenceSettings) {
   const s = normalizeSettings(value), { width, height } = pageDimensions(s);
   const left = Math.max(2, s.marginLeft), right = width - Math.max(2, s.marginRight);
-  const baseline = height - Math.min(9, Math.max(2, s.marginBottom / 2));
+  const baseline = height - Math.max(Math.min(9, Math.max(2, s.marginBottom / 2)), s.pageText.footer.trim() ? s.pageText.footerStyle.size * .3 + .5 : 0);
   if (s.pageText.footerImage) return illustratedFooter(s, referenceSettings, { left, right, baseline });
   if (s.pageText.footer.trim()) {
     // Three horizontal slots share a fixed baseline. Bound the outer slots so
@@ -53,13 +64,12 @@ export function footerLines(value, referenceSettings) {
     const sourceNatural = s.source ? footerTextWidth(SERVICE_ADDRESS) : 0, referenceNatural = reference ? footerTextWidth(reference) : 0;
     const sourceWidth = Math.min(sourceNatural, available * .2), referenceWidth = Math.min(referenceNatural, available * .45);
     const middleLeft = left + (s.source ? sourceWidth + gap : 0), middleRight = right - (reference ? referenceWidth + gap : 0);
-    const text = pageFontText(s.pageText.footer.trim());
-    const fontSize = Math.min(2.4, Math.max(.01, middleRight - middleLeft) / Math.max(.01, pageTextWidth(text, 1)));
-    const textWidth = pageTextWidth(text, fontSize);
-    const x = Math.min(middleRight - textWidth / 2, Math.max(middleLeft + textWidth / 2, (left + right) / 2));
-    const custom = { text, x, y: baseline, anchor: 'middle', font: 'page', fontSize, role: 'custom-footer' };
+    const style = s.pageText.footerStyle, face = pageFontKey(style), text = pageFontText(s.pageText.footer.trim(), face);
+    const fontSize = Math.min(style.size, Math.max(.01, middleRight - middleLeft) / Math.max(.01, pageTextWidth(text, 1, face)));
+    const textWidth = pageTextWidth(text, fontSize, face);
+    const x = blockLeft(middleLeft, middleRight, textWidth, s.pageText.footerAlign, (left + right) / 2) + textWidth / 2;
     const fit = (natural, width) => natural > width ? { fontSize: FOOTER_SIZE * width / natural } : {};
-    return [custom,
+    return [...customText(text, x, baseline, fontSize, style),
       ...(s.source ? [{ text: SERVICE_ADDRESS, x: left, y: baseline, anchor: 'start', ...fit(sourceNatural, sourceWidth) }] : []),
       ...(reference ? [{ text: reference, x: right, y: baseline, anchor: 'end', ...fit(referenceNatural, referenceWidth) }] : [])];
   }

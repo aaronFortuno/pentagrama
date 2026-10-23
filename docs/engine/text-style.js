@@ -2,6 +2,7 @@ export const TEXT_FAMILIES = Object.freeze(['serif', 'sans', 'lora']);
 // Physical millimetres internally, points in the formatting panel.
 export const DEFAULT_TITLE_STYLE = Object.freeze({ family: 'serif', size: 6, bold: false, italic: false, underline: false });
 export const DEFAULT_INSTRUCTIONS_STYLE = Object.freeze({ ...DEFAULT_TITLE_STYLE, size: 3.2 });
+export const DEFAULT_FOOTER_STYLE = Object.freeze({ ...DEFAULT_TITLE_STYLE, size: 2.4 });
 export const mmToPoints = value => value * 72 / 25.4;
 export const pointsToMm = value => Math.round(value * 25.4 / 72 * 100) / 100;
 export function normalizeTextStyle(value, fallback = DEFAULT_TITLE_STYLE) {

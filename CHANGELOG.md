@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.7.0 · 2026-10-23
+
+- El text personalitzat del peu reutilitza el panell de format del títol i les instruccions: tres tipografies locals, mida de 6 a 48 punts, negreta, cursiva, subratllat i alineació. Un engranatge al costat del camp obre el flotant amb el mateix moviment, teclat i tancament exterior.
+- Les preferències de format del peu es recorden al navegador. Plantilles personals, biblioteca de peus, desfer/refer, restabliment i còpies de seguretat conserven el format i l’alineació. Els enllaços compartits retenen el format del text, sense incloure logotips; el codi imprès continua descrivint només el layout.
+- Diagrames de posició amb un rectangle i línies de text substitueixen els botons llargs: quatre disposicions en una fila i tres alineacions verticals. Noms accessibles i ajudes traduïdes mantenen el significat de cada acció.
+- La geometria compartida de previsualització, impressió i PDF mesura cada variant tipogràfica, reserva l’espai necessari i ajusta el bloc dins de la banda lliure sense trepitjar l’adreça ni la referència. El format inicial i els fulls anteriors mantenen el mateix aspecte.
+- Esquema de còpia de seguretat 2 amb importació compatible de les còpies 1 de la 2.6.0. Migració limitada als dos nous valors de format, mantenint la validació estricta de la resta. Textos de novetats als deu idiomes i proves de compatibilitat, geometria i renderització.
+
 ## 2.6.0 · 2026-10-23
 
 - Un únic accés de còpia de seguretat al centre del footer, al costat de la versió, compartit entre generador i catàleg. Diàleg amb exportació i importació de tot el perfil, sense separar plantilles i peus. Icones existents de Lucide, moviment de 220 ms, controls accessibles i disposició mòbil.

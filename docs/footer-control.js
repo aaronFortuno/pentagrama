@@ -1,8 +1,9 @@
-import { iconMarkup } from './icons.js?v=2.6.0';
-import { showPopover } from './motion.js?v=2.6.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.6.0';
-import { importFooterImage } from './footer-image-upload.js?v=2.6.0';
-import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter } from './footer-library.js?v=2.6.0';
+import { iconMarkup } from './icons.js?v=2.7.0';
+import { showPopover } from './motion.js?v=2.7.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.7.0';
+import { importFooterImage } from './footer-image-upload.js?v=2.7.0';
+import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter, footerSnapshot } from './footer-library.js?v=2.7.0';
+import { footerLayoutIcon } from './footer-layout-icons.js?v=2.7.0';
 
 export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, finishEdit }) {
   const $ = id => document.getElementById(id), input = $('footer-image-file');
@@ -64,7 +65,7 @@ export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, 
     }
     if (button.dataset.footerApply) {
       const footer = library.find(item => item.id === button.dataset.footerApply);
-      if (footer) { finishEdit?.(); change({ footer: footer.footer, footerImage: footer.footerImage }); close(); $('custom-footer').focus({ preventScroll: true }); }
+      if (footer) { finishEdit?.(); change(footerSnapshot(footer)); close(); $('custom-footer').focus({ preventScroll: true }); }
     }
     if (button.dataset.footerDelete) { persist(deleteFooter(library, button.dataset.footerDelete), 'footerDeleted'); panel.querySelector('[data-footer-close]').focus({ preventScroll: true }); }
     if (button.hasAttribute('data-footer-clear')) { persist([], 'footerDeleted'); panel.querySelector('[data-footer-close]').focus({ preventScroll: true }); }
@@ -89,8 +90,8 @@ export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, 
     panel.querySelectorAll('[data-footer-label]').forEach(element => { element.textContent = t(element.dataset.footerLabel); });
     if (active === 'image' && image) {
       if (document.activeElement !== size) size.value = image.height;
-      panel.querySelectorAll('[data-image-placement]').forEach(button => { button.textContent = t('footerImage_' + button.dataset.imagePlacement); button.setAttribute('aria-pressed', String(button.dataset.imagePlacement === image.placement)); });
-      panel.querySelectorAll('[data-image-align]').forEach(button => { button.textContent = t('footerAlign_' + button.dataset.imageAlign); button.setAttribute('aria-pressed', String(button.dataset.imageAlign === image.align)); button.disabled = !options.footer.trim() || ['above', 'below'].includes(image.placement); });
+      panel.querySelectorAll('[data-image-placement]').forEach(button => { if (!button.firstElementChild) button.innerHTML = footerLayoutIcon(button.dataset.imagePlacement); label(button, t('footerImage_' + button.dataset.imagePlacement)); button.setAttribute('aria-pressed', String(button.dataset.imagePlacement === image.placement)); });
+      panel.querySelectorAll('[data-image-align]').forEach(button => { if (!button.firstElementChild) button.innerHTML = footerLayoutIcon(button.dataset.imageAlign); label(button, t('footerAlign_' + button.dataset.imageAlign)); button.setAttribute('aria-pressed', String(button.dataset.imageAlign === image.align)); button.disabled = !options.footer.trim() || ['above', 'below'].includes(image.placement); });
       enhanceNumberInputs(panel, t);
     }
     if (active === 'library') {

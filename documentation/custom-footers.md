@@ -15,3 +15,9 @@ Internament, la imatge es torna a codificar com un PNG sense metadades, amb un m
 La biblioteca de peus utilitza `pentagrama.footers.v1`. Les imatges de les plantilles personals són instantànies independents, perquè eliminar un peu de la biblioteca no en trenqui l’aparença. Les preferències tipogràfiques de títol i instruccions no incorporen el peu ni les seves imatges. L’analítica no transmet logotips, noms de fitxer, textos ni configuracions de peu.
 
 La compressió PNG/PDF utilitza [fflate 0.8.2](https://github.com/101arrowz/fflate), distribuïda localment sota MIT i fixada amb SHA-512 a `tools/vendor-raster.mjs`. Les icones continuen sent de Lucide. Les llicències i els enllaços es troben també al diàleg del projecte.
+
+## Format del text
+
+L’engranatge del camp personalitzat reutilitza el mateix panell de format que el títol i les instruccions. La mida (6–48 pt), tipografia, negreta, cursiva, subratllat i alineació es recorden com a preferències locals, sense desar el contingut com a valor per defecte. L’alineació situa tot el bloc personalitzat dins de l’espai disponible entre adreça i referència. El text es redueix proporcionalment si és massa llarg; no envaeix les altres bandes. Les disposicions i alineacions de la imatge es trien amb diagrames accessibles.
+
+Els peus desats, les plantilles i les còpies de seguretat inclouen el format. Els enllaços compartits inclouen el format del text però continuen excloent les imatges. Les dades antigues obtenen el format original (serif fi, 2,4 mm, centrat).

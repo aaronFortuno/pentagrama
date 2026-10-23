@@ -650,9 +650,10 @@ body>#print-root{display:block!important;width:auto;height:auto;overflow:visible
 .footer-options-popover fieldset{border:0;padding:0;margin:12px 0 0;min-width:0}
 .footer-options-popover legend{font-size:11px;font-weight:400;margin-bottom:7px}
 .footer-options-popover .text-format-row{margin:0}
-.footer-placement-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.footer-placement-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
 .footer-align-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.footer-placement-buttons button,.footer-align-buttons button{min-height:36px;border:1px solid #d8d6ce;border-radius:4px;background:#fcfcf8;padding:6px;color:var(--muted);font-size:11px;font-weight:400}
+.footer-placement-buttons button,.footer-align-buttons button{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid #d8d6ce;border-radius:4px;background:#fcfcf8;padding:5px;color:var(--muted);font-size:11px;font-weight:400}
+.footer-layout-icon{display:block;flex:none}
 .footer-options-popover button:disabled{opacity:.45;cursor:default}
 .footer-options-popover [data-footer-view=library]>.text-format-hint{margin:0 0 10px}
 .footer-saved-list{display:grid;gap:6px;max-height:240px;overflow-y:auto;padding:2px}

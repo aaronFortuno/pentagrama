@@ -1,34 +1,34 @@
-import { readUserProfile } from './user-backup.js?v=2.6.0';
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.6.0';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.6.0';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.6.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.6.0';
-import { iconMarkup, renderIcons } from './icons.js?v=2.6.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.6.0';
-import { bindTouchRange } from './touch-range.js?v=2.6.0';
-import { analytics, configurationMetrics } from './analytics.js?v=2.6.0';
-import { createLogoNote } from './logo-note.js?v=2.6.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.6.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.6.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.6.0';
-import { createResetBaseline } from './settings-baseline.js?v=2.6.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.6.0';
-import { bindSelectControl } from './select-control.js?v=2.6.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.6.0';
-import { bindSiteDialogs } from './site-chrome.js?v=2.6.0';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.6.0';
-import { bindNotesControl } from './notes-control.js?v=2.6.0';
-import { bindPageTextControl } from './page-text-control.js?v=2.6.0';
-import { bindFooterControl } from './footer-control.js?v=2.6.0';
-import { footerSnapshot } from './footer-library.js?v=2.6.0';
-import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.6.0';
-import { bindClefsControl } from './clefs-control.js?v=2.6.0';
-import { bindBarlinesControl } from './barlines-control.js?v=2.6.0';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.6.0';
-import { createDocument } from './engine/document.js?v=2.6.0';
-import { renderSvgPage } from './engine/svg.js?v=2.6.0';
-import { renderPrintDocument } from './engine/print.js?v=2.6.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.6.0';
+import { readUserProfile } from './user-backup.js?v=2.7.0';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.7.0';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.7.0';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.7.0';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.7.0';
+import { iconMarkup, renderIcons } from './icons.js?v=2.7.0';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.7.0';
+import { bindTouchRange } from './touch-range.js?v=2.7.0';
+import { analytics, configurationMetrics } from './analytics.js?v=2.7.0';
+import { createLogoNote } from './logo-note.js?v=2.7.0';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.7.0';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.7.0';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.7.0';
+import { createResetBaseline } from './settings-baseline.js?v=2.7.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.7.0';
+import { bindSelectControl } from './select-control.js?v=2.7.0';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.7.0';
+import { bindSiteDialogs } from './site-chrome.js?v=2.7.0';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.7.0';
+import { bindNotesControl } from './notes-control.js?v=2.7.0';
+import { bindPageTextControl } from './page-text-control.js?v=2.7.0';
+import { bindFooterControl } from './footer-control.js?v=2.7.0';
+import { footerSnapshot } from './footer-library.js?v=2.7.0';
+import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.7.0';
+import { bindClefsControl } from './clefs-control.js?v=2.7.0';
+import { bindBarlinesControl } from './barlines-control.js?v=2.7.0';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.7.0';
+import { createDocument } from './engine/document.js?v=2.7.0';
+import { renderSvgPage } from './engine/svg.js?v=2.7.0';
+import { renderPrintDocument } from './engine/print.js?v=2.7.0';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.7.0';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -395,8 +395,8 @@ const marginsControl = bindMarginsControl({ read: () => settings, change: patch 
 const notesControl = bindNotesControl({ read: () => settings, change: patch => update('notes', { ...settings.notes, ...patch }), onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); groupControl.close(); pageTextControl.close(); footerControl.close(); } });
 const pageTextControl = bindPageTextControl({ read: () => settings, change: patch => {
   update('pageText', { ...settings.pageText, ...patch, language });
-  if (Object.keys(patch).some(key => ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign'].includes(key))) {
-    preferredTextStyle = textPreferences({ ...preferredTextStyle, ...Object.fromEntries(Object.entries(patch).filter(([key]) => ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign'].includes(key))) });
+  if (Object.keys(patch).some(key => ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign', 'footerStyle', 'footerAlign'].includes(key))) {
+    preferredTextStyle = textPreferences({ ...preferredTextStyle, ...Object.fromEntries(Object.entries(patch).filter(([key]) => ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign', 'footerStyle', 'footerAlign'].includes(key))) });
     if (!write(TEXT_PREFERENCES_KEY, preferredTextStyle)) toast(t('noStorage'));
   }
 }, t, onOpen: () => { closeLanguageMenu(); paperControl.close(); barlinesControl.close(); clefsControl.close(); notesControl.close(); groupControl.close(); footerControl.close(); },

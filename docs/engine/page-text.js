@@ -1,5 +1,5 @@
-import { pageTextWidth, pageFontText, wrapPageText, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.6.0';
-import { pageDimensions } from './settings.js?v=2.6.0';
+import { pageTextWidth, pageFontText, wrapPageText, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.7.0';
+import { pageDimensions } from './settings.js?v=2.7.0';
 
 export const PRINTED_FIELD_LABELS = Object.freeze({ ca: ['Nom', 'Data'], en: ['Name', 'Date'], es: ['Nombre', 'Fecha'],
   de: ['Name', 'Datum'], fr: ['Nom', 'Date'], it: ['Nome', 'Data'], pt: ['Nome', 'Data'], nl: ['Naam', 'Datum'], eu: ['Izena', 'Data'], gl: ['Nome', 'Data'] });

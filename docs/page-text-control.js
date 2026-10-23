@@ -1,10 +1,11 @@
-import { iconMarkup } from './icons.js?v=2.6.0';
-import { showPopover } from './motion.js?v=2.6.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.6.0';
-import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.6.0';
+import { iconMarkup } from './icons.js?v=2.7.0';
+import { showPopover } from './motion.js?v=2.7.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.7.0';
+import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.7.0';
 
 const alignments = ['left', 'center', 'right'], icons = ['text-align-start', 'text-align-center', 'text-align-end'];
 const fontNames = { serif: 'Noto Serif', sans: 'Noto Sans', lora: 'Editorial' };
+const fieldLabels = { title: 'pageTitle', instructions: 'pageInstructions', footer: 'customFooter' };
 
 export function bindPageTextControl({ read, change, t, onOpen, beginEdit, finishEdit }) {
   const $ = id => document.getElementById(id);
@@ -67,10 +68,10 @@ export function bindPageTextControl({ read, change, t, onOpen, beginEdit, finish
     $('show-name-date').checked = settings.pageText.nameDate;
     $('header-front-only').checked = settings.pageText.firstPageOnly;
     $('header-front-option').hidden = !settings.duplex.enabled;
-    for (const button of buttons) label(button, t('formatField', { field: t(button.dataset.pageFormat === 'title' ? 'pageTitle' : 'pageInstructions') }));
+    for (const button of buttons) label(button, t('formatField', { field: t(fieldLabels[button.dataset.pageFormat]) }));
     if (!active) return;
     const style = settings.pageText[active + 'Style'];
-    $('text-format-heading').textContent = t('formatField', { field: t(active === 'title' ? 'pageTitle' : 'pageInstructions') });
+    $('text-format-heading').textContent = t('formatField', { field: t(fieldLabels[active]) });
     $('text-font-label').textContent = t('textTypeface'); $('text-size-label').textContent = t('textSize');
     label(panel.querySelector('[data-format-close]'), t('close'));
     panel.querySelector('.text-format-hint').textContent = t('textStyleSavedHint');

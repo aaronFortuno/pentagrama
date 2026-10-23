@@ -123,7 +123,7 @@ test('browser defaults contain only formatting and apply to new suggested sheets
   const original = normalizeSettings({ pageText: { title: 'PRIVATE', instructions: 'PRIVATE', nameDate: true, footer: 'PRIVATE', titleStyle: { family: 'lora', bold: true, size: 9 }, instructionsAlign: 'right' } });
   const preferences = textPreferences(original.pageText);
   assert.equal(JSON.stringify(preferences).includes('PRIVATE'), false);
-  assert.deepEqual(Object.keys(preferences), ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign']);
+  assert.deepEqual(Object.keys(preferences), ['titleStyle', 'instructionsStyle', 'titleAlign', 'instructionsAlign', 'footerStyle', 'footerAlign']);
   const fresh = normalizeSettings(withTextPreferences(DEFAULTS, preferences));
   assert.equal(fresh.pageText.title, ''); assert.equal(fresh.pageText.nameDate, false); assert.equal(fresh.pageText.titleStyle.family, 'lora');
   assert.equal(fresh.pageText.instructionsAlign, 'right');
@@ -131,4 +131,33 @@ test('browser defaults contain only formatting and apply to new suggested sheets
   assert.deepEqual(next.titleStyle, preferences.titleStyle); assert.equal(next.instructionsStyle.family, 'sans');
   const own = decodeShareHash(encodeShareHash(original)); assert.deepEqual(own, original);
   assert.equal(original.pageText.title, 'PRIVATE');
+});
+
+
+test('footer typography shares measured SVG, print and PDF placement, with bounded source and reference slots', () => {
+  for (const family of TEXT_FAMILIES) for (const align of ['left','center','right']) {
+    const s = normalizeSettings({ count: 4, source: true, reference: true, marginBottom: 0, pageText: { footer: title, footerAlign: align, footerStyle: { family, size: 8, bold: true, italic: true, underline: true } } });
+    const doc = createDocument(s); assert.ok(doc.valid);
+    const page = doc.pages[0], line = page.scene.find(e => e.role === 'custom-footer'), underline = page.scene.find(e => e.role === 'custom-footer-underline');
+    const width = pageTextWidth(line.text, line.fontSize, line.fontFace);
+    near(underline.x1, line.x - width / 2); near(underline.x2, line.x + width / 2);
+    assert.ok(underline.y1 + underline.strokeWidth / 2 < page.frame.height);
+    assert.ok(line.y - line.fontSize > page.layout.staves.at(-1)[4] + 2.9);
+    const svg = renderSvgPage(page), pdf = new TextDecoder().decode(createPdfDocument(doc));
+    assert.ok(svg.includes('font-style="italic"')); assert.ok(renderPrintDocument(doc).includes(svg));
+    assert.ok(pdf.includes('/BaseFont /' + pageFontMetrics(line.fontFace).name));
+    assert.ok(pdf.includes(pageTextHex(title, line.fontFace)));
+    assert.equal(encodeReference(s), encodeReference({...s,pageText:{}}));
+  }
+});
+
+test('footer styles survive shared links, saved snapshots, defaults and nested document overrides', () => {
+  const s=normalizeSettings({pageText:{footer:'Escola',footerAlign:'right',footerStyle:{family:'sans',size:4,bold:true,underline:true}}});
+  assert.deepEqual(decodeShareHash(encodeShareHash(s)),s);
+  assert.equal(JSON.parse(Buffer.from(encodePageText(s.pageText),'base64url')).length,12);
+  const prefs=textPreferences(s.pageText), fresh=normalizeSettings(withTextPreferences(DEFAULTS,prefs));
+  assert.deepEqual(fresh.pageText.footerStyle,s.pageText.footerStyle);assert.equal(fresh.pageText.footer,'');assert.equal(fresh.pageText.footerAlign,'right');
+  const doc=createDocument({settings:s,pages:[{settings:{pageText:{footerStyle:{italic:true}}}},{settings:{}}]});
+  assert.equal(doc.pages[0].settings.pageText.footerStyle.bold,true);assert.equal(doc.pages[0].settings.pageText.footerStyle.italic,true);
+  assert.equal(doc.pages[1].settings.pageText.footerStyle.italic,false);
 });

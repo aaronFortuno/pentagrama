@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { readUserProfile, createUserBackup, parseUserBackup, restoreUserBackup, PROFILE_KEYS, PROFILE_REVISION_KEY, BACKUP_MAX_BYTES } from '../docs/user-backup.js';
+import { readUserProfile, createUserBackup, parseUserBackup, restoreUserBackup, PROFILE_KEYS, PROFILE_REVISION_KEY, BACKUP_MAX_BYTES, BACKUP_SCHEMA } from '../docs/user-backup.js';
 import { normalizeSettings } from '../docs/layout.js';
 import { textPreferences } from '../docs/text-preferences.js';
 import { LANGUAGES } from '../docs/i18n.js';
+import { footerSnapshot } from '../docs/footer-library.js';
 import { pngFixture } from './fixtures/footer-image.mjs';
 const clone = value => JSON.parse(JSON.stringify(value));
 function store(entries = []) {
@@ -14,7 +15,7 @@ function store(entries = []) {
 function sample() {
   const image = { data: pngFixture(), name: 'Escola', height: 8, placement: 'before', align: 'bottom' };
   const settings = normalizeSettings({ count: 6, pageText: { nameDate: true, title: 'Música · Íñigo', footer: 'Escola', footerImage: image }, notes: { enabled: true } });
-  return { settings, baseline: normalizeSettings({ count: 12, group: 2 }), templates: { hidden: ['trio'], saved: [{ id: 'school', name: 'Fitxa personal', settings }] }, footers: [{ id: 'logo', footer: 'Escola', footerImage: image }],
+  return { settings, baseline: normalizeSettings({ count: 12, group: 2 }), templates: { hidden: ['trio'], saved: [{ id: 'school', name: 'Fitxa personal', settings }] }, footers: [{ id: 'logo', ...footerSnapshot({ footer: 'Escola', footerImage: image }) }],
     preferences: { language: 'eu', sidebar: 'footer-settings', text: textPreferences({ titleStyle: { family: 'sans', bold: true } }), analyticsExcluded: false } };
 }
 const backup = () => createUserBackup(sample(), '2.6.0', new Date('2026-10-23T06:00:00Z'));
@@ -50,7 +51,7 @@ test('corrupt, incomplete, unknown and lossy backups are rejected before any dat
     assert.throws(()=>restoreUserBackup(storage,value),/backupInvalid/);assert.deepEqual([...storage.data],[['original','data']]);
   }
   for(const text of ['{}','null','not json','{"__proto__":{"polluted":true}}',JSON.stringify({...backup(),data:{constructor:{}}})]) assert.throws(()=>parseUserBackup(text),/backupInvalid/);
-  assert.throws(()=>parseUserBackup(JSON.stringify({...backup(),schemaVersion:2})),/backupUnsupported/);
+  assert.throws(()=>parseUserBackup(JSON.stringify({...backup(),schemaVersion:BACKUP_SCHEMA+1})),/backupUnsupported/);
   assert.throws(()=>parseUserBackup(' '.repeat(BACKUP_MAX_BYTES+1)),/backupInvalid/);
   assert.equal({}.polluted,undefined);
   assert.deepEqual(parseUserBackup('\uFEFF'+JSON.stringify(backup())).data,sample());
@@ -89,4 +90,18 @@ test('every language shares one backup entry and dialog between the editor and t
     }
     assert.equal(editor.match(/<dialog id="backup-dialog"[\s\S]*?<\/dialog>/)[0],catalogue.match(/<dialog id="backup-dialog"[\s\S]*?<\/dialog>/)[0]);
   }
+});
+
+
+test('version 1 backups migrate only new footer formatting fields and version 2 retains strict validation',()=>{
+  const old=backup();old.schemaVersion=1;
+  const strip=p=>{delete p.footerStyle;delete p.footerAlign;};
+  strip(old.data.settings.pageText);strip(old.data.baseline.pageText);strip(old.data.templates.saved[0].settings.pageText);strip(old.data.footers[0]);strip(old.data.preferences.text);
+  assert.deepEqual(parseUserBackup(JSON.stringify(old)).data,sample());
+  const damaged=clone(old);damaged.data.settings.count=500;
+  assert.throws(()=>parseUserBackup(JSON.stringify(damaged)),/backupInvalid/);
+  const incomplete=backup();delete incomplete.data.settings.pageText.footerStyle;
+  assert.throws(()=>parseUserBackup(JSON.stringify(incomplete)),/backupInvalid/);
+  const current=backup();current.data.settings.pageText.footerStyle={family:'lora',size:4.2,bold:true,italic:true,underline:true};current.data.footers[0].footerAlign='right';
+  assert.deepEqual(parseUserBackup(JSON.stringify(current)),current);
 });

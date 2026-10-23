@@ -13,3 +13,7 @@ Abans d’aplicar la còpia es comprova que l’emmagatzematge permet escriure. 
 La importació mai reactiva les estadístiques si aquest navegador o el perfil importat les havien excloses. Aquesta preferència es pot modificar expressament des del diàleg del projecte. DNT i GPC depenen del navegador i continuen aplicant-se independentment de la còpia.
 
 El format inicial és `pentagrama-user-backup`, `schemaVersion: 1`, amb `appVersion`, `createdAt` i `data`. El codi de validació i restauració és a `docs/user-backup.js`. Un esquema futur no reconegut es rebutja per evitar perdre dades. Les còpies amb aquest format són portables entre els dominis i navegadors on s’utilitzi una versió compatible de Pentagrama.
+
+## Esquema 2 (2.7.0)
+
+Afegeix `footerStyle` i `footerAlign` als ajustos, peus desats i preferències tipogràfiques. L’importador continua acceptant l’esquema 1 i afegeix exclusivament aquests valors per defecte on no existien; la resta de dades es valida sense canvis ni truncaments. Les còpies noves declaren l’esquema 2.

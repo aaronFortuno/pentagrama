@@ -117,7 +117,7 @@ test('a logo-only PDF needs no text fonts and still exposes a complete image res
 test('saved footers contain only footer options, deduplicate, validate, reuse and delete without changing originals', () => {
   const current = { title: 'Private task', nameDate: true, footer: 'Escola', footerImage: image };
   let library = saveFooter([], current, 'one');
-  assert.deepEqual(Object.keys(library[0]), ['id','footer','footerImage']);
+  assert.deepEqual(Object.keys(library[0]), ['id','footer','footerImage','footerStyle','footerAlign']);
   assert.equal(saveFooter(library, current, 'two').length, 1);
   assert.deepEqual(footerSnapshot(library[0]), footerSnapshot(current));
   const original = JSON.stringify(library);
@@ -127,4 +127,22 @@ test('saved footers contain only footer options, deduplicate, validate, reuse an
   assert.throws(()=>saveFooter(library,{footer:'Ninth'},'nine'),/footerLibraryFull/);
   assert.throws(()=>saveFooter([],{},'empty'),/emptyFooter/);
   assert.equal(normalizeFooterLibrary(JSON.parse(JSON.stringify(library))).length,8);
+});
+
+
+test('formatted image footers protect neighbouring bands and retain style in the footer library', () => {
+  for(const placement of ['before','after','above','below'])for(const align of ['left','center','right'])for(const family of ['serif','sans','lora']){
+    const options={footer:'Conservatori · Àlbum',footerStyle:{family,size:8,bold:true,italic:true,underline:true},footerAlign:align,footerImage:{...image,placement,height:18}};
+    const doc=createDocument({count:4,source:true,reference:true,pageText:options,duplex:{enabled:true,mirrorMargins:true}});assert.ok(doc.valid);
+    for(const page of doc.pages){
+      const rows=footerLines(page.settings,page.referenceSettings),picture=rows.find(e=>e.kind==='image'),text=rows.find(e=>e.role==='custom-footer'),width=pageTextWidth(text.text,text.fontSize,text.fontFace);
+      for(const outer of rows.filter(e=>!e.role)){
+        const w=footerTextWidth(outer.text,outer.fontSize??FOOTER_SIZE);
+        if(outer.anchor==='start')assert.ok(outer.x+w<Math.min(picture.x,text.x-width/2));
+        else assert.ok(outer.x-w>Math.max(picture.x+picture.width,text.x+width/2));
+      }
+      assert.ok(rows.find(e=>e.role==='custom-footer-underline').y1<page.frame.height);
+    }
+    const saved=saveFooter([],options,'formatted');assert.deepEqual(footerSnapshot(saved[0]),footerSnapshot(options));
+  }
 });

@@ -1,9 +1,9 @@
-import { normalizePageText } from './engine/page-text-settings.js?v=2.6.0';
+import { normalizePageText } from './engine/page-text-settings.js?v=2.7.0';
 
 export const FOOTER_LIBRARY_KEY = 'pentagrama.footers.v1', MAX_SAVED_FOOTERS = 8;
 export function footerSnapshot(value) {
   const text = normalizePageText(value);
-  return { footer: text.footer, footerImage: text.footerImage };
+  return { footer: text.footer, footerImage: text.footerImage, footerStyle: text.footerStyle, footerAlign: text.footerAlign };
 }
 export function normalizeFooterLibrary(value) {
   if (!Array.isArray(value)) return [];
