@@ -1,8 +1,8 @@
-import { analytics } from './analytics.js?v=2.7.0';
-import { LANGUAGES, translate } from './i18n.js?v=2.7.0';
-import { renderIcons } from './icons.js?v=2.7.0';
-import { openDialog, showPopover } from './motion.js?v=2.7.0';
-import { bindSiteDialogs } from './site-chrome.js?v=2.7.0';
+import { analytics } from './analytics.js?v=2.7.1';
+import { LANGUAGES, translate } from './i18n.js?v=2.7.1';
+import { renderIcons } from './icons.js?v=2.7.1';
+import { openDialog, showPopover } from './motion.js?v=2.7.1';
+import { bindSiteDialogs } from './site-chrome.js?v=2.7.1';
 
 const $ = id => document.getElementById(id), locale = document.documentElement.lang;
 const t = key => translate(locale, key);
@@ -53,5 +53,6 @@ menu.addEventListener('click', event => {
   if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
   try { localStorage.setItem('pentagrama.language.v1', JSON.stringify(link.dataset.language)); } catch { /* Navigation also works without storage. */ }
 });
+document.addEventListener('focusin', event => { if (menuOpen && !event.target.closest('.language-control')) close(); });
 document.addEventListener('pointerdown', event => { if (menuOpen && !event.target.closest('.language-control')) close(); });
 analytics.init(document.querySelector('meta[name="umami-website-id"]')?.content);

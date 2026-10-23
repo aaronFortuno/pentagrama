@@ -1,34 +1,35 @@
-import { readUserProfile } from './user-backup.js?v=2.7.0';
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.7.0';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.7.0';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.7.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.7.0';
-import { iconMarkup, renderIcons } from './icons.js?v=2.7.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.7.0';
-import { bindTouchRange } from './touch-range.js?v=2.7.0';
-import { analytics, configurationMetrics } from './analytics.js?v=2.7.0';
-import { createLogoNote } from './logo-note.js?v=2.7.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.7.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.7.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.7.0';
-import { createResetBaseline } from './settings-baseline.js?v=2.7.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.7.0';
-import { bindSelectControl } from './select-control.js?v=2.7.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.7.0';
-import { bindSiteDialogs } from './site-chrome.js?v=2.7.0';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.7.0';
-import { bindNotesControl } from './notes-control.js?v=2.7.0';
-import { bindPageTextControl } from './page-text-control.js?v=2.7.0';
-import { bindFooterControl } from './footer-control.js?v=2.7.0';
-import { footerSnapshot } from './footer-library.js?v=2.7.0';
-import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.7.0';
-import { bindClefsControl } from './clefs-control.js?v=2.7.0';
-import { bindBarlinesControl } from './barlines-control.js?v=2.7.0';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.7.0';
-import { createDocument } from './engine/document.js?v=2.7.0';
-import { renderSvgPage } from './engine/svg.js?v=2.7.0';
-import { renderPrintDocument } from './engine/print.js?v=2.7.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.7.0';
+import { previewDescription, createPreviewAnnouncer } from './accessibility.js?v=2.7.1';
+import { readUserProfile } from './user-backup.js?v=2.7.1';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.7.1';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.7.1';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.7.1';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.7.1';
+import { iconMarkup, renderIcons } from './icons.js?v=2.7.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.7.1';
+import { bindTouchRange } from './touch-range.js?v=2.7.1';
+import { analytics, configurationMetrics } from './analytics.js?v=2.7.1';
+import { createLogoNote } from './logo-note.js?v=2.7.1';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.7.1';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.7.1';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.7.1';
+import { createResetBaseline } from './settings-baseline.js?v=2.7.1';
+import { enhanceNumberInputs } from './number-input.js?v=2.7.1';
+import { bindSelectControl } from './select-control.js?v=2.7.1';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.7.1';
+import { bindSiteDialogs } from './site-chrome.js?v=2.7.1';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.7.1';
+import { bindNotesControl } from './notes-control.js?v=2.7.1';
+import { bindPageTextControl } from './page-text-control.js?v=2.7.1';
+import { bindFooterControl } from './footer-control.js?v=2.7.1';
+import { footerSnapshot } from './footer-library.js?v=2.7.1';
+import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.7.1';
+import { bindClefsControl } from './clefs-control.js?v=2.7.1';
+import { bindBarlinesControl } from './barlines-control.js?v=2.7.1';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.7.1';
+import { createDocument } from './engine/document.js?v=2.7.1';
+import { renderSvgPage } from './engine/svg.js?v=2.7.1';
+import { renderPrintDocument } from './engine/print.js?v=2.7.1';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.7.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -57,6 +58,7 @@ const zoomModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl
 const t = (key, variables) => translate(language, key, { version: RELEASE.version, ...variables });
 const number = value => new Intl.NumberFormat(language, { maximumFractionDigits: 2 }).format(value);
 const staffCount = count => t(count === 1 ? 'oneStaff' : 'staffCount', { n: count });
+const announcePreview = createPreviewAnnouncer($('preview-status'));
 const paperName = paper => paper === 'LETTER' ? t('paperLetter') : paper;
 
 function toast(message) {
@@ -165,7 +167,8 @@ function renderBlocks() {
   settings.blocks.forEach((block, index) => {
     const card = node('div', 'block-card'), heading = node('div', 'block-heading');
     const name = node('input'); name.type = 'text'; name.value = block.label; name.maxLength = 60; name.placeholder = t('block', { n: index + 1 }); name.setAttribute('aria-label', `${t('blockName')} ${index + 1}`); name.dataset.field = 'label'; name.dataset.index = index;
-    const up = icon('arrow-up', t('moveUp'), 'up', index), down = icon('arrow-down', t('moveDown'), 'down', index), remove = icon('trash', t('remove'), 'remove', index);
+    const context = ': ' + t('block', { n: index + 1 });
+    const up = icon('arrow-up', t('moveUp') + context, 'up', index), down = icon('arrow-down', t('moveDown') + context, 'down', index), remove = icon('trash', t('remove') + context, 'remove', index);
     up.disabled = index === 0; down.disabled = index === settings.blocks.length - 1; remove.disabled = settings.blocks.length === 1;
     heading.append(name, up, down, remove); card.append(heading);
     const fields = node('div', 'block-fields');
@@ -261,6 +264,8 @@ function render({ blocks = false, templates = false, record = true } = {}) {
   const grouping = settings.mode === 'blocks' ? t('blocks') : settings.group ? t('groupEvery', { n: settings.group }) : t('none');
   $('layout-summary').textContent = `${staffCount(visibleCount)} · ${grouping} · ${number(settings.thickness)} mm`;
   $('layout-summary').dataset.tooltip = $('layout-summary').textContent;
+  $('preview-description').textContent = previewDescription(settings, t, number);
+  announcePreview(t(score.valid ? 'previewUpdated' : 'previewInvalid', { summary: $('layout-summary').textContent + ' · ' + paperName(settings.paper) + ' · ' + t(settings.orientation) + (settings.duplex.enabled ? ' · ' + t('twoSides') : '') }));
   $('paper-dimensions').textContent = `${paperName(settings.paper)} · ${number(layout.width)} × ${number(layout.height)} mm${settings.duplex.enabled ? ' · ' + t('twoSides') : ''}`;
   $('page-settings-value').textContent = `${paperName(settings.paper)} · ${t(settings.orientation)}${settings.duplex.enabled ? ' · 2' : ''}`;
   $('staves-settings-value').textContent = visibleCount !== layout.count ? `${number(visibleCount)} / ${number(layout.count)}` : number(layout.count);
@@ -285,6 +290,8 @@ function render({ blocks = false, templates = false, record = true } = {}) {
 
 function setTemplatesOpen(value) {
   if (value) { setLanguageOpen(false); pageTextControl.close(); footerControl.close(); mobileWorkspace?.close(); }
+  const returnFocus = !value && $('templates-panel').contains(document.activeElement);
+  if (returnFocus) $('toggle-templates').focus({ preventScroll: true });
   templatesOpen = value; render({ templates: value });
   if (value) $('close-templates').focus({ preventScroll: true });
 }
@@ -374,6 +381,7 @@ $('language-menu').addEventListener('keydown', event => {
     if (button) { event.preventDefault(); focusLanguage(button); }
   }
 });
+document.addEventListener('focusin', event => { if (languageOpen && !event.target.closest('.language-control')) closeLanguageMenu(); });
 document.addEventListener('pointerdown', event => { if (languageOpen && !event.target.closest('.language-control')) closeLanguageMenu(); });
 // A drag or a field edit is one step; discrete buttons remain separate steps.
 const settingsPanel = document.querySelector('.settings');
@@ -436,8 +444,11 @@ $('block-list').addEventListener('click', event => {
   else if (action === 'up' && index > 0) [settings.blocks[index - 1], settings.blocks[index]] = [settings.blocks[index], settings.blocks[index - 1]];
   else if (action === 'down' && index < settings.blocks.length - 1) [settings.blocks[index + 1], settings.blocks[index]] = [settings.blocks[index], settings.blocks[index + 1]];
   render({ blocks: true });
+  const nextIndex = Math.min(settings.blocks.length - 1, action === 'up' ? index - 1 : action === 'down' ? index + 1 : index);
+  const card = $('block-list').children[Math.max(0, nextIndex)];
+  (card?.querySelector('button[data-action="' + action + '"]:not(:disabled)') || card?.querySelector('input[data-field=label]'))?.focus();
 });
-$('add-block').addEventListener('click', () => { if (settings.blocks.length < 24) settings.blocks.push({ label: '', count: 2, inside: 8, after: 14 }); render({ blocks: true }); });
+$('add-block').addEventListener('click', () => { if (settings.blocks.length < 24) settings.blocks.push({ label: '', count: 2, inside: 8, after: 14 }); render({ blocks: true }); $('block-list').lastElementChild?.querySelector('input[data-field=label]').focus(); });
 for (const [id, key] of [['systems', 'systems'], ['system-gap', 'systemGap']]) bindNumber(id, key);
 $('fit-button').addEventListener('click', () => { settings = fitSettings(settings); render({ blocks: true }); });
 $('reset-button').addEventListener('click', () => {
@@ -529,6 +540,7 @@ $('paper-stage').addEventListener('pointermove', event => {
 function stopDragging(event) { if (drag?.id === event.pointerId) { drag = undefined; $('paper-stage').classList.remove('dragging'); } }
 ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => $('paper-stage').addEventListener(type, stopDragging));
 $('paper-stage').addEventListener('keydown', event => {
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (event.key === 'Home' || event.key === '0') { event.preventDefault(); zoomPreview(MIN_ZOOM); return; }
   if (event.key === '+' || event.key === '=') { event.preventDefault(); zoomPreview(previewZoom * 1.25); return; }
   if (event.key === '-') { event.preventDefault(); zoomPreview(previewZoom / 1.25); return; }

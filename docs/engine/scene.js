@@ -1,9 +1,9 @@
-import { FOOTER_GRAY, FOOTER_SIZE } from './constants.js?v=2.7.0';
-import { footerLines } from './footers.js?v=2.7.0';
-import { createBarlines } from './barlines.js?v=2.7.0';
-import { createClefs } from './clefs.js?v=2.7.0';
-import { headerContent } from './page-text.js?v=2.7.0';
-import { createNotes } from './notes.js?v=2.7.0';
+import { FOOTER_GRAY, FOOTER_SIZE } from './constants.js?v=2.7.1';
+import { footerLines } from './footers.js?v=2.7.1';
+import { createBarlines } from './barlines.js?v=2.7.1';
+import { createClefs } from './clefs.js?v=2.7.1';
+import { headerContent } from './page-text.js?v=2.7.1';
+import { createNotes } from './notes.js?v=2.7.1';
 
 // A physical, renderer-independent display list. Both SVG and PDF consume
 // these exact coordinates; renderers do not calculate staff positions.

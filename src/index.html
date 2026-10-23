@@ -9,14 +9,14 @@
   <!-- localized-head -->
   <title>Pentagrama · El teu paper pautat</title>
   <link rel="icon" type="image/png" sizes="96x96" href="./favicon.png">
-  <link rel="stylesheet" href="./style.css?v=2.7.0">
-  <script type="module" src="./app.js?v=2.7.0"></script>
+  <link rel="stylesheet" href="./style.css?v=2.7.1">
+  <script type="module" src="./app.js?v=2.7.1"></script>
   <style id="print-page-style">@page{size:210mm 297mm;margin:0}</style>
 </head>
 <body class="editor-page">
   <div class="app-shell">
     <!-- site-header -->
-    <main>
+    <main id="main-content" tabindex="-1">
       <div class="workspace" id="workspace" data-templates-open="false">
         <aside class="settings scroll-panel" aria-labelledby="settings-title">
           <h2 id="settings-title" class="sr-only" data-i18n="settings">El teu full</h2>
@@ -66,8 +66,8 @@
         </aside>
         <section class="preview-area" data-aria="preview">
           <div id="layout-warning" class="layout-warning" role="status" hidden><span data-i18n="fitWarning"></span><button type="button" id="fit-button" class="text-button" data-i18n="fit">Ajusta al full</button></div>
-          <div id="paper-stage" class="paper-stage" tabindex="0" role="group" data-aria="previewNavigation" data-title="previewNavigation"><div id="preview-spread" class="preview-spread"><div id="preview-paper" class="paper" role="img"></div><div id="preview-back" class="paper" role="img" hidden></div><div id="preview-binding" class="preview-binding" aria-hidden="true" hidden></div><span id="preview-front-label" class="preview-side-label" hidden><span data-i18n="oddPages">Senars</span> · <span data-i18n="frontSide">Anvers</span></span><span id="preview-back-label" class="preview-side-label" hidden><span data-i18n="evenPages">Parells</span> · <span data-i18n="backSide">Revers</span></span></div><span id="book-view-label" class="book-view-label" data-i18n="bookView" hidden>Vista de llibre</span><div id="zoom-hint" class="zoom-hint transient-label" role="status" aria-hidden="true"></div></div>
-          <div class="preview-caption"><span id="layout-summary"></span><span id="paper-dimensions"></span></div>
+          <div id="paper-stage" class="paper-stage" tabindex="0" role="group" data-aria="previewNavigation" data-title="previewNavigation"><div id="preview-spread" class="preview-spread"><div id="preview-paper" class="paper" role="img" aria-describedby="preview-description"></div><div id="preview-back" class="paper" role="img" hidden></div><div id="preview-binding" class="preview-binding" aria-hidden="true" hidden></div><span id="preview-front-label" class="preview-side-label" hidden><span data-i18n="oddPages">Senars</span> · <span data-i18n="frontSide">Anvers</span></span><span id="preview-back-label" class="preview-side-label" hidden><span data-i18n="evenPages">Parells</span> · <span data-i18n="backSide">Revers</span></span></div><span id="book-view-label" class="book-view-label" data-i18n="bookView" hidden>Vista de llibre</span><div id="zoom-hint" class="zoom-hint transient-label" role="status" aria-hidden="true"></div></div>
+          <p id="preview-description" class="sr-only"></p><div id="preview-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div><div class="preview-caption"><span id="layout-summary"></span><span id="paper-dimensions"></span></div>
           <div class="zoom-controls" role="group" data-aria="zoom"><button id="zoom-out" type="button" class="icon-button" data-aria="zoomOut"><span data-icon="minus"></span></button><button id="zoom-in" type="button" class="icon-button" data-aria="zoomIn"><span data-icon="plus"></span></button><button id="zoom-reset" type="button" class="icon-button zoom-reset" data-aria="previewReset" data-title="previewReset"><span data-icon="fullscreen"></span></button><output id="zoom-value" class="zoom-readout transient-label" aria-live="polite" aria-hidden="true">100 %</output></div>
         </section>
         <div class="templates-layer"><div class="templates-drawer">
@@ -103,6 +103,6 @@
   <div id="melody-announcement" class="sr-only" role="status"></div>
   <dialog id="backup-dialog" class="backup-dialog scroll-panel" aria-labelledby="backup-title"><div class="dialog-heading"><h2 id="backup-title" data-i18n="backupTitle"></h2><button type="button" data-close="backup-dialog" class="icon-button" data-aria="close"><span data-icon="x"></span></button></div><p data-i18n="backupDescription"></p><div class="backup-actions"><button type="button" id="backup-export" class="small-button"><span data-icon="arrow-down"></span><span data-i18n="backupExport"></span></button><button type="button" id="backup-import" class="small-button"><span data-icon="arrow-up"></span><span data-i18n="backupImport"></span></button></div><input type="file" id="backup-file" accept=".json,application/json" hidden><div id="backup-review" class="backup-review" hidden><p id="backup-date" class="backup-date"></p><dl class="backup-counts"><div><dt data-i18n="backupTemplates"></dt><dd id="backup-template-count"></dd></div><div><dt data-i18n="savedFooters"></dt><dd id="backup-footer-count"></dd></div></dl><p data-i18n="backupReplace"></p><div class="backup-confirm"><button type="button" id="backup-cancel-import" class="text-button" data-i18n="cancel"></button><button type="button" id="backup-restore" class="button" data-i18n="backupRestore" disabled></button></div></div><p id="backup-status" class="field-hint" role="status" aria-live="polite"></p></dialog>
   <dialog id="copy-dialog" aria-labelledby="copy-title"><div class="dialog-heading"><h2 id="copy-title" data-i18n="copy"></h2><button type="button" data-close="copy-dialog" class="icon-button" data-aria="close"><span data-icon="x"></span></button></div><p data-i18n="manualCopy"></p><input id="copy-text" readonly data-aria="copy"></dialog>
-  <div id="print-root" aria-hidden="true"></div><div id="toast" role="status" class="toast"></div>
+  <div id="print-root" aria-hidden="true"></div><div id="toast" role="status" aria-atomic="true" class="toast"></div>
 </body>
 </html>

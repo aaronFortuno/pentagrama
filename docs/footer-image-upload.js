@@ -1,4 +1,4 @@
-import { RASTER_LIMITS, rasterImage } from './engine/raster-image.js?v=2.7.0';
+import { RASTER_LIMITS, rasterImage } from './engine/raster-image.js?v=2.7.1';
 
 export function rasterFileType(bytes) {
   if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) return 'image/png';

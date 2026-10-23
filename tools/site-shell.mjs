@@ -12,7 +12,7 @@ export function composeSiteShell(source) {
 export function guideChrome(html, locale, links, t) {
   if (!html) throw new Error(`Missing generator shell for ${locale}`);
   let header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
-  header = header.replace(/<button id="logo-note"[^>]*>([\s\S]*?)<\/button>/,
+  header = header.replace('href="#main-content"', 'href="#template-guide"').replace(/<a class="skip-link" href="#paper-stage"[^>]*>[\s\S]*?<\/a>/, '').replace(/<button id="logo-note"[^>]*>([\s\S]*?)<\/button>/,
     `<a class="brand-note" href="./${locale}/" aria-label="Pentagrama">$1</a>`)
     .replace('href="./" aria-label="Pentagrama"', `href="./${locale}/" aria-label="Pentagrama"`)
     .replace(/<button id="melody-info"[\s\S]*?<\/button>/, '')

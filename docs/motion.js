@@ -20,7 +20,11 @@ export function openDialog(dialog) {
   const wasOpen = dialog.open, style = wasOpen ? getComputedStyle(dialog) : undefined;
   const from = wasOpen ? { opacity: style.opacity, transform: style.transform } : { opacity: 0, transform: 'translateY(8px) scale(.98)' };
   dialog.dataset.motion = 'opening'; dialog.inert = false;
-  if (!wasOpen) { dialogFocus.set(dialog, document.activeElement); dialog.showModal(); }
+  if (!wasOpen) {
+    dialogFocus.set(dialog, document.activeElement); dialog.setAttribute('aria-modal', 'true'); dialog.showModal();
+    const heading = dialog.querySelector('h2,h3');
+    if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+  }
   return animate(dialog, [from, { opacity: 1, transform: 'none' }], () => { dialog.dataset.motion = 'open'; });
 }
 

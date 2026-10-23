@@ -1,4 +1,4 @@
-import { iconMarkup } from './icons.js?v=2.7.0';
+import { iconMarkup } from './icons.js?v=2.7.1';
 
 // Relative steps preserve imported half/fractional millimetres instead of snapping them away.
 export function incrementValue(value, direction, { step = 1, min = -Infinity, max = Infinity } = {}) {
@@ -48,6 +48,8 @@ export function enhanceNumberInputs(root, t) {
       control = { wrapper, buttons }; controls.set(input, control);
     }
     const label = input.getAttribute('aria-label') || input.labels?.[0]?.textContent || '';
+    const unit = input.dataset.unit || control.wrapper.querySelector('.number-unit')?.textContent.trim();
+    if (unit && input.value !== '' && Number.isFinite(Number(input.value))) input.setAttribute('aria-valuetext', new Intl.NumberFormat(document.documentElement.lang || 'en', { maximumFractionDigits: 2 }).format(Number(input.value)) + ' ' + unit);
     control.buttons.forEach(({ button }, index) => {
       button.setAttribute('aria-label', t(index === 0 ? 'increaseValue' : 'decreaseValue', { label }));
       button.disabled = input.disabled || input.value !== '' && (index === 0 ? input.max !== '' && Number(input.value) >= Number(input.max) : input.min !== '' && Number(input.value) <= Number(input.min));

@@ -1,7 +1,8 @@
-import { iconMarkup } from './icons.js?v=2.7.0';
-import { showPopover } from './motion.js?v=2.7.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.7.0';
-import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.7.0';
+import { bindPopoverFocus } from './keyboard-focus.js?v=2.7.1';
+import { iconMarkup } from './icons.js?v=2.7.1';
+import { showPopover } from './motion.js?v=2.7.1';
+import { enhanceNumberInputs } from './number-input.js?v=2.7.1';
+import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.7.1';
 
 const alignments = ['left', 'center', 'right'], icons = ['text-align-start', 'text-align-center', 'text-align-end'];
 const fontNames = { serif: 'Noto Serif', sans: 'Noto Sans', lora: 'Editorial' };
@@ -22,6 +23,7 @@ export function bindPageTextControl({ read, change, t, onOpen, beginEdit, finish
     <div class="text-format-toolbar"><div class="text-format-toggles" role="group">${['bold', 'italic', 'underline'].map(key => `<button type="button" class="icon-button" data-text-style="${key}" aria-pressed="false">${iconMarkup(key)}</button>`).join('')}</div><div class="text-format-alignments" role="group">${alignments.map((align, i) => `<button type="button" class="icon-button" data-text-align="${align}" aria-pressed="false">${iconMarkup(icons[i])}</button>`).join('')}</div></div>
     <p class="text-format-hint"></p>`;
   document.body.append(panel);
+  bindPopoverFocus(panel, { trigger: () => trigger(), close: () => close() });
   const sizeInput = $('text-font-size'); let active;
   const trigger = () => buttons.find(button => button.dataset.pageFormat === active);
   function close(returnFocus = false) {
@@ -59,7 +61,7 @@ export function bindPageTextControl({ read, change, t, onOpen, beginEdit, finish
   document.addEventListener('pointerdown', event => { if (active && !panel.contains(event.target) && !trigger()?.contains(event.target)) close(); });
   document.addEventListener('focusin', event => { if (active && !panel.contains(event.target) && !trigger()?.contains(event.target)) close(); });
   panel.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(true); } });
-  document.addEventListener('scroll', event => { if (active && !panel.contains(event.target)) close(true); }, true);
+  document.addEventListener('scroll', event => { if (active && !panel.contains(event.target) && !panel.contains(document.activeElement)) close(true); }, true);
   window.addEventListener('resize', () => close(true));
   function label(element, value) { element.setAttribute('aria-label', value); element.dataset.tooltip = value; }
   function refresh({ force = false } = {}) {

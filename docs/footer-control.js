@@ -1,9 +1,10 @@
-import { iconMarkup } from './icons.js?v=2.7.0';
-import { showPopover } from './motion.js?v=2.7.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.7.0';
-import { importFooterImage } from './footer-image-upload.js?v=2.7.0';
-import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter, footerSnapshot } from './footer-library.js?v=2.7.0';
-import { footerLayoutIcon } from './footer-layout-icons.js?v=2.7.0';
+import { bindPopoverFocus } from './keyboard-focus.js?v=2.7.1';
+import { iconMarkup } from './icons.js?v=2.7.1';
+import { showPopover } from './motion.js?v=2.7.1';
+import { enhanceNumberInputs } from './number-input.js?v=2.7.1';
+import { importFooterImage } from './footer-image-upload.js?v=2.7.1';
+import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter, footerSnapshot } from './footer-library.js?v=2.7.1';
+import { footerLayoutIcon } from './footer-layout-icons.js?v=2.7.1';
 
 export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, finishEdit }) {
   const $ = id => document.getElementById(id), input = $('footer-image-file');
@@ -16,6 +17,7 @@ export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, 
     <fieldset class="footer-image-alignment"><legend data-footer-label="footerImageAlign"></legend><div class="footer-align-buttons">${['top', 'middle', 'bottom'].map(align => `<button type="button" data-image-align="${align}" aria-pressed="false"></button>`).join('')}</div></fieldset><p class="text-format-hint" data-footer-label="footerImageMax"></p></div>
     <div data-footer-view="library"><p class="text-format-hint" data-footer-label="footerLibraryHint"></p><div class="footer-saved-list"></div><button type="button" class="button footer-save" data-footer-save>${iconMarkup('save')}<span data-footer-label="footerSave"></span></button><button type="button" class="text-button footer-clear" data-footer-clear data-footer-label="footerClear"></button></div>`;
   document.body.append(panel);
+  bindPopoverFocus(panel, { trigger: () => trigger(), close: () => close() });
   const imageTrigger = $('footer-image-options'), libraryTrigger = $('footer-library-button'), size = $('footer-image-height');
   const trigger = () => active === 'image' ? imageTrigger : libraryTrigger;
   const label = (element, text) => { element.setAttribute('aria-label', text); element.dataset.tooltip = text; };
@@ -73,7 +75,7 @@ export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, 
   document.addEventListener('pointerdown', event => { if (active && !panel.contains(event.target) && !trigger().contains(event.target)) close(); });
   document.addEventListener('focusin', event => { if (active && !panel.contains(event.target) && !trigger().contains(event.target)) close(); });
   panel.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(true); } });
-  document.addEventListener('scroll', event => { if (active && !panel.contains(event.target)) close(true); }, true);
+  document.addEventListener('scroll', event => { if (active && !panel.contains(event.target) && !panel.contains(document.activeElement)) close(true); }, true);
   window.addEventListener('resize', () => close(true));
   window.addEventListener('storage', event => { if (event.key === FOOTER_LIBRARY_KEY) { loadLibrary(); refresh(); } });
   function refresh() {

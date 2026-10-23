@@ -1,8 +1,8 @@
-import { DEFAULTS, normalizeSettings } from './layout.js?v=2.7.0';
-import { LANGUAGES } from './i18n.js?v=2.7.0';
-import { normalizeLibrary } from './library.js?v=2.7.0';
-import { normalizeFooterLibrary } from './footer-library.js?v=2.7.0';
-import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.7.0';
+import { DEFAULTS, normalizeSettings } from './layout.js?v=2.7.1';
+import { LANGUAGES } from './i18n.js?v=2.7.1';
+import { normalizeLibrary } from './library.js?v=2.7.1';
+import { normalizeFooterLibrary } from './footer-library.js?v=2.7.1';
+import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.7.1';
 
 export const BACKUP_FORMAT = 'pentagrama-user-backup', BACKUP_SCHEMA = 2, BACKUP_MAX_BYTES = 16 * 1024 * 1024;
 export const PROFILE_KEYS = Object.freeze({ settings: 'pentagrama.settings.v2', baseline: 'pentagrama.settings-baseline.v1', templates: 'pentagrama.library.v1', footers: 'pentagrama.footers.v1', language: 'pentagrama.language.v1', sidebar: 'pentagrama.sidebar.v1', text: 'pentagrama.text-preferences.v1', excluded: 'umami.disabled' });

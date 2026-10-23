@@ -1,4 +1,4 @@
-import { motionOptions } from './motion.js?v=2.7.0';
+import { motionOptions } from './motion.js?v=2.7.1';
 
 // Keep the label inside the viewport, including the last controls in a sidebar or dialog.
 export function tooltipPosition(anchor, size, viewport) {
@@ -101,7 +101,7 @@ export function bindTooltips(root = document) {
   root.addEventListener('input', hide, true);
   root.addEventListener('scroll', event => { if (!tooltip.contains(event.target)) hide(); }, { capture: true, passive: true });
   root.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && (active || pending)) { event.preventDefault(); event.stopPropagation(); hide(); }
+    if (event.key === 'Escape' && (active || pending)) { hide(); }
     else if (['Tab', 'Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) hide();
   }, true);
   root.addEventListener('beforetoggle', event => { if (event.target.matches('dialog')) hide(); }, true);

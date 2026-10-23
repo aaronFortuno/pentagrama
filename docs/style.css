@@ -667,3 +667,10 @@ body>#print-root{display:block!important;width:auto;height:auto;overflow:visible
 .footer-clear{display:block;font-size:10px;margin:12px auto 0}
 @media(max-width:760px){.footer-media-toolbar .text-button{font-size:11px;min-height:36px}.footer-image-current .icon-button{height:36px;width:36px}.footer-placement-buttons button,.footer-align-buttons button{min-height:42px}.footer-options-popover legend{font-size:12px}.footer-saved-apply{font-size:12px}}
 @media(max-width:760px){.settings{--settings-control-height:42px;--settings-label-size:12px;--settings-hint-size:11px}}
+
+/* Keyboard-only affordances do not change the resting layout. */
+.skip-link{position:fixed;top:12px;left:16px;z-index:100;transform:translateY(calc(-100% - 20px));padding:12px 16px;background:var(--accent);color:white;border-radius:5px;font-size:14px;text-decoration:underline}
+.skip-link:focus{transform:none}
+:is(.paper-stage,.distribution-scroll,.settings-content,#main-content,#templates-library):focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.select-menu>button[data-active=true]{background:#f0e9e2;color:#98402d;outline:2px solid var(--accent);outline-offset:-2px}
+@media(forced-colors:active){.switch-track{border:1px solid ButtonText}.switch input:checked+.switch-track{background:Highlight}.switch-track:after{background:ButtonText}.segmented button[aria-pressed=true],.text-format-popover button[aria-pressed=true]{outline:2px solid Highlight;outline-offset:-3px}.select-menu>button[data-active=true]{outline-color:Highlight}}

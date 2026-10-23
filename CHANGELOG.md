@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.7.1 · 2026-10-23
+
+- Millores d’accessibilitat sense canviar la disposició, les opcions ni el resultat imprimible. Enllaços visibles només amb el focus del teclat per saltar al contingut i a la previsualització; també al catàleg, amb destinacions correctes. Indicador de focus a les regions desplaçables i suport dels estats actius en colors forçats.
+- Desplegables de configuració amb focus al combobox i opció activa identificada amb `aria-activedescendant`. Fletxes, inici/final, cerca per inicial, Enter/Espai per confirmar, Escape per cancel·lar i Tab per confirmar i continuar. Menús d’idioma que es tanquen en moure el focus a fora.
+- Els flotants de format i imatge retornen la navegació de Tab a la seqüència del seu activador. Diàlegs modals amb focus inicial al títol i retorn al control que els ha obert. Escape tanca el menú o diàleg encara que hi hagi una ajuda emergent visible. Focus conservat en afegir, eliminar i reordenar blocs. El desplaçament automàtic en enfocar un control no tanca el flotant; el desplaçament manual exterior sí.
+- Unitats i valors numèrics anunciats conjuntament; accions dels blocs identificades amb el seu número. Descripció accessible de la distribució, marges, anotacions i contingut imprès; avisos de previsualització agrupats després d’una pausa, sense llegir cada pas d’un lliscador ni anunciar l’obertura inicial.
+- Les dreceres de la previsualització respecten Ctrl/Command/Alt perquè no bloquegin el zoom del navegador. Traduccions als deu idiomes, proves de teclat, semàntica i avisos. Documentació de l’abast i de la validació amb tecnologia assistiva pendent, sense atribuir una certificació de conformitat.
+
 ## 2.7.0 · 2026-10-23
 
 - El text personalitzat del peu reutilitza el panell de format del títol i les instruccions: tres tipografies locals, mida de 6 a 48 punts, negreta, cursiva, subratllat i alineació. Un engranatge al costat del camp obre el flotant amb el mateix moviment, teclat i tancament exterior.
