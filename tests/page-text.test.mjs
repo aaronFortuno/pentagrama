@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, fitSettings, footerLines, footerTextWidth, FOOTER_SIZE, SERVICE_ADDRESS } from '../docs/layout.js';
 import { createDocument, renderSvgPage, renderPrintDocument, createPdfDocument } from '../docs/engine/index.js';
-import { normalizePageText, PAGE_TEXT_LIMITS } from '../docs/engine/page-text-settings.js';
+import { normalizePageText, PAGE_TEXT_LIMITS, sharedPageText } from '../docs/engine/page-text-settings.js';
 import { headerContent, PRINTED_FIELD_LABELS } from '../docs/engine/page-text.js';
 import { pageTextWidth, pageFontText, wrapPageText } from '../docs/engine/page-font.js';
 import { PAGE_FONT } from '../docs/vendor/page-font-metrics.js';
@@ -92,7 +92,7 @@ test('geometry codes exclude all page text while full shares retain Unicode, ali
   }
   for (const code of ['P1-N9-G3-E22-T12', 'P2-A4-P-I20-T12-N9-G0-E22', 'P7-A4-P-I20-T12-N9-G0-E22-DF.M']) assert.equal(decodeReference(code).pageText.title, '');
   const blank = normalizeSettings({ pageText: { titleAlign: 'center', firstPageOnly: false, language: 'eu' } });
-  assert.deepEqual(decodeShareHash(encodeShareHash(blank)).pageText, blank.pageText);
+  assert.deepEqual(decodeShareHash(encodeShareHash(blank)).pageText, sharedPageText(blank.pageText));
 });
 
 test('historical P8 text references remain importable without being generated or printed again', () => {

@@ -4,12 +4,12 @@ import { access, readFile } from 'node:fs/promises';
 import { normalizeSettings, encodeReference, encodeShareHash, decodeShareHash, DEFAULTS } from '../docs/layout.js';
 import { createDocument, renderSvgPage, renderPrintDocument, createPdfDocument } from '../docs/engine/index.js';
 import { DEFAULT_TITLE_STYLE, DEFAULT_INSTRUCTIONS_STYLE, TEXT_FAMILIES, normalizeTextStyle, pointsToMm, mmToPoints } from '../docs/engine/text-style.js';
-import { encodePageText, decodePageText, normalizePageText, hasPageTextSettings } from '../docs/engine/page-text-settings.js';
+import { encodePageText, decodePageText, normalizePageText, hasPageTextSettings, sharedPageText } from '../docs/engine/page-text-settings.js';
 import { pageFontKey, pageFontMetrics, pageFontAppearance, pageTextWidth, pageFontText } from '../docs/engine/page-font.js';
 import { pageTextHex } from '../docs/engine/page-font-pdf.js';
 import { HEADER_FONTS } from '../docs/vendor/header-font-metrics.js';
 import { HEADER_FONT_DATA } from '../docs/vendor/header-font-data.js';
-import { textPreferences, withTextPreferences } from '../docs/text-preferences.js';
+import { textPreferences, withTextPreferences, withEmptyTextPreferences } from '../docs/text-preferences.js';
 import { addTemplate, normalizeLibrary } from '../docs/library.js';
 import { createSettingsHistory } from '../docs/settings-history.js';
 import { createResetBaseline } from '../docs/settings-baseline.js';
@@ -92,7 +92,7 @@ test('formatting changes wrapping and reserved space, with no text truncation an
 
 test('formatted shares extend canonical tuples without changing old links or geometry references', () => {
   for (const family of TEXT_FAMILIES) {
-    const s = normalizeSettings({ pageText: { title, titleStyle: { family, size: 8, bold: true, italic: true, underline: true }, instructionsStyle: { family: 'sans', size: 4.2 }, instructionsAlign: 'right' } });
+    const s = normalizeSettings({ pageText: { title, instructions, titleStyle: { family, size: 8, bold: true, italic: true, underline: true }, instructionsStyle: { family: 'sans', size: 4.2 }, instructionsAlign: 'right' } });
     assert.deepEqual(decodeShareHash(encodeShareHash(s)), s);
     assert.deepEqual(decodePageText(encodePageText(s.pageText)), s.pageText);
     assert.equal(JSON.parse(Buffer.from(encodePageText(s.pageText), 'base64url')).length, 10);
@@ -113,7 +113,8 @@ test('templates, history, reset and explicit-page inheritance retain independent
   const library = normalizeLibrary(addTemplate({}, { id: 'test', name: 'Test', settings }));
   assert.deepEqual(library.saved[0].settings, settings);
   const history = createSettingsHistory({}); history.record(settings); history.undo(); assert.deepEqual(history.redo(), settings);
-  const reset = createResetBaseline(); reset.fromHash(encodeShareHash(settings)); assert.deepEqual(reset.restore(), settings);
+  const reset = createResetBaseline(); reset.fromHash(encodeShareHash(settings)); assert.deepEqual(reset.restore(), normalizeSettings({ ...settings, pageText: sharedPageText(settings.pageText) }));
+  assert.deepEqual(createResetBaseline(settings).restore(), settings);
   const doc = createDocument({ settings, pages: [{ settings: { pageText: { titleStyle: { italic: true } } } }, { settings: { pageText: { title: 'Other' } } }] });
   assert.equal(doc.pages[0].settings.pageText.titleStyle.family, 'lora'); assert.equal(doc.pages[0].settings.pageText.titleStyle.bold, true);
   assert.equal(doc.pages[0].settings.pageText.titleStyle.italic, true); assert.equal(doc.pages[1].settings.pageText.titleStyle.italic, false);
@@ -160,4 +161,34 @@ test('footer styles survive shared links, saved snapshots, defaults and nested d
   const doc=createDocument({settings:s,pages:[{settings:{pageText:{footerStyle:{italic:true}}}},{settings:{}}]});
   assert.equal(doc.pages[0].settings.pageText.footerStyle.bold,true);assert.equal(doc.pages[0].settings.pageText.footerStyle.italic,true);
   assert.equal(doc.pages[1].settings.pageText.footerStyle.italic,false);
+});
+
+
+test('the reported empty Trio link compacts to geometry while old payloads remain readable',()=>{
+ const old='P2-A4-P-I20-T12-N9-G3-E22~%7B%22t%22%3A%22WyIiLCIiLGZhbHNlLHRydWUsImNhIiwiIiwiY2VudGVyIiwibGVmdCIsWyJsb3JhIiw2LHRydWUsdHJ1ZSxmYWxzZV0sWyJsb3JhIiwzLjkyLGZhbHNlLHRydWUsZmFsc2VdXQ%22%7D';
+ const original=decodeShareHash(old),short=encodeShareHash(original);assert.equal(short,'P2-A4-P-I20-T12-N9-G3-E22');
+ assert.equal(original.pageText.titleStyle.family,'lora');assert.equal(original.pageText.instructionsStyle.italic,true);
+ const before=createDocument(original),after=createDocument(decodeShareHash(short));assert.equal(renderSvgPage(before.pages[0]),renderSvgPage(after.pages[0]));assert.deepEqual(createPdfDocument(before),createPdfDocument(after));
+});
+
+test('only content-bearing text fields and named blocks extend shared links, without mutating stored templates',()=>{
+ for(const field of ['title','instructions','footer'])for(const family of TEXT_FAMILIES)for(const nameDate of [false,true]){
+  const original=normalizeSettings({mode:'blocks',pageText:{[field]:'Educació · Íñigo',titleStyle:{family,bold:true},instructionsStyle:{family,italic:true},footerStyle:{family,underline:true},titleAlign:'right',instructionsAlign:'center',footerAlign:'left',language:'eu',nameDate,firstPageOnly:false}});
+  const snapshot=JSON.stringify(original),hash=encodeShareHash(original),restored=decodeShareHash(hash);
+  assert.deepEqual(restored.pageText,sharedPageText(original.pageText));assert.equal(restored.pageText[field],original.pageText[field]);
+  assert.equal(restored.pageText[field+'Style'].family,family);assert.equal(JSON.stringify(original),snapshot);
+  assert.ok(!decodeURIComponent(hash).includes('"b"'));
+  const before=createDocument(original),after=createDocument(restored);assert.equal(renderSvgPage(before.pages[0]),renderSvgPage(after.pages[0]));
+ }
+ const empty=normalizeSettings({mode:'blocks',pageText:{title:'  ',instructions:'\n ',footer:' ',language:'de',firstPageOnly:false,titleAlign:'right',footerStyle:{family:'lora',size:5}}});assert.equal(encodeShareHash(empty),encodeReference(empty));
+ empty.blocks[1].label='Piano';const restored=decodeShareHash(encodeShareHash(empty));assert.equal(restored.blocks[0].label,'');assert.equal(restored.blocks[1].label,'Piano');
+ const library=normalizeLibrary(addTemplate({}, {id:'empty-style',name:'Test',settings:empty}));assert.deepEqual(library.saved[0].settings,empty);
+});
+
+test('compact links use local preferences only for empty fields and preserve the linked content format',()=>{
+ const preferences=textPreferences({titleStyle:{family:'sans',bold:true},instructionsStyle:{family:'lora',italic:true},footerAlign:'right',footerStyle:{size:5}});
+ const sheet=normalizeSettings({pageText:{title:'Shared title',titleStyle:{family:'lora',size:8,underline:true}}});
+ const original=JSON.stringify(sheet),restored=normalizeSettings(withEmptyTextPreferences(decodeShareHash(encodeShareHash(sheet)),preferences));
+ assert.deepEqual(restored.pageText.titleStyle,sheet.pageText.titleStyle);assert.deepEqual(restored.pageText.instructionsStyle,preferences.instructionsStyle);assert.deepEqual(restored.pageText.footerStyle,preferences.footerStyle);assert.equal(restored.pageText.footerAlign,'right');
+ assert.equal(restored.pageText.instructions,'');assert.equal(JSON.stringify(sheet),original);
 });

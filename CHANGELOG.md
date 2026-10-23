@@ -1,5 +1,12 @@
 # Canvis
 
+## 2.8.1 · 2026-10-23
+
+- Corregida la generació d’enllaços llargs en plantilles sense text: les preferències locals de tipografia i alineació del títol, instruccions i peu buits ja no creen un sufix de contingut. La plantilla Trio sense personalització torna a acabar a `P2-A4-P-I20-T12-N9-G3-E22`.
+- La representació compartida omet espais buits, l’idioma dels camps nom/data quan estan desactivats, les opcions de capçalera sense capçalera i les llistes de noms de blocs completament buides. El contingut present i el seu format continuen viatjant a l’enllaç. La normalització local, les plantilles personals i les còpies de seguretat conserven tots els ajustos.
+- Els enllaços antics es continuen descodificant amb el format original i es compacten en obrir-los al generador, conservant ruta, idioma i estat local de navegació. Els camps buits recuperen les preferències tipogràfiques del navegador; els camps amb contingut mantenen el format de l’enllaç. Les imatges continuen excloses de l’URL.
+- Resum de novetats als deu idiomes i proves del cas aportat, dels camps actius i inactius, de noms de blocs, d’enllaços antics i de la igualtat del resultat imprès.
+
 ## 2.8.0 · 2026-10-23
 
 - Lliscador d’intensitat de cinc graus per a la pauta, quadrícula i matriu de punts de l’espai d’anotacions. El grau 2, un pas més intens que el gris anterior, és el valor predeterminat. El control s’oculta en l’espai completament en blanc i conserva la navegació nativa amb teclat i el tractament tàctil dels altres lliscadors. La mateixa tonalitat es renderitza a la previsualització, impressió i PDF, sense alterar mides, gruixos ni espaiats.

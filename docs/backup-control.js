@@ -1,7 +1,7 @@
-import { openDialog } from './motion.js?v=2.8.0';
-import { RELEASE } from './release.js?v=2.8.0';
-import { detectLanguage } from './i18n.js?v=2.8.0';
-import { BACKUP_MAX_BYTES, PROFILE_REVISION_KEY, PROFILE_KEYS, readUserProfile, createUserBackup, parseUserBackup, restoreUserBackup } from './user-backup.js?v=2.8.0';
+import { openDialog } from './motion.js?v=2.8.1';
+import { RELEASE } from './release.js?v=2.8.1';
+import { detectLanguage } from './i18n.js?v=2.8.1';
+import { BACKUP_MAX_BYTES, PROFILE_REVISION_KEY, PROFILE_KEYS, readUserProfile, createUserBackup, parseUserBackup, restoreUserBackup } from './user-backup.js?v=2.8.1';
 
 export function bindUserBackup({ t, getProfile }) {
   const $ = id => document.getElementById(id), dialog = $('backup-dialog'), file = $('backup-file'), status = $('backup-status');

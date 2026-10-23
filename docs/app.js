@@ -1,36 +1,36 @@
-import { notesUsage, notesFeedback } from './notes-summary.js?v=2.8.0';
-import { previewDescription, createPreviewAnnouncer } from './accessibility.js?v=2.8.0';
-import { readUserProfile } from './user-backup.js?v=2.8.0';
-import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.8.0';
-import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.8.0';
-import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.8.0';
-import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.8.0';
-import { iconMarkup, renderIcons } from './icons.js?v=2.8.0';
-import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.8.0';
-import { bindTouchRange } from './touch-range.js?v=2.8.0';
-import { analytics, configurationMetrics } from './analytics.js?v=2.8.0';
-import { createLogoNote } from './logo-note.js?v=2.8.0';
-import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.8.0';
-import { createMelodyDiscovery } from './melody-discovery.js?v=2.8.0';
-import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.8.0';
-import { createResetBaseline } from './settings-baseline.js?v=2.8.0';
-import { enhanceNumberInputs } from './number-input.js?v=2.8.0';
-import { bindSelectControl } from './select-control.js?v=2.8.0';
-import { languageFromURL, languageURL } from './language-routing.js?v=2.8.0';
-import { bindSiteDialogs } from './site-chrome.js?v=2.8.0';
-import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.8.0';
-import { bindNotesControl } from './notes-control.js?v=2.8.0';
-import { bindPageTextControl } from './page-text-control.js?v=2.8.0';
-import { bindFooterControl } from './footer-control.js?v=2.8.0';
-import { footerSnapshot } from './footer-library.js?v=2.8.0';
-import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.8.0';
-import { bindClefsControl } from './clefs-control.js?v=2.8.0';
-import { bindBarlinesControl } from './barlines-control.js?v=2.8.0';
-import { bindMobileWorkspace } from './mobile-workspace.js?v=2.8.0';
-import { createDocument } from './engine/document.js?v=2.8.0';
-import { renderSvgPage } from './engine/svg.js?v=2.8.0';
-import { renderPrintDocument } from './engine/print.js?v=2.8.0';
-import { RELEASE, RELEASE_DATES } from './release.js?v=2.8.0';
+import { notesUsage, notesFeedback } from './notes-summary.js?v=2.8.1';
+import { previewDescription, createPreviewAnnouncer } from './accessibility.js?v=2.8.1';
+import { readUserProfile } from './user-backup.js?v=2.8.1';
+import { DEFAULTS, normalizeSettings, encodeReference, decodeReference, encodeShareHash, createLayout, fitSettings, renderSheet } from './layout.js?v=2.8.1';
+import { MIN_ZOOM, MAX_ZOOM, spreadMode, spreadView } from './preview.js?v=2.8.1';
+import { LANGUAGES, orderedLanguages, detectLanguage, translate } from './i18n.js?v=2.8.1';
+import { DEFAULT_TEMPLATES, suggestedTemplateSettings, normalizeLibrary, storedTemplatePresence, addTemplate, removeTemplate, restoreDefaults } from './library.js?v=2.8.1';
+import { iconMarkup, renderIcons } from './icons.js?v=2.8.1';
+import { animateReflow, openDialog, closeDialog, showPopover, bindAnimatedDetails } from './motion.js?v=2.8.1';
+import { bindTouchRange } from './touch-range.js?v=2.8.1';
+import { analytics, configurationMetrics } from './analytics.js?v=2.8.1';
+import { createLogoNote } from './logo-note.js?v=2.8.1';
+import { connectLogoSound, createGlockenspiel } from './glockenspiel.js?v=2.8.1';
+import { createMelodyDiscovery } from './melody-discovery.js?v=2.8.1';
+import { createSettingsHistory, historyShortcut } from './settings-history.js?v=2.8.1';
+import { createResetBaseline } from './settings-baseline.js?v=2.8.1';
+import { enhanceNumberInputs } from './number-input.js?v=2.8.1';
+import { bindSelectControl } from './select-control.js?v=2.8.1';
+import { languageFromURL, languageURL } from './language-routing.js?v=2.8.1';
+import { bindSiteDialogs } from './site-chrome.js?v=2.8.1';
+import { bindMarginsControl, bookMargins } from './margins-control.js?v=2.8.1';
+import { bindNotesControl } from './notes-control.js?v=2.8.1';
+import { bindPageTextControl } from './page-text-control.js?v=2.8.1';
+import { bindFooterControl } from './footer-control.js?v=2.8.1';
+import { footerSnapshot } from './footer-library.js?v=2.8.1';
+import { textPreferences, withTextPreferences, withEmptyTextPreferences } from './text-preferences.js?v=2.8.1';
+import { bindClefsControl } from './clefs-control.js?v=2.8.1';
+import { bindBarlinesControl } from './barlines-control.js?v=2.8.1';
+import { bindMobileWorkspace } from './mobile-workspace.js?v=2.8.1';
+import { createDocument } from './engine/document.js?v=2.8.1';
+import { renderSvgPage } from './engine/svg.js?v=2.8.1';
+import { renderPrintDocument } from './engine/print.js?v=2.8.1';
+import { RELEASE, RELEASE_DATES } from './release.js?v=2.8.1';
 
 const $ = id => document.getElementById(id);
 const SETTINGS_KEY = 'pentagrama.settings.v2', BASELINE_KEY = 'pentagrama.settings-baseline.v1', LIBRARY_KEY = 'pentagrama.library.v1', LANGUAGE_KEY = 'pentagrama.language.v1', SIDEBAR_KEY = 'pentagrama.sidebar.v1';
@@ -343,12 +343,17 @@ function restoreFromHash({ initial = false } = {}) {
   if (initial && !handledHash) return true;
   finishHistoryGroup();
   try {
-    settings = handledHash ? resetBaseline.capture(editorSettings(resetBaseline.fromHash(handledHash, settings))) : resetBaseline.capture(withTextPreferences(DEFAULTS, preferredTextStyle));
+    settings = handledHash ? resetBaseline.capture(editorSettings(withEmptyTextPreferences(resetBaseline.fromHash(handledHash, settings), preferredTextStyle))) : resetBaseline.capture(withTextPreferences(DEFAULTS, preferredTextStyle));
     const localFooter = history.state?.pentagramaFooter;
     if (localFooter && typeof localFooter === 'object' && localFooter.current && localFooter.baseline) {
       const baseline = resetBaseline.restore();
       resetBaseline.capture({ ...baseline, pageText: { ...baseline.pageText, ...footerSnapshot(localFooter.baseline) } });
       settings = { ...settings, pageText: { ...settings.pageText, ...footerSnapshot(localFooter.current) } };
+    }
+    if (handledHash) {
+      const compact = encodeShareHash(resetBaseline.restore()), url = new URL(location.href); url.hash = compact;
+      if (url.href !== location.href) history.replaceState(history.state, '', url);
+      handledHash = location.hash;
     }
     return true;
   } catch { return false; }

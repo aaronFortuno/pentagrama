@@ -1,5 +1,5 @@
-import { iconMarkup } from './icons.js?v=2.8.0';
-import { showPopover } from './motion.js?v=2.8.0';
+import { iconMarkup } from './icons.js?v=2.8.1';
+import { showPopover } from './motion.js?v=2.8.1';
 
 export function bindSelectControl(select, button, menu, { onOpen, minWidth = 130 } = {}) {
   let open = false, signature, active = select.selectedIndex;

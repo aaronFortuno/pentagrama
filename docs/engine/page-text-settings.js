@@ -1,5 +1,5 @@
-import { DEFAULT_TITLE_STYLE, DEFAULT_INSTRUCTIONS_STYLE, DEFAULT_FOOTER_STYLE, normalizeTextStyle, sameTextStyle, textStyleTuple, textStyleFromTuple } from './text-style.js?v=2.8.0';
-import { normalizeFooterImage } from './raster-image.js?v=2.8.0';
+import { DEFAULT_TITLE_STYLE, DEFAULT_INSTRUCTIONS_STYLE, DEFAULT_FOOTER_STYLE, normalizeTextStyle, sameTextStyle, textStyleTuple, textStyleFromTuple } from './text-style.js?v=2.8.1';
+import { normalizeFooterImage } from './raster-image.js?v=2.8.1';
 export const PAGE_TEXT_LIMITS = Object.freeze({ title: 100, instructions: 500, footer: 160 });
 export const PAGE_TEXT_LANGUAGES = Object.freeze(['ca', 'en', 'es', 'de', 'fr', 'it', 'pt', 'nl', 'eu', 'gl']);
 export const DEFAULT_PAGE_TEXT = Object.freeze({ title: '', instructions: '', nameDate: false, firstPageOnly: true, language: 'ca', footer: '', titleAlign: 'left', instructionsAlign: 'left', titleStyle: DEFAULT_TITLE_STYLE, instructionsStyle: DEFAULT_INSTRUCTIONS_STYLE, footerImage: null, footerAlign: 'center', footerStyle: DEFAULT_FOOTER_STYLE });
@@ -23,6 +23,20 @@ export const hasPageText = value => Boolean(value.title.trim() || value.instruct
 export function hasPageTextSettings(value) {
   const normalized = normalizePageText(value);
   return JSON.stringify(normalized) !== JSON.stringify(DEFAULT_PAGE_TEXT);
+}
+
+// A share describes the printed result, not dormant editing preferences.
+// Keep the full normalizer/codec unchanged so older links remain readable.
+export function sharedPageText(value) {
+  const text = normalizePageText(value);
+  text.footerImage = null;
+  for (const field of ['title', 'instructions', 'footer']) if (!text[field].trim()) {
+    text[field] = ''; text[field + 'Align'] = DEFAULT_PAGE_TEXT[field + 'Align'];
+    text[field + 'Style'] = { ...DEFAULT_PAGE_TEXT[field + 'Style'] };
+  }
+  if (!text.nameDate) text.language = DEFAULT_PAGE_TEXT.language;
+  if (!text.title && !text.instructions && !text.nameDate) text.firstPageOnly = DEFAULT_PAGE_TEXT.firstPageOnly;
+  return text;
 }
 
 export function encodePageText(value) {

@@ -180,3 +180,7 @@ La distribució base conserva les mides i distàncies originals. Amb reserva act
 `notes.intensity` és un enter d’1 a 5, predeterminat 2. El grau 1 reprodueix els grisos originals (punts 185, línies 190 i quadrícula 205); cada grau següent redueix el gris en 30. Només canvia el color: gruixos, dimensions i posicions són compartits pels tres renderitzadors. El codi P9 admet un sufix opcional `.2` a `.5`; la seva absència representa el grau original 1.
 
 Els avisos es deriven dels pentagrames efectivament visibles al document, amb recomptes per cara i rangs per bloc entre repeticions. No apareixen per la sola presència de la reserva. Són informatius i no formen part del paper imprès.
+
+## Enllaços de configuració (2.8.1)
+
+La normalització i les dades locals conserven tots els ajustos. En generar un enllaç es construeix una còpia de `pageText` que omet el format de camps buits, l’idioma si no s’imprimeixen nom/data i les opcions de capçalera sense contingut. Els noms de blocs només s’inclouen si n’hi ha algun de no buit. Els còdecs anteriors continuen descodificant els sufixos antics; en obrir-los, el generador en substitueix l’adreça per la forma compacta, sense canviar la ruta ni el document imprès. Els camps buits utilitzen les preferències locals de text; les dades de camps amb contingut tenen precedència sobre aquestes preferències.
