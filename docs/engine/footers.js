@@ -1,9 +1,9 @@
-import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.7.1';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.7.1';
-import { encodeReference } from './references.js?v=2.7.1';
-import { footerTextWidth } from './typography.js?v=2.7.1';
-import { pageFontText, pageTextWidth, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.7.1';
-import { rasterImage, RASTER_LIMITS } from './raster-image.js?v=2.7.1';
+import { SERVICE_ADDRESS, FOOTER_SIZE } from './constants.js?v=2.8.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.8.0';
+import { encodeReference } from './references.js?v=2.8.0';
+import { footerTextWidth } from './typography.js?v=2.8.0';
+import { pageFontText, pageTextWidth, pageFontKey, DEFAULT_PAGE_FACE } from './page-font.js?v=2.8.0';
+import { rasterImage, RASTER_LIMITS } from './raster-image.js?v=2.8.0';
 
 function blockLeft(start, end, width, align, center) {
   return align === 'left' ? start : align === 'right' ? end - width : Math.max(start, Math.min(end - width, center - width / 2));

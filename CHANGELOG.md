@@ -1,5 +1,13 @@
 # Canvis
 
+## 2.8.0 · 2026-10-23
+
+- Lliscador d’intensitat de cinc graus per a la pauta, quadrícula i matriu de punts de l’espai d’anotacions. El grau 2, un pas més intens que el gris anterior, és el valor predeterminat. El control s’oculta en l’espai completament en blanc i conserva la navegació nativa amb teclat i el tractament tàctil dels altres lliscadors. La mateixa tonalitat es renderitza a la previsualització, impressió i PDF, sense alterar mides, gruixos ni espaiats.
+- Corregit el centrat dels pentagrames amb reserva d’anotacions: abans d’amagar res, el conjunt es trasllada dins de la zona musical disponible. Si hi cap sencer, queda centrat en aquesta zona; si no hi cap, s’ancora al costat oposat a la reserva i només es retallen els pentagrames que encara envaeixen el marge de separació. Es preserven espaiats, identitats, claus i unions. També s’aplica a un únic pentagrama; els fulls sense reserva mantenen la geometria anterior.
+- El resum del preview indica el percentatge reservat i, quan hi ha retall, els pentagrames visibles respecte dels configurats. Avisos informatius als menús d’anotacions i pentagrames, més recordatoris per bloc amb el recompte visible per conjunt. Només apareixen quan s’oculta algun pentagrama; les dues cares es comparen separadament i els blocs afectats s’identifiquen sense substituir l’avís vermell de desbordament.
+- La intensitat es conserva en plantilles, historial, restabliment, enllaços i referències. Sufix opcional de dos caràcters als codis P9; les referències antigues mantenen el seu grau original. Còpies de seguretat amb esquema 3, importació compatible dels esquemes 1 i 2 i migració limitada al nou valor. No s’amplia l’analítica.
+- Controls, avisos i novetats traduïts als deu idiomes. Proves del cas 4+2 amb nom/data, una repetició i peu; reserves superiors/inferiors, repeticions, marges, espai superior, doble cara, tons vectorials i compatibilitat de dades.
+
 ## 2.7.1 · 2026-10-23
 
 - Millores d’accessibilitat sense canviar la disposició, les opcions ni el resultat imprimible. Enllaços visibles només amb el focus del teclat per saltar al contingut i a la previsualització; també al catàleg, amb destinacions correctes. Indicador de focus a les regions desplaçables i suport dels estats actius en colors forçats.

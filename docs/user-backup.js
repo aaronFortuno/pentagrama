@@ -1,10 +1,10 @@
-import { DEFAULTS, normalizeSettings } from './layout.js?v=2.7.1';
-import { LANGUAGES } from './i18n.js?v=2.7.1';
-import { normalizeLibrary } from './library.js?v=2.7.1';
-import { normalizeFooterLibrary } from './footer-library.js?v=2.7.1';
-import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.7.1';
+import { DEFAULTS, normalizeSettings } from './layout.js?v=2.8.0';
+import { LANGUAGES } from './i18n.js?v=2.8.0';
+import { normalizeLibrary } from './library.js?v=2.8.0';
+import { normalizeFooterLibrary } from './footer-library.js?v=2.8.0';
+import { textPreferences, withTextPreferences } from './text-preferences.js?v=2.8.0';
 
-export const BACKUP_FORMAT = 'pentagrama-user-backup', BACKUP_SCHEMA = 2, BACKUP_MAX_BYTES = 16 * 1024 * 1024;
+export const BACKUP_FORMAT = 'pentagrama-user-backup', BACKUP_SCHEMA = 3, BACKUP_MAX_BYTES = 16 * 1024 * 1024;
 export const PROFILE_KEYS = Object.freeze({ settings: 'pentagrama.settings.v2', baseline: 'pentagrama.settings-baseline.v1', templates: 'pentagrama.library.v1', footers: 'pentagrama.footers.v1', language: 'pentagrama.language.v1', sidebar: 'pentagrama.sidebar.v1', text: 'pentagrama.text-preferences.v1', excluded: 'umami.disabled' });
 export const PROFILE_REVISION_KEY = 'pentagrama.profile-revision.v1';
 const sections = ['page-settings', 'staves-settings', 'notes-settings', 'notation-settings', 'footer-settings', 'code-details'];
@@ -38,7 +38,7 @@ export function parseUserBackup(text) {
   try {
     const value = JSON.parse(text.replace(/^\uFEFF/, '')); safe(value);
     if (!value || value.format !== BACKUP_FORMAT) fail();
-    if (![1, BACKUP_SCHEMA].includes(value.schemaVersion)) { if (Number.isInteger(value.schemaVersion) && value.schemaVersion > BACKUP_SCHEMA) throw new Error('backupUnsupported'); fail(); }
+    if (![1, 2, BACKUP_SCHEMA].includes(value.schemaVersion)) { if (Number.isInteger(value.schemaVersion) && value.schemaVersion > BACKUP_SCHEMA) throw new Error('backupUnsupported'); fail(); }
     if (Object.keys(value).sort().join() !== 'appVersion,createdAt,data,format,schemaVersion' || !/^\d+\.\d+\.\d+(?:-[\w.]+)?$/.test(value.appVersion) || typeof value.createdAt !== 'string' || !Number.isFinite(Date.parse(value.createdAt)) || !value.data || typeof value.data !== 'object') fail();
     // Version 1 predates footer typography. Add only the two new defaults;
     // every pre-existing field still undergoes the strict, lossless comparison.
@@ -48,7 +48,13 @@ export function parseUserBackup(text) {
       extend(value.data.settings?.pageText); extend(value.data.baseline?.pageText);
       for (const item of value.data.templates?.saved || []) extend(item.settings?.pageText);
       for (const item of value.data.footers || []) extend(item);
-      extend(value.data.preferences?.text); value.schemaVersion = BACKUP_SCHEMA;
+      extend(value.data.preferences?.text);
+    }
+    if (value.schemaVersion < 3) {
+      const extend = settings => { const notes = settings?.notes; if (notes && typeof notes === 'object' && !Array.isArray(notes) && !Object.hasOwn(notes, 'intensity')) notes.intensity = 1; };
+      extend(value.data.settings); extend(value.data.baseline);
+      for (const item of value.data.templates?.saved || []) extend(item.settings);
+      value.schemaVersion = BACKUP_SCHEMA;
     }
     const profile = normalizeProfile(value.data);
     // Never silently truncate a template, discard a damaged logo or clamp a value.

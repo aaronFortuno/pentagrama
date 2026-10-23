@@ -1,5 +1,5 @@
-import { DEFAULT_PAGE_TEXT } from './page-text-settings.js?v=2.7.1';
-import { DEFAULT_NOTES } from './notes.js?v=2.7.1';
+import { DEFAULT_PAGE_TEXT } from './page-text-settings.js?v=2.8.0';
+import { DEFAULT_NOTES } from './notes.js?v=2.8.0';
 export { DEFAULT_PAGE_TEXT };
 
 export const PAPER_SIZES = Object.freeze({ A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] });

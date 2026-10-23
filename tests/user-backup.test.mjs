@@ -105,3 +105,15 @@ test('version 1 backups migrate only new footer formatting fields and version 2 
   const current=backup();current.data.settings.pageText.footerStyle={family:'lora',size:4.2,bold:true,italic:true,underline:true};current.data.footers[0].footerAlign='right';
   assert.deepEqual(parseUserBackup(JSON.stringify(current)),current);
 });
+
+
+test('backups from schemas 1 and 2 retain the original annotation intensity and schema 3 rejects missing values',()=>{
+ for(const schemaVersion of[1,2]){
+  const legacy=backup();legacy.schemaVersion=schemaVersion;
+  for(const settings of[legacy.data.settings,legacy.data.baseline,...legacy.data.templates.saved.map(t=>t.settings)])delete settings.notes.intensity;
+  const restored=parseUserBackup(JSON.stringify(legacy));assert.equal(restored.schemaVersion,3);
+  assert.equal(restored.data.settings.notes.intensity,1);assert.equal(restored.data.baseline.notes.intensity,1);assert.equal(restored.data.templates.saved[0].settings.notes.intensity,1);
+ }
+ const missing=backup();delete missing.data.settings.notes.intensity;assert.throws(()=>parseUserBackup(JSON.stringify(missing)),/backupInvalid/);
+ const custom=backup();custom.data.settings.notes.intensity=5;assert.equal(parseUserBackup(JSON.stringify(custom)).data.settings.notes.intensity,5);
+});

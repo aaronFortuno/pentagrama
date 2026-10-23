@@ -1,4 +1,4 @@
-import { normalizeSettings } from './settings.js?v=2.7.1';
+import { normalizeSettings } from './settings.js?v=2.8.0';
 
 // Physical sides of one sheet, with a left binding edge on its front.
 // Keep the shared template separate from these derived page settings.

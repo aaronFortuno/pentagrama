@@ -17,3 +17,7 @@ El format inicial és `pentagrama-user-backup`, `schemaVersion: 1`, amb `appVers
 ## Esquema 2 (2.7.0)
 
 Afegeix `footerStyle` i `footerAlign` als ajustos, peus desats i preferències tipogràfiques. L’importador continua acceptant l’esquema 1 i afegeix exclusivament aquests valors per defecte on no existien; la resta de dades es valida sense canvis ni truncaments. Les còpies noves declaren l’esquema 2.
+
+## Esquema 3 (2.8.0)
+
+Inclou `notes.intensity` als ajustos, al punt de restabliment i a les plantilles personals. Els esquemes 1 i 2 continuen admesos: el camp absent es migra al grau original 1 sense modificar cap altre valor. Les preferències o configuracions noves sense intensitat explícita utilitzen el nou predeterminat 2. La validació de l’esquema 3 continua rebutjant camps absents, valors fora de límit i dades desconegudes.

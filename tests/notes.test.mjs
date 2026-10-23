@@ -2,14 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeSettings, encodeReference, decodeReference, encodeShareHash, decodeShareHash, fitSettings } from '../docs/layout.js';
 import { createDocument, renderSvgPage, renderPrintDocument, createPdfDocument } from '../docs/engine/index.js';
-import { normalizeNotes } from '../docs/engine/notes.js';
+import { normalizeNotes, notesGray } from '../docs/engine/notes.js';
+import { notesUsage, notesFeedback } from '../docs/notes-summary.js';
+import { LANGUAGES, translate } from '../docs/i18n.js';
 import { addTemplate, normalizeLibrary } from '../docs/library.js';
 import { createResetBaseline } from '../docs/settings-baseline.js';
 import { createSettingsHistory } from '../docs/settings-history.js';
 
 const near = (a, b) => assert.ok(Math.abs(a-b) < 1e-6, `${a} != ${b}`);
 test('notes default to an inactive bottom dotted area and normalize bounds by pattern', () => {
-  assert.deepEqual(normalizeNotes(), { enabled: false, position: 'bottom', percent: 40, pattern: 'dots', spacing: 8 });
+  assert.deepEqual(normalizeNotes(), { enabled: false, position: 'bottom', percent: 40, pattern: 'dots', spacing: 8, intensity: 2 });
   assert.equal(normalizeNotes({ percent: Infinity, spacing: NaN }).percent, 40);
   assert.equal(normalizeNotes({ percent: 99, spacing: 50 }).percent, 70);
   assert.equal(normalizeNotes({ percent: -1, spacing: -1 }).spacing, 6);
@@ -36,7 +38,7 @@ test('notes fit inside content margins with a music gap on either side for every
     const marks = page.scene.filter(e => e.role?.startsWith('notes-'));
     assert.equal(marks.length > 0, pattern !== 'blank');
     for (const mark of marks) {
-      assert.ok(mark.gray >= 180 && mark.gray <= 210);
+      assert.ok(mark.gray === notesGray(pattern, s.notes.intensity));
       for (const x of mark.kind === 'circle' ? [mark.x-mark.radius,mark.x+mark.radius] : [mark.x1,mark.x2]) assert.ok(x>=area.left && x<=area.right);
       for (const y of mark.kind === 'circle' ? [mark.y-mark.radius,mark.y+mark.radius] : [mark.y1,mark.y2]) assert.ok(y>=area.top && y<=area.bottom);
     }
@@ -68,7 +70,7 @@ test('growing notes only removes edge staves, preserving the pitch and spacing o
       const page = createDocument({ ...full.settings, notes:{enabled:true,percent,position} }).pages[0];
       assert.ok(page.valid);assert.equal(page.layout.gap,full.layout.gap);
       for (const index of page.layout.staffIndices) assert.ok(previous.includes(index));
-      assert.deepEqual(page.layout.staves,page.layout.staffIndices.map(index=>full.layout.staves[index]));
+      assert.deepEqual(page.layout.staves,page.layout.staffIndices.map(index=>full.layout.staves[index].map(y=>y+page.layout.musicOffset)));
       assert.deepEqual(createDocument({ pages:[page] }).pages[0],page);
       previous=page.layout.staffIndices;
     }
@@ -99,13 +101,13 @@ test('asymmetric margins determine the separator and original clefs and bar conn
   }
 });
 
-test('explicit block spacing and repeated systems stay anchored and references retain the complete base count', () => {
+test('explicit block spacing and repeated systems reposition without changing internal distances and references retain the complete base count', () => {
   const s=normalizeSettings({mode:'blocks',systems:3,systemGap:24,blocks:[{label:'Veus',count:2,inside:10,after:15},{label:'Baix',count:1,inside:8,after:12}],reference:true});
   const full=createDocument(s).pages[0];
   for(const position of ['top','bottom']){
     const doc=createDocument({...s,notes:{enabled:true,position,percent:40}}),page=doc.pages[0];assert.ok(doc.valid);
     assert.ok(page.layout.visibleCount<page.layout.count);
-    assert.deepEqual(page.layout.staves,page.layout.staffIndices.map(index=>full.layout.staves[index]));
+    assert.deepEqual(page.layout.staves,page.layout.staffIndices.map(index=>full.layout.staves[index].map(y=>y+page.layout.musicOffset)));
     assert.deepEqual(createDocument(doc),doc);
     const code=page.scene.filter(e=>e.kind==='text'&&e.anchor==='end').map(e=>e.text).join('');
     const restored=decodeReference(code);assert.equal(restored.systems,3);assert.equal(restored.blocks.length,2);
@@ -123,7 +125,7 @@ test('both faces crop their own original geometry and no complete staff remainin
   assert.ok(doc.valid);
   for(let i=0;i<2;i++)assert.deepEqual(doc.pages[i].layout.staves,doc.pages[i].layout.staffIndices.map(index=>full.pages[i].layout.staves[index]));
   assert.ok(doc.pages[0].layout.visibleCount<=doc.pages[1].layout.visibleCount);
-  const empty=createDocument({count:1,notes:{enabled:true,percent:70}});
+  const empty=createDocument({count:1,marginTop:100,marginBottom:100,notes:{enabled:true,percent:70}});
   assert.equal(empty.pages[0].layout.visibleCount,0);assert.equal(empty.valid,false);
   assert.throws(()=>createPdfDocument(empty),/layoutInvalid/);assert.throws(()=>renderPrintDocument(empty),/layoutInvalid/);
 });
@@ -148,7 +150,7 @@ test('compact hybrid codes have bounded growth, preserve full geometry and rejec
       clefs: { enabled: true, mode: 'pattern', pattern: ['treble','bass'] }, barlines: { enabled: true, connect: 'solid' },
       marginTop: 19, pageText: { title: 'A'.repeat(100), instructions: 'B'.repeat(500), footer: 'C'.repeat(160) } });
     const code = encodeReference(s), plain = encodeReference({ ...s, notes: {} });
-    assert.match(code, /^P9-/); assert.ok(code.length-plain.length<=9);
+    assert.match(code, /^P9-/); assert.ok(code.length-plain.length<=11);
     assert.deepEqual(decodeReference(code).notes, s.notes); assert.equal(encodeReference(decodeReference(code)), code);
     assert.equal(encodeReference({...s, pageText:{}}),code);
     assert.deepEqual(decodeShareHash(encodeShareHash(s)).notes, s.notes);
@@ -184,4 +186,50 @@ test('hybrid settings survive templates, undo/redo, reset and fitting without re
   const history=createSettingsHistory({});history.record(s);history.undo();assert.deepEqual(history.redo(),s);
   const baseline=createResetBaseline();baseline.fromHash(encodeShareHash(s));assert.deepEqual(baseline.restore().notes,s.notes);
   assert.equal(createDocument(s).valid,false);assert.throws(()=>createPdfDocument(createDocument(s)),/layoutInvalid/);
+});
+
+
+test('4+2 with name/date and footer repositions before cropping, on either side and with extra top space',()=>{
+ for(const position of ['top','bottom'])for(const topSpace of [0,40])for(const notation of [false,true]){
+  const settings=normalizeSettings({mode:'blocks',systems:1,topSpace,blocks:[{count:4,inside:12,after:14},{count:2,inside:6,after:14}],pageText:{nameDate:true,footer:'Escola de Música'},notes:{enabled:true,position,percent:35},clefs:{enabled:notation,type:'bass'},barlines:{enabled:notation,connect:'solid'},duplex:{enabled:true,mirrorMargins:true}});
+  const full=createDocument({...settings,notes:{...settings.notes,enabled:false}}),doc=createDocument(settings);assert.ok(doc.valid);
+  for(const [index,page]of doc.pages.entries()){
+   assert.equal(page.layout.visibleCount,6);assert.deepEqual(page.systems[0].blocks.map(b=>b.staves.filter(staff=>staff.lines.length).length),[4,2]);
+   const first=page.layout.staves[0][0],last=page.layout.staves.at(-1)[4];
+   near(first-page.layout.top,page.layout.bottom-last);
+   for(let i=1;i<6;i++)near(page.layout.staves[i][0]-page.layout.staves[i-1][0],full.pages[index].layout.staves[i][0]-full.pages[index].layout.staves[i-1][0]);
+   assert.equal(notesUsage(doc).affected,false);
+  }
+ }
+ const single=createDocument({count:1,notes:{enabled:true,percent:70}});assert.ok(single.valid);assert.equal(single.pages[0].layout.visibleCount,1);
+});
+
+test('cropped block feedback is based on actual rows and distinguishes complete, partial and absent repetitions',()=>{
+ const base=normalizeSettings({mode:'blocks',systems:1,pageText:{nameDate:true,footer:'Escola'},notes:{enabled:true,percent:35}});
+ for(const position of ['top','bottom']){
+  const complete=notesUsage(createDocument({...base,notes:{...base.notes,position}}));assert.equal(complete.affected,false);
+  const cropped=notesUsage(createDocument({...base,systems:2,notes:{...base.notes,position}}));assert.equal(cropped.affected,true);assert.equal(cropped.blocksAffected,true);
+  assert.ok(cropped.blockCounts.some(b=>b.min<b.total));
+  for(const locale of Object.keys(LANGUAGES)){const feedback=notesFeedback(cropped,(key,vars)=>translate(locale,key,vars));assert.ok(feedback.message.includes(translate(locale,'notesBlocksAffected')));assert.ok(feedback.blocks.some(Boolean));assert.ok(!feedback.message.includes('undefined'));}
+ }
+ const noCrop=notesUsage(createDocument({...base,notes:{...base.notes,percent:10}}));assert.equal(notesFeedback(noCrop,(key,vars)=>translate('ca',key,vars)).message,'');
+ const asymmetric=createDocument({...base,systems:2,topSpace:50,duplex:{enabled:true}}),usage=notesUsage(asymmetric),feedback=notesFeedback(usage,(key,vars)=>translate('ca',key,vars));
+ assert.notEqual(usage.pages[0].visible,usage.pages[1].visible);assert.ok(feedback.countText.includes('Anvers'));assert.ok(feedback.countText.includes('Revers'));
+});
+
+test('all five annotation tones preserve geometry and use identical SVG, print and PDF grays',()=>{
+ for(const pattern of ['dots','ruled','grid']){
+  let previous=256,geometry;
+  for(let intensity=1;intensity<=5;intensity++){
+   const doc=createDocument({count:5,notes:{enabled:true,pattern,intensity}}),page=doc.pages[0],marks=page.scene.filter(e=>e.role?.startsWith('notes-'));assert.ok(doc.valid);
+   const gray=notesGray(pattern,intensity);assert.ok(gray<previous);previous=gray;assert.ok(marks.every(mark=>mark.gray===gray));
+   const current=marks.map(({gray,...mark})=>mark);if(geometry)assert.deepEqual(current,geometry);else geometry=current;
+   const svg=renderSvgPage(page);assert.ok(svg.includes('rgb('+[gray,gray,gray].join(',')+')'));assert.ok(renderPrintDocument(doc).includes(svg));
+   const pdf=new TextDecoder().decode(createPdfDocument(doc));assert.ok(pdf.includes((gray/255).toFixed(5)+(pattern==='dots'?' g':' G')));
+  }
+ }
+ assert.equal(normalizeNotes().intensity,2);assert.equal(normalizeNotes({intensity:0}).intensity,1);assert.equal(normalizeNotes({intensity:99}).intensity,5);assert.equal(normalizeNotes({intensity:Infinity}).intensity,2);
+ const legacy='P9-A4-P-I20-T12-S1-J180-B4.120.140_2.60.140-WB35.D8';assert.equal(decodeReference(legacy).notes.intensity,1);assert.equal(encodeReference(decodeReference(legacy)),legacy);
+ for(const intensity of [2,3,4,5]){const settings=normalizeSettings({...decodeReference(legacy),notes:{...decodeReference(legacy).notes,intensity}});assert.equal(decodeReference(encodeReference(settings)).notes.intensity,intensity);assert.equal(decodeShareHash(encodeShareHash(settings)).notes.intensity,intensity);}
+ for(const suffix of ['.0','.6','.02','.2.3'])assert.throws(()=>decodeReference(legacy+suffix),/invalidRef/);
 });

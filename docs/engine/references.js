@@ -1,6 +1,6 @@
-import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.7.1';
-import { normalizeSettings } from './settings.js?v=2.7.1';
-import { hasPageText, hasPageTextSettings, encodePageText, decodePageText } from './page-text-settings.js?v=2.7.1';
+import { DEFAULTS, DEFAULT_MARGINS } from './constants.js?v=2.8.0';
+import { normalizeSettings } from './settings.js?v=2.8.0';
+import { hasPageText, hasPageTextSettings, encodePageText, decodePageText } from './page-text-settings.js?v=2.8.0';
 
 const styles = { single: 'S', double: 'D', dashed: 'H' }, connections = { none: 'N', solid: 'S', dashed: 'D' };
 const clefCodes = { none: 'N', treble: 'G', bass: 'F', alto: 'A', tenor: 'T' };
@@ -17,7 +17,7 @@ function encodeGeometry(value, legacyText = false) {
   const distribution = s.mode === 'simple' ? `-N${s.count}-G${s.group}-E${Math.round(s.spacing * 10)}` : `-S${s.systems}-J${Math.round(s.systemGap * 10)}-B${s.blocks.map(b => `${b.count}.${Math.round(b.inside * 10)}.${Math.round(b.after * 10)}`).join('_')}`;
   const bars = s.barlines;
   const clefs = s.clefs, key = clefs.enabled ? `-K${clefs.mode === 'uniform' ? 'U' : 'P'}.${clefCodes[clefs.type]}${clefs.mode === 'pattern' ? s.mode === 'simple' ? `.S.${patternCode(clefs.pattern)}` : `.B.${s.blocks.map(block => patternCode(block.clefs || [])).join('_')}` : ''}` : '';
-  return `${prefix}${distribution}${bars.enabled ? `-V${bars.measures}.${styles[bars.style]}.${bars.thicknessMode === 'staff' ? 'A' : Math.round(bars.thickness * 100)}.${connections[bars.connect]}` : ''}${key}${s.duplex.enabled ? `-D${s.duplex.firstPageOnly ? 'F' : 'A'}.${s.duplex.mirrorMargins ? 'M' : 'N'}` : ''}${s.notes.enabled ? `-W${s.notes.position === 'top' ? 'T' : 'B'}${s.notes.percent}.${noteCodes[s.notes.pattern]}${s.notes.spacing}` : ''}${personalized ? '-Q' + encodePageText(s.pageText) : ''}`;
+  return `${prefix}${distribution}${bars.enabled ? `-V${bars.measures}.${styles[bars.style]}.${bars.thicknessMode === 'staff' ? 'A' : Math.round(bars.thickness * 100)}.${connections[bars.connect]}` : ''}${key}${s.duplex.enabled ? `-D${s.duplex.firstPageOnly ? 'F' : 'A'}.${s.duplex.mirrorMargins ? 'M' : 'N'}` : ''}${s.notes.enabled ? `-W${s.notes.position === 'top' ? 'T' : 'B'}${s.notes.percent}.${noteCodes[s.notes.pattern]}${s.notes.spacing}${s.notes.intensity !== 1 ? `.${s.notes.intensity}` : ''}` : ''}${personalized ? '-Q' + encodePageText(s.pageText) : ''}`;
 }
 // The printed code describes geometry, never personal text or its display options.
 export const encodeReference = value => encodeGeometry(value);
@@ -42,9 +42,9 @@ export function decodeReference(text) {
   if (marginTop !== undefined) Object.assign(raw, { marginTop: Number(marginTop), marginRight: Number(marginRight), marginBottom: Number(marginBottom), marginLeft: Number(marginLeft) });
   let suffix = tail, clefPatterns;
   if (version === '9') {
-    const notes = /^(.*)-W([TB])(\d{2})\.([BRGD])(\d{1,2})$/.exec(suffix);
+    const notes = /^(.*)-W([TB])(\d{2})\.([BRGD])(\d{1,2})(?:\.([1-5]))?$/.exec(suffix);
     if (!notes) throw new Error('invalidRef');
-    suffix = notes[1]; raw.notes = { enabled: true, position: notes[2] === 'T' ? 'top' : 'bottom', percent: Number(notes[3]), pattern: fromCode(noteCodes, notes[4]), spacing: Number(notes[5]) };
+    suffix = notes[1]; raw.notes = { enabled: true, position: notes[2] === 'T' ? 'top' : 'bottom', percent: Number(notes[3]), pattern: fromCode(noteCodes, notes[4]), spacing: Number(notes[5]), intensity: Number(notes[6] || 1) };
   }
   if (version === '8') { try { raw.pageText = decodePageText(payload); } catch { throw new Error('invalidRef'); } }
   if (version === '7' || ['8', '9'].includes(version) && suffix.includes('-D')) {

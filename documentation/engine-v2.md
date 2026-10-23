@@ -172,3 +172,11 @@ Amb `pageText.footer`, `footerLines()` distribueix adreça a l’esquerra, text 
 La tupla compartida afegeix a les vuit posicions prèvies dues tuples opcionals `[family,size,bold,italic,underline]`. Només s’emeten si hi ha format diferent de l’original, i el descodificador continua acceptant sis i vuit camps sense modificar-ne la codificació. `encodeReference` continua ignorant tot `pageText`.
 
 Les fonts són locals, amb mètriques separades dels programes PDF. Consulteu `docs/vendor/header-fonts-SOURCE.md` i `tools/vendor-header-fonts.py` per reproducció, revisió fixada i verificació de fonts i llicències.
+
+## Reserva d’anotacions i intensitat (2.8.0)
+
+La distribució base conserva les mides i distàncies originals. Amb reserva activa, abans de retallar, es trasllada el conjunt a la zona musical restant: centrat si hi cap; al límit oposat a la reserva si el conjunt és més alt. `musicOffset` registra aquesta translació i `staffIndices` manté les identitats dels pentagrames visibles. Es corregeix així el cas d’un conjunt 4+2 centrat sobre tota la pàgina que perdia pentagrames malgrat disposar de prou espai a la zona musical. Sense reserva no hi ha translació.
+
+`notes.intensity` és un enter d’1 a 5, predeterminat 2. El grau 1 reprodueix els grisos originals (punts 185, línies 190 i quadrícula 205); cada grau següent redueix el gris en 30. Només canvia el color: gruixos, dimensions i posicions són compartits pels tres renderitzadors. El codi P9 admet un sufix opcional `.2` a `.5`; la seva absència representa el grau original 1.
+
+Els avisos es deriven dels pentagrames efectivament visibles al document, amb recomptes per cara i rangs per bloc entre repeticions. No apareixen per la sola presència de la reserva. Són informatius i no formen part del paper imprès.

@@ -1,9 +1,9 @@
-import { FOOTER_SIZE } from './constants.js?v=2.7.1';
-import { normalizeSettings, pageDimensions } from './settings.js?v=2.7.1';
-import { footerLines } from './footers.js?v=2.7.1';
-import { barlinesFit } from './barlines.js?v=2.7.1';
-import { clefMetrics, clefsFit } from './clefs.js?v=2.7.1';
-import { headerContent } from './page-text.js?v=2.7.1';
+import { FOOTER_SIZE } from './constants.js?v=2.8.0';
+import { normalizeSettings, pageDimensions } from './settings.js?v=2.8.0';
+import { footerLines } from './footers.js?v=2.8.0';
+import { barlinesFit } from './barlines.js?v=2.8.0';
+import { clefMetrics, clefsFit } from './clefs.js?v=2.8.0';
+import { headerContent } from './page-text.js?v=2.8.0';
 
 export function layoutPage(value, { referenceSettings } = {}) {
   const s = normalizeSettings(value); const { width, height } = pageDimensions(s);
@@ -15,8 +15,8 @@ export function layoutPage(value, { referenceSettings } = {}) {
   const notesArea = s.notes.enabled ? { left: s.marginLeft, right: width - s.marginRight,
     top: s.notes.position === 'top' ? contentTop : contentBottom - notesHeight,
     bottom: s.notes.position === 'top' ? contentTop + notesHeight : contentBottom } : undefined;
-  // Lay out the complete sheet first. A notes reserve crops this geometry;
-  // it never changes the pitch, spacing or centering of the original staves.
+  // Preserve the complete sheet's pitch and gaps, then position that music
+  // inside the remaining area before deciding which staves must be cropped.
   const fullTop = contentTop + clefs.above, fullBottom = contentBottom - clefs.below;
   const fullAvailable = fullBottom - fullTop, staffHeight = s.lineSpacing * 4;
   const left = s.marginLeft, right = width - s.marginRight;
@@ -41,10 +41,17 @@ export function layoutPage(value, { referenceSettings } = {}) {
       if (system < s.systems - 1) y += s.systemGap;
     }
   }
-  const fullStaves = positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing));
   const notesGap = Math.min(s.marginTop, s.marginBottom);
   const top = notesArea && s.notes.position === 'top' ? notesArea.bottom + notesGap + Math.max(clefs.above, s.thickness / 2) : fullTop;
   const bottom = notesArea && s.notes.position === 'bottom' ? notesArea.top - notesGap - Math.max(clefs.below, s.thickness / 2) : fullBottom;
+  let musicOffset = 0;
+  if (notesArea && positions.length) {
+    const span = positions.at(-1) + staffHeight - positions[0], room = bottom - top;
+    const offset = span <= room + 1e-6 ? top + Math.max(0, (room - span) / 2) - positions[0]
+      : s.notes.position === 'bottom' ? top - positions[0] : bottom - positions.at(-1) - staffHeight;
+    if (Math.abs(offset) > 1e-6) { musicOffset = offset; positions = positions.map(y => y + offset); }
+  }
+  const fullStaves = positions.map(y => Array.from({ length: 5 }, (_, i) => y + i * s.lineSpacing));
   const staffIndices = positions.flatMap((y, index) => y + 1e-6 >= top && y + staffHeight <= bottom + 1e-6 ? [index] : []);
   const staves = notesArea ? staffIndices.map(index => fullStaves[index]) : fullStaves;
   const baseNeeded = needed;
@@ -52,7 +59,7 @@ export function layoutPage(value, { referenceSettings } = {}) {
   const available = bottom - top;
   const valid = header.valid && baseNeeded <= fullAvailable + 1e-6 && right - left > clefs.header && count <= 256 && barlinesFit(s, right - left - clefs.header) && clefsFit(s, fullStaves, clefs) && (!notesArea || staves.length > 0);
   return { ...s, width, height, top, bottom, left, right, available, needed, count, gap, staves,
-    ...(notesArea ? { notesArea, notesGap, staffIndices, visibleCount: staves.length, baseNeeded } : {}),
+    ...(notesArea ? { notesArea, notesGap, staffIndices, visibleCount: staves.length, baseNeeded, musicOffset } : {}),
     ...(clefs.header ? { musicLeft: left + clefs.header } : {}), valid,
     overflow: Math.max(0, baseNeeded - fullAvailable, notesArea && !staves.length ? Math.max(staffHeight, needed - available) : 0) };
 }

@@ -1,10 +1,10 @@
-import { bindPopoverFocus } from './keyboard-focus.js?v=2.7.1';
-import { iconMarkup } from './icons.js?v=2.7.1';
-import { showPopover } from './motion.js?v=2.7.1';
-import { enhanceNumberInputs } from './number-input.js?v=2.7.1';
-import { importFooterImage } from './footer-image-upload.js?v=2.7.1';
-import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter, footerSnapshot } from './footer-library.js?v=2.7.1';
-import { footerLayoutIcon } from './footer-layout-icons.js?v=2.7.1';
+import { bindPopoverFocus } from './keyboard-focus.js?v=2.8.0';
+import { iconMarkup } from './icons.js?v=2.8.0';
+import { showPopover } from './motion.js?v=2.8.0';
+import { enhanceNumberInputs } from './number-input.js?v=2.8.0';
+import { importFooterImage } from './footer-image-upload.js?v=2.8.0';
+import { FOOTER_LIBRARY_KEY, normalizeFooterLibrary, saveFooter, deleteFooter, footerSnapshot } from './footer-library.js?v=2.8.0';
+import { footerLayoutIcon } from './footer-layout-icons.js?v=2.8.0';
 
 export function bindFooterControl({ read, change, t, notify, onOpen, beginEdit, finishEdit }) {
   const $ = id => document.getElementById(id), input = $('footer-image-file');

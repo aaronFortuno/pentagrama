@@ -1,11 +1,11 @@
-import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.7.1';
-import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.7.1';
-import { footerTextWidth } from './typography.js?v=2.7.1';
-import { validatePath } from './path-data.js?v=2.7.1';
-import { pageTextWidth, DEFAULT_PAGE_FACE } from './page-font.js?v=2.7.1';
-import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.7.1';
-import { rasterPixels } from './raster-image.js?v=2.7.1';
-import { zlibSync } from '../vendor/fflate.js?v=2.7.1';
+import { FOOTER_FONT } from '../vendor/footer-font-metrics.js?v=2.8.0';
+import { FOOTER_FONT_DATA } from '../vendor/footer-font-data.js?v=2.8.0';
+import { footerTextWidth } from './typography.js?v=2.8.0';
+import { validatePath } from './path-data.js?v=2.8.0';
+import { pageTextWidth, DEFAULT_PAGE_FACE } from './page-font.js?v=2.8.0';
+import { pageTextHex, pageFontObjects } from './page-font-pdf.js?v=2.8.0';
+import { rasterPixels } from './raster-image.js?v=2.8.0';
+import { zlibSync } from '../vendor/fflate.js?v=2.8.0';
 
 let fontProgram;
 function embeddedFont() {
