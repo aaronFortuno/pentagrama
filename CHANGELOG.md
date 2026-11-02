@@ -1,5 +1,10 @@
 # Canvis
 
+## 2.8.2 · 2026-11-02
+
+- Indicació i enllaç a la llicència GPL-3.0 del projecte al costat de l’enllaç al repositori dins del quadre Sobre el projecte · V4V. Es reutilitzen l’estil i la icona dels enllaços existents, amb obertura en una pestanya nova.
+- Etiqueta i resum de novetats als deu idiomes. La font compartida del diàleg actualitza també el catàleg i les fitxes de plantilles.
+
 ## 2.8.1 · 2026-10-23
 
 - Corregida la generació d’enllaços llargs en plantilles sense text: les preferències locals de tipografia i alineació del títol, instruccions i peu buits ja no creen un sufix de contingut. La plantilla Trio sense personalització torna a acabar a `P2-A4-P-I20-T12-N9-G3-E22`.

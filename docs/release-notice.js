@@ -1,5 +1,5 @@
-import { iconMarkup } from './icons.js?v=2.8.1';
-import { motionOptions } from './motion.js?v=2.8.1';
+import { iconMarkup } from './icons.js?v=2.8.2';
+import { motionOptions } from './motion.js?v=2.8.2';
 
 export const RELEASE_NOTICE_KEY = 'pentagrama.release-notice.v1';
 export const RELEASE_NOTICE_DURATION = 12000;
