@@ -1,9 +1,19 @@
 {
-  "date": "2026-11-02",
+  "date": "2026-11-05",
   "changes": [
-    "release282Summary"
+    "release283Summary"
   ],
+  "announcement": ["pautaAnnouncement"],
+  "announcementUntil": "2026-12-06T00:00:00+01:00",
+  "announcementLink": { "label": "Pauta.", "url": "https://pauta.ortogra.fi/" },
   "history": [
+    {
+      "version": "2.8.2",
+      "date": "2026-11-02",
+      "changes": [
+        "release282Summary"
+      ]
+    },
     {
       "version": "2.8.1",
       "date": "2026-10-23",

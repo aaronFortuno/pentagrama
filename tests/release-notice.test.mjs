@@ -51,6 +51,15 @@ test('the notice and its progress bar share exactly twelve seconds of active rea
   t.advance(50000); assert.equal(t.expires, 1);
 });
 
+test('the linked project notice also reaches first-time visitors until it expires', () => {
+  const release = { version: '2.8.3', announcement: ['pautaAnnouncement'], announcementUntil: '2026-12-06T00:00:00+01:00',
+    announcementLink: { label: 'Pauta.', url: 'https://pauta.ortogra.fi/' } };
+  const deadline = Date.parse(release.announcementUntil);
+  assert.equal(shouldAnnounceRelease(release, undefined, { now: deadline - 1 }), true);
+  assert.equal(shouldAnnounceRelease(release, release.version, { now: deadline - 1 }), false);
+  assert.equal(shouldAnnounceRelease(release, undefined, { now: deadline }), false);
+});
+
 test('hover, focus and background pauses are independent and cannot shorten the remaining time', () => {
   const t = timer(); t.advance(3000);
   t.clock.pause('pointer'); t.clock.pause('pointer'); t.clock.pause('focus'); t.clock.pause('hidden');

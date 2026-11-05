@@ -1,5 +1,9 @@
 # Canvis
 
+## 2.8.3 · 2026-11-05
+
+- Avís temporal amb un enllaç a Pauta., el generador de paper pautat per a escriptura i cal·ligrafia.
+
 ## 2.8.2 · 2026-11-02
 
 - Indicació i enllaç a la llicència GPL-3.0 del projecte al costat de l’enllaç al repositori dins del quadre Sobre el projecte · V4V. Es reutilitzen l’estil i la icona dels enllaços existents, amb obertura en una pestanya nova.

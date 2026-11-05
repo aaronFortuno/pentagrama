@@ -1,5 +1,5 @@
-import { iconMarkup } from './icons.js?v=2.8.2';
-import { motionOptions } from './motion.js?v=2.8.2';
+import { iconMarkup } from './icons.js?v=2.8.3';
+import { motionOptions } from './motion.js?v=2.8.3';
 
 export const RELEASE_NOTICE_KEY = 'pentagrama.release-notice.v1';
 export const RELEASE_NOTICE_DURATION = 12000;
@@ -7,7 +7,7 @@ export const RELEASE_NOTICE_DURATION = 12000;
 export function shouldAnnounceRelease(release, seen, { returningVisitor = false, now = Date.now() } = {}) {
   const version = release.announcementVersion || release.version;
   const active = !release.announcementUntil || now < Date.parse(release.announcementUntil);
-  return Boolean(returningVisitor && active && version && release.announcement?.length && seen !== version);
+  return Boolean((returningVisitor || release.announcementLink) && active && version && release.announcement?.length && seen !== version);
 }
 
 // One clock drives both expiry and the progress bar. Independent pause reasons
@@ -47,9 +47,15 @@ export function bindReleaseNotice({ release, t, openHistory, root = document, st
   const version = release.announcementVersion || release.version;
   const notice = root.createElement('div'); notice.className = 'release-notice';
   notice.setAttribute('role', 'status'); notice.setAttribute('aria-live', 'polite');
-  const action = root.createElement('button'); action.type = 'button'; action.className = 'release-notice-content';
-  action.setAttribute('aria-haspopup', 'dialog'); action.setAttribute('aria-controls', 'version-dialog');
-  const heading = root.createElement('strong'); heading.textContent = `Pentagrama · ${version}`; action.append(heading);
+  const link = release.announcementLink;
+  const action = root.createElement(link ? 'a' : 'button'); action.className = 'release-notice-content';
+  if (link) {
+    action.href = link.url; action.target = '_blank'; action.rel = 'noopener noreferrer';
+  } else {
+    action.type = 'button'; action.setAttribute('aria-haspopup', 'dialog'); action.setAttribute('aria-controls', 'version-dialog');
+  }
+  const heading = root.createElement('strong'); heading.textContent = link?.label || `Pentagrama · ${version}`; action.append(heading);
+  if (link) heading.insertAdjacentHTML('beforeend', iconMarkup('external-link'));
   for (const key of release.announcement) {
     const line = root.createElement('span'); line.dataset.i18n = key; line.textContent = t(key); action.append(line);
   }
@@ -78,7 +84,7 @@ export function bindReleaseNotice({ release, t, openHistory, root = document, st
   notice.addEventListener('focusout', event => { if (!notice.contains(event.relatedTarget)) clock.resume('focus'); });
   notice.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); dismiss(); } });
   close.addEventListener('click', dismiss);
-  action.addEventListener('click', () => { dismiss(); openHistory(); });
+  action.addEventListener('click', () => { dismiss(); if (!link) openHistory(); });
   root.addEventListener('visibilitychange', visibility); visibility();
   requestAnimationFrame(() => { if (!dismissed) notice.classList.add('visible'); });
   try { storage?.setItem(RELEASE_NOTICE_KEY, version); } catch { /* It still works for this page visit. */ }
