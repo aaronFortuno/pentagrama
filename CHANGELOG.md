@@ -1,5 +1,10 @@
 # Canvis
 
+## 2.8.3 · 2026-11-05
+
+- Signatura «Un projecte d’ortogra.fi» al centre del peu web, amb el logotip de Plec i un enllaç a ortogra.fi. La signatura es comparteix entre el generador, el catàleg i les fitxes de plantilles i es tradueix als deu idiomes.
+- L’historial de versions i la còpia de seguretat s’agrupen a la dreta amb el botó V4V. En pantalles estretes, la signatura té una fila centrada pròpia.
+
 ## 2.8.2 · 2026-11-02
 
 - Indicació i enllaç a la llicència GPL-3.0 del projecte al costat de l’enllaç al repositori dins del quadre Sobre el projecte · V4V. Es reutilitzen l’estil i la icona dels enllaços existents, amb obertura en una pestanya nova.

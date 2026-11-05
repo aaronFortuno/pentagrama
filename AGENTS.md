@@ -6,7 +6,7 @@ En els projectes remots, si s’han comprovat els canvis en local, no repeteixis
 
 ## Novetats de cada versió
 
-Cada nova versió publicada del web ha de reflectir els canvis al diàleg de novetats que s’obre des del número de versió al centre del footer. És un requisit del projecte: no n’hi ha prou amb actualitzar `CHANGELOG.md`.
+Cada nova versió publicada del web ha de reflectir els canvis al diàleg de novetats que s’obre des del número de versió del footer. És un requisit del projecte: no n’hi ha prou amb actualitzar `CHANGELOG.md`.
 
 El resum ha de ser breu, concís i entenedor per a l’usuari: procura dedicar entre una i tres línies a cada versió. Evita detalls interns d’implementació i repeticions. Ha d’incloure la data real de publicació i estar disponible en tots els idiomes del web.
 
