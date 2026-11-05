@@ -6,6 +6,7 @@ import { openDialog, closeDialog, bindAnimatedDetails } from './motion.js?v=2.8.
 import { bindTooltips } from './tooltips.js?v=2.8.2';
 import { RELEASE } from './release.js?v=2.8.2';
 import { bindReleaseNotice } from './release-notice.js?v=2.8.2';
+import './project-promo.js?v=2.8.2';
 
 // Shared footer behavior for the editor and the static template guide.
 export function bindSiteDialogs({ t, copy, toast, getUserProfile }) {
