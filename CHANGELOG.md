@@ -1,5 +1,10 @@
 # Canvis
 
+## 2.8.4 · 2026-11-12
+
+- Les noves estadístiques d’ús s’envien a una instància pròpia d’Umami, tant a l’editor com al catàleg i a les fitxes de plantilles.
+- Es mantenen els esdeveniments, el filtratge i les preferències de privadesa. L’històric anterior continua a Umami Cloud.
+
 ## 2.8.3 · 2026-11-05
 
 - Signatura «Un projecte d’ortogra.fi» al centre del peu web, amb el logotip de Plec i un enllaç a ortogra.fi. La signatura es comparteix entre el generador, el catàleg i les fitxes de plantilles i es tradueix als deu idiomes.

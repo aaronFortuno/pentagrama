@@ -121,6 +121,7 @@ test('tracking loads once in production and respects opt-out, Do Not Track and G
   assert.equal(analytics.excluded(), false);
   assert.equal(analytics.init(website), true); assert.equal(analytics.init(website), true);
   assert.equal(env.scripts.length, 1); assert.equal(env.scripts[0].async, true);
+  assert.equal(env.scripts[0].src, 'https://maquestria.tail72bc84.ts.net:8443/script.js');
   assert.equal(env.scripts[0].dataset.excludeHash, 'true');
   assert.equal(env.pentagramaBeforeSend('event', { website, url: '/#PRIVATE' }).url, '/');
   for (const hostname of ['localhost', '127.0.0.1', 'aaronfortuno.github.io']) {

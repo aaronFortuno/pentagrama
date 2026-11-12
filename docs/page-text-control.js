@@ -1,8 +1,8 @@
-import { bindPopoverFocus } from './keyboard-focus.js?v=2.8.3';
-import { iconMarkup } from './icons.js?v=2.8.3';
-import { showPopover } from './motion.js?v=2.8.3';
-import { enhanceNumberInputs } from './number-input.js?v=2.8.3';
-import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.8.3';
+import { bindPopoverFocus } from './keyboard-focus.js?v=2.8.4';
+import { iconMarkup } from './icons.js?v=2.8.4';
+import { showPopover } from './motion.js?v=2.8.4';
+import { enhanceNumberInputs } from './number-input.js?v=2.8.4';
+import { TEXT_FAMILIES, mmToPoints, pointsToMm } from './engine/text-style.js?v=2.8.4';
 
 const alignments = ['left', 'center', 'right'], icons = ['text-align-start', 'text-align-center', 'text-align-end'];
 const fontNames = { serif: 'Noto Serif', sans: 'Noto Sans', lora: 'Editorial' };

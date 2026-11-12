@@ -1,5 +1,5 @@
-import { validatePath } from './path-data.js?v=2.8.3';
-import { pageFontAppearance } from './page-font.js?v=2.8.3';
+import { validatePath } from './path-data.js?v=2.8.4';
+import { pageFontAppearance } from './page-font.js?v=2.8.4';
 const escape = text => String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 
 export function renderSvgPage(page) {

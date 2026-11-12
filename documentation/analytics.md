@@ -1,6 +1,6 @@
 # Analítica i privadesa
 
-La publicació de `pentagrama.page` utilitza Umami Cloud per conèixer l’abast i l’ús bàsic del generador. No utilitza cookies, gravacions de sessions, mapes de calor ni identificadors propis per seguir persones entre webs.
+La publicació de `pentagrama.page` utilitza una instància pròpia d’Umami per conèixer l’abast i l’ús bàsic del generador. No utilitza cookies, gravacions de sessions, mapes de calor ni identificadors propis per seguir persones entre webs.
 
 La finalitat és saber quines funcions resulten útils i orientar les millores futures.
 
@@ -71,8 +71,8 @@ El switch reflecteix només l’exclusió manual. Si el navegador envia Do Not T
 
 ## Panells del propietari
 
-- [Umami: visites](https://cloud.umami.is/analytics/eu/websites/20ee7f51-6ba8-4486-86a5-f347851105b2).
-- [Umami: accions](https://cloud.umami.is/analytics/eu/websites/20ee7f51-6ba8-4486-86a5-f347851105b2/events).
+- Les dades noves es consulten a l’entrada Pentagrama del tauler privat de l’Umami d’ortogra.fi.
+- L’històric anterior es conserva a [Umami Cloud](https://cloud.umami.is/analytics/eu/websites/20ee7f51-6ba8-4486-86a5-f347851105b2).
 - [Google Search Console](https://search.google.com/search-console?resource_id=sc-domain%3Apentagrama.page).
 
 Els panells requereixen accés al compte del propietari. L’identificador d’Umami al meta `umami-website-id` de l’HTML és públic i no dona accés al panell.

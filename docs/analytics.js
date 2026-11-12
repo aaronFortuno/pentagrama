@@ -1,4 +1,4 @@
-import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=2.8.3';
+import { LANGUAGES as SUPPORTED_LANGUAGES } from './i18n.js?v=2.8.4';
 
 const DOMAIN = 'pentagrama.page';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -90,7 +90,7 @@ export function createAnalytics(env = globalThis) {
       env.pentagramaBeforeSend = (type, payload) => excluded() ? false : sanitizePayload(type, payload);
       const script = env.document.createElement('script');
       script.id = 'pentagrama-analytics'; script.async = true;
-      script.src = 'https://cloud.umami.is/script.js';
+      script.src = 'https://maquestria.tail72bc84.ts.net:8443/script.js';
       script.dataset.websiteId = websiteId;
       script.dataset.domains = DOMAIN;
       script.dataset.excludeHash = 'true';
